@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# Mascot payload is copied from mascot/dist by `npm run mascot:sync`. It is generated,
+# not authored — the source of truth is mascot/ — but it IS committed: mascot/dist is
+# ignored (22MB of authoring output, and rebuilding it needs the Python pipeline), so
+# this 770KB slice is the only copy CI ever sees. Re-run mascot:sync and commit the
+# result whenever the art changes.
+
+# Screenshots are captured from the running app by `npm run shoot`.
+# Re-shootable, and they must never be committed before the credential review.
+public/shots/*
+# ...except the hand-drawn placeholders, which contain no real data.
+!public/shots/_placeholder-*.svg

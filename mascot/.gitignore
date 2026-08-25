@@ -1,0 +1,4 @@
+__pycache__/
+# Generated art: the .png plates come from the image model and the .webp layers are derived
+# from them by import_art.py. Both are kept in the repo on purpose — regenerating them costs
+# quota and never reproduces exactly — so nothing under art/ is ignored here.

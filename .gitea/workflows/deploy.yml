@@ -1,0 +1,112 @@
+name: Build-and-Deploy-Diwche-Site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Disable SSL verification (INSECURE)
+        run: git config --global http.sslVerify false
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          github-server-url: https://git.helabyte.com
+          token: ${{ secrets.GITHUB_TOKEN }}
+          set-safe-directory: true
+
+      # The site is built inside the Dockerfile (node:22-alpine stage), so there
+      # is no Node setup step here. One toolchain, identical locally and in CI.
+
+      - name: Set image vars
+        id: vars
+        run: |
+          IMAGE_REPO=$(echo "git.helabyte.com/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_TAG="${{ github.sha }}"
+          echo "image=${IMAGE_REPO}:${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "latest=${IMAGE_REPO}:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to registry
+        run: |
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.helabyte.com \
+            -u "${{ vars.REGISTRY_USER }}" \
+            --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t "${{ steps.vars.outputs.image }}" .
+          docker tag "${{ steps.vars.outputs.image }}" "${{ steps.vars.outputs.latest }}" || true
+          docker push "${{ steps.vars.outputs.image }}"
+          docker push "${{ steps.vars.outputs.latest }}" || true
+
+      - name: Deploy to NAS
+        uses: https://github.com/appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          password: ${{ secrets.SSH_PASS }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            TARGET_IMAGE=$(echo "git.helabyte.com/${{ github.repository }}:${{ github.sha }}" | tr '[:upper:]' '[:lower:]')
+
+            echo "Logging in to registry..."
+            echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.helabyte.com \
+              -u "${{ vars.REGISTRY_USER }}" \
+              --password-stdin
+
+            echo "Pulling new image..."
+            docker pull "$TARGET_IMAGE"
+
+            echo "Stopping old container..."
+            docker stop diwche-site || true
+            docker rm   diwche-site || true
+
+            echo "Freeing port 5659 if anything else holds it..."
+            OWNER=$(docker ps --filter "publish=5659" --format "{{.Names}}" 2>/dev/null || true)
+            if [ -n "$OWNER" ]; then
+              echo "Stopping container holding port 5659: $OWNER"
+              docker stop "$OWNER" || true
+              docker rm   "$OWNER" || true
+            fi
+
+            echo "Starting new container on port 5659..."
+            docker run -d \
+              --name diwche-site \
+              --restart always \
+              -p 5659:80 \
+              "$TARGET_IMAGE"
+
+            echo "Waiting for nginx..."
+            OK=""
+            for i in $(seq 1 15); do
+              if curl -fsS http://127.0.0.1:5659/healthz >/dev/null 2>&1; then
+                echo "Healthy after ${i}s."
+                OK=1
+                break
+              fi
+              sleep 1
+            done
+            if [ -z "$OK" ]; then
+              echo "Site did not answer /healthz within 15s:"
+              docker logs --tail 40 diwche-site || true
+              exit 1
+            fi
+
+            echo "Smoke-checking the homepage..."
+            curl -fsS -o /dev/null http://127.0.0.1:5659/
+
+            docker ps -f "name=diwche-site"
+
+            echo "Cleaning old images..."
+            docker image prune -af || true
+
+            echo "Deployment complete."

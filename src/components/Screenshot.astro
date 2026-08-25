@@ -1,0 +1,172 @@
+---
+/**
+ * A real app capture, framed in CSS rather than baked into the PNG.
+ *
+ * Keeping the chrome in CSS means the frame stays crisp at any DPR, restyles
+ * with the tokens, and callout labels stay editable — and translatable — HTML.
+ *
+ * Callouts are positioned with percentages so they survive a re-shoot at a
+ * different size.
+ */
+interface Callout {
+  /** Percentage from the left/top edge of the image. */
+  x: number;
+  y: number;
+  text: string;
+  /** Which side the label sits on relative to its dot. */
+  side?: 'left' | 'right';
+}
+
+interface Props {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  /** Shown in the frame's title bar. Omit for a bare frame. */
+  label?: string;
+  callouts?: Callout[];
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  label,
+  callouts = [],
+  loading = 'lazy',
+  class: className = '',
+} = Astro.props;
+---
+
+<figure class:list={['shot', className]}>
+  <div class="shot__frame">
+    <div class="shot__bar">
+      <span class="shot__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      {label && <span class="shot__label">{label}</span>}
+    </div>
+    <div class="shot__viewport">
+      <img src={src} alt={alt} width={width} height={height} loading={loading} decoding="async" />
+      {
+        callouts.map((c) => (
+          <span
+            class:list={['shot__callout', `is-${c.side ?? 'right'}`]}
+            style={`--x:${c.x}%; --y:${c.y}%`}
+          >
+            <i class="shot__dot" aria-hidden="true" />
+            <b class="shot__text">{c.text}</b>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</figure>
+
+<style>
+  .shot {
+    width: 100%;
+  }
+
+  .shot__frame {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    box-shadow: var(--shadow-frame);
+    overflow: hidden;
+    /* Only transform/opacity — no layout properties. */
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      box-shadow var(--dur-slow) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .shot__frame:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-frame-lift);
+    }
+  }
+
+  .shot__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    height: 28px;
+    padding-inline: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+  }
+
+  .shot__dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .shot__dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rule);
+  }
+
+  .shot__label {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+  }
+
+  .shot__viewport {
+    position: relative;
+  }
+
+  .shot__viewport img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---- Callouts ---------------------------------------------------------- */
+
+  .shot__callout {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    transform: translateY(-50%);
+  }
+
+  .shot__callout.is-left {
+    flex-direction: row-reverse;
+    transform: translate(-100%, -50%);
+  }
+
+  .shot__dot {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--horn);
+    box-shadow: 0 0 0 4px rgba(201, 163, 94, 0.22);
+  }
+
+  .shot__text {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+    white-space: nowrap;
+    padding: 5px 9px;
+    border-radius: var(--r-1);
+    background: var(--ink);
+    color: var(--paper-2);
+  }
+
+  /* Callouts crowd the image below tablet — the screenshot alone still reads. */
+  @media (max-width: 720px) {
+    .shot__callout {
+      display: none;
+    }
+  }
+</style>

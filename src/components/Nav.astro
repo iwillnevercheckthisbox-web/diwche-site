@@ -1,0 +1,118 @@
+---
+const links = [
+  { href: '/product', label: 'Product' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/learn', label: 'Learn' },
+  { href: '/about', label: 'About' },
+];
+
+const path = Astro.url.pathname;
+---
+
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="/">Diwche</a>
+
+    <nav class="nav__links" aria-label="Main">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="btn nav__cta" href="/pricing">Request access</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur) ease;
+  }
+
+  /* Hairline only once the page has moved — no border against the hero. */
+  .nav:not([data-top]) {
+    border-bottom-color: var(--rule);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-6);
+    width: 100%;
+    max-width: var(--width);
+    margin-inline: auto;
+    padding: var(--s-3) var(--s-5);
+  }
+
+  .nav__brand {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.5rem;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: var(--s-5);
+  }
+
+  .nav__links a {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: color var(--dur) ease;
+  }
+
+  .nav__links a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav__links a:hover {
+      color: var(--ink);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .nav__links {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Hairline appears only after the page scrolls. rAF-throttled so the scroll
+  // listener never does layout work per event.
+  const nav = document.querySelector<HTMLElement>('.nav');
+
+  if (nav) {
+    let ticking = false;
+
+    const sync = () => {
+      nav.toggleAttribute('data-top', window.scrollY < 8);
+      ticking = false;
+    };
+
+    sync();
+    addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(sync);
+      },
+      { passive: true }
+    );
+  }
+</script>

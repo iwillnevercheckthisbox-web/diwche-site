@@ -1,0 +1,15 @@
+# The build needs almost nothing, on purpose.
+#
+# Pillow    image loading, WebP encoding (including animated WebP for the fallbacks — the
+#           ffmpeg on this machine is built without libwebp and cannot write them)
+# NumPy     the chroma key and despill maths
+#
+# Both are already present on this machine. There is deliberately no `lottie` package: it is
+# aimed at Telegram stickers and at vectorising raster art, ships about one release a year,
+# and we would still have to hand-write the external-asset fields. build/lottie.py is 200
+# lines and we control every byte of the output.
+#
+# The fallback renderer additionally uses Playwright, which is already installed in
+# frontend/node_modules — no separate Python binding needed.
+Pillow>=10.0
+numpy>=1.24

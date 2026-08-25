@@ -1,0 +1,24 @@
+{
+  "name": "diwche-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketing site for Diwche (diwche.com)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "mascot:sync": "node scripts/sync-mascot.mjs && node scripts/render-poster.mjs",
+    "shoot": "node scripts/shoot.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.1.1",
+    "@astrojs/mdx": "^4.0.3"
+  },
+  "devDependencies": {
+    "@fontsource-variable/fraunces": "^5.1.0",
+    "@fontsource-variable/geist": "^5.2.5",
+    "lottie-web": "^5.12.2",
+    "puppeteer": "^23.11.1"
+  }
+}

@@ -1,0 +1,89 @@
+/*
+ * Diwche design tokens.
+ * The authority for these values is design/DNA.md — change that first, then this.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Palette: warm paper, warm ink, one accent -------------------------- */
+  --paper: #f6f1e4;
+  --paper-2: #fbfaf7;
+  --paper-3: #efe8d6;
+  --ink: #3a3226;
+  --ink-2: #6b6459;
+  --ink-3: #8f8676;
+  --rule: #dcd2bc;
+  --horn: #c9a35e;
+  --horn-deep: #a8823f;
+  --accent: #2a3a5a;
+  --alarm: #b4463c;
+
+  /* ---- Type -------------------------------------------------------------- */
+  --font-display: 'Fraunces Variable', Georgia, ui-serif, serif;
+  --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  /* Fraunces axes: softened terminals + a slight off-kilter cut, to echo the
+     mascot's "loose, slightly wobbly ink contour". Weight stays at 400 always. */
+  --display-axes: 'SOFT' 40, 'WONK' 1, 'opsz' 120;
+
+  --t-hero: clamp(2.75rem, 1.6rem + 5vw, 4.125rem); /* → 66px */
+  --t-section: clamp(2.125rem, 1.4rem + 3vw, 3.25rem); /* → 52px */
+  --t-subhead: clamp(1.5rem, 1.15rem + 1.6vw, 2.125rem); /* → 34px */
+  --t-lead: clamp(1.125rem, 1.02rem + 0.45vw, 1.3125rem); /* → 21px */
+  --t-body: 1.0625rem; /* 17px */
+  --t-meta: 0.875rem; /* 14px */
+  --t-eyebrow: 0.8125rem; /* 13px */
+
+  /* ---- Space: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 140 -------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+  --s-10: 8.75rem;
+
+  --section-y: clamp(3.5rem, 2rem + 7vw, 8.75rem);
+  --width: 1120px;
+  --width-prose: 68ch;
+
+  /* ---- Shape: max 10px radius, hairline rules, shadows only under frames -- */
+  --r-1: 4px;
+  --r-2: 6px;
+  --r-3: 10px;
+  --r-pill: 999px; /* nav CTA only */
+  --shadow-frame: 0 24px 60px -24px rgba(58, 50, 38, 0.28);
+  --shadow-frame-lift: 0 32px 72px -26px rgba(58, 50, 38, 0.34);
+
+  /* ---- Motion ------------------------------------------------------------ */
+  /* Strong curves: the CSS built-ins are too weak to read as intentional. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-fast: 160ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+}
+
+/* Reduced motion: movement goes, opacity stays. Never a blanket `animation: none`
+   — fades still aid comprehension. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

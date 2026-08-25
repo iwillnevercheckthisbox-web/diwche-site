@@ -1,0 +1,247 @@
+---
+import Base from '../layouts/Base.astro';
+import Mascot from '../components/Mascot.astro';
+import Screenshot from '../components/Screenshot.astro';
+
+// Phase 0: hero + one pillar only. The remaining three pillars, the pipeline
+// walkthrough and the pricing teaser land in Phase 1, once the look is signed off.
+const capabilities = [
+  { name: 'Topics', text: 'Ten topics every morning, with a hook and a reason it matters today.' },
+  { name: 'Insights', text: 'What actually worked — by source, persona, format and hour.' },
+  { name: 'RSS Pipeline', text: 'Your feeds, filtered to the keywords you care about.' },
+  { name: 'Scraper', text: 'The accounts you admire, read once and never posted to.' },
+];
+---
+
+<Base
+  title="Diwche — it runs your Instagram accounts"
+  description="Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the reel, and posts it. On schedule, in your language, in your look."
+>
+  <!-- ================================================================== HERO -->
+  <section class="hero">
+    <div class="wrap hero__inner">
+      <div class="hero__copy">
+        <h1 class="hero__title">It runs your Instagram accounts. You take the credit.</h1>
+        <p class="lead hero__lead">
+          Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the
+          reel, and posts it. On schedule, in your language, in your look.
+        </p>
+        <div class="hero__actions">
+          <a class="btn" href="/pricing">Request access</a>
+          <a class="btn btn--quiet" href="/product">See everything it does</a>
+        </div>
+        <p class="hero__meta">
+          One engine, many accounts. Each with its own feeds, keywords, voice and schedule.
+        </p>
+      </div>
+
+      <div class="hero__art">
+        <Mascot
+          scene="01-writing"
+          slug="writing"
+          alt="Diwche, a small horned imp with heavy droopy eyelids, sitting at a desk writing with a quill."
+          width={725}
+          height={613}
+          animate
+          loading="eager"
+        />
+        <figcaption class="hero__caption">
+          Diwche. Does every job in the pipeline. Not impressed by this deadline either.
+        </figcaption>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= PILLAR 01 -->
+  <section class="section pillar">
+    <div class="wrap">
+      <header class="pillar__head reveal">
+        <p class="eyebrow">01 — Know what to post</p>
+        <h2 class="pillar__title">It reads the internet so you don't.</h2>
+        <p class="lead">
+          Diwche watches your feeds, the accounts you admire and your own numbers. Every morning it
+          hands you about ten topics, each with a hook, a format and a reason it matters today. You
+          say make it, keep it, or not this — and tomorrow's list is different.
+        </p>
+      </header>
+
+      <div class="pillar__shot reveal" style="--reveal-delay: 60ms">
+        <Screenshot
+          src="/shots/_placeholder-topics.svg"
+          alt="The Topics page: a list of suggested topics for today, each with a hook and a pillar, beside the account's stated direction."
+          width={1280}
+          height={800}
+          label="diwche — Topics"
+          callouts={[
+            { x: 44, y: 28, text: 'Why this, today', side: 'right' },
+            { x: 40, y: 52, text: 'Make it · Keep · Not this', side: 'right' },
+          ]}
+        />
+      </div>
+
+      <ul class="pillar__list">
+        {
+          capabilities.map((c, i) => (
+            <li class="cap reveal" style={`--reveal-delay: ${i * 50}ms`}>
+              <h3 class="cap__name">{c.name}</h3>
+              <p class="cap__text">{c.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <p class="phase-note wrap">
+    Phase 0 — hero and one pillar, for the look. Three pillars, the pipeline walkthrough and real
+    screenshots follow once this is approved.
+  </p>
+</Base>
+
+<style>
+  /* ---- Hero -------------------------------------------------------------- */
+
+  .hero {
+    padding-block: clamp(3rem, 1rem + 8vw, 7rem) clamp(2rem, 1rem + 5vw, 5rem);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: center;
+  }
+
+  .hero__title {
+    font-size: var(--t-hero);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    max-width: 15ch;
+  }
+
+  .hero__lead {
+    margin-top: var(--s-5);
+    max-width: 44ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+
+  .hero__meta {
+    margin-top: var(--s-5);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    max-width: 40ch;
+  }
+
+  .hero__art {
+    /* The panel art is crisp to ~500px and soft past it (source is 243x168).
+       `width: 100%` is load-bearing: with only `margin-inline: auto` the grid
+       item stops stretching and shrink-to-fits to the caption's width. */
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+  }
+
+  .hero__caption {
+    margin-top: var(--s-4);
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    color: var(--ink-3);
+    text-align: center;
+    max-width: 34ch;
+    margin-inline: auto;
+  }
+
+  /* ---- Pillar ------------------------------------------------------------ */
+
+  .pillar__head {
+    max-width: 62ch;
+  }
+
+  .pillar__title {
+    margin-top: var(--s-4);
+    font-size: var(--t-section);
+    max-width: 18ch;
+  }
+
+  .pillar__head .lead {
+    margin-top: var(--s-5);
+    max-width: 58ch;
+  }
+
+  .pillar__shot {
+    margin-top: var(--s-8);
+  }
+
+  .pillar__list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--s-8);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  .cap {
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .cap__name {
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+  }
+
+  .cap__text {
+    margin-top: var(--s-2);
+    font-size: var(--t-meta);
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* ---- Phase note (temporary, removed in Phase 1) ------------------------- */
+
+  .phase-note {
+    display: block;
+    margin-top: var(--s-8);
+    padding-top: var(--s-4);
+    border-top: 1px dashed var(--rule);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    max-width: 62ch;
+  }
+
+  /* ---- Responsive -------------------------------------------------------- */
+
+  @media (max-width: 900px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+      gap: var(--s-7);
+    }
+
+    .hero__art {
+      order: -1;
+      max-width: 380px;
+    }
+
+    .hero__title {
+      max-width: 18ch;
+    }
+
+    .pillar__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .pillar__list {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+    }
+  }
+</style>

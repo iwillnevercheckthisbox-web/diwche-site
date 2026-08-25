@@ -1,0 +1,192 @@
+---
+/**
+ * Diwche.
+ *
+ * Renders the poster still immediately — that is the LCP image and the
+ * no-JS/reduced-motion result. Only `01-writing` is a genuinely layered scene,
+ * so only it upgrades to Lottie, and only when it scrolls into view.
+ *
+ * The load rules come from mascot/integration/diwche.directive.ts:
+ *  - lazy-import the player (~46KB gzipped); most viewers never scroll to a mascot
+ *  - assetsPath uses the BARE slug ("writing/"), not the numbered name
+ *    ("01-writing/") — the directive gets this wrong, dist/index.html gets it right
+ *  - every asset carries an empty `u` on purpose: lottie-web resolves a non-empty
+ *    `u` against the document URL, not the JSON's, so a deeper route would 404
+ *  - a missing layer image is not an error in lottie-web, it renders an invisible
+ *    layer — hence the explicit data_failed listener
+ *  - pause off-screen
+ */
+interface Props {
+  /** Numbered scene name, e.g. "01-writing". */
+  scene?: string;
+  /** Bare asset slug, e.g. "writing". Only needed for the animated scene. */
+  slug?: string;
+  /** Described for screen readers. The character bible forbids text inside the art. */
+  alt: string;
+  /** Intrinsic aspect, matching the poster. */
+  width?: number;
+  height?: number;
+  /** Use the sharper 720px still. */
+  large?: boolean;
+  animate?: boolean;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  scene = '01-writing',
+  slug = 'writing',
+  alt,
+  width = 384,
+  height = 265,
+  large = false,
+  animate = false,
+  class: className = '',
+  loading = 'lazy',
+} = Astro.props;
+
+// An animated scene's poster must be that scene's own frame 0, not the flat
+// panel — the layered cut is a transparent cutout while the shipped panel is the
+// full desk illustration, so mixing them makes the page swap pictures on load.
+// scripts/render-poster.mjs produces the matching `-cutout.webp`.
+const poster = animate
+  ? `/mascot/fallback/${scene}-cutout.webp`
+  : large
+    ? `/mascot/fallback/${scene}-poster@720.webp`
+    : `/mascot/fallback/${scene}-poster.webp`;
+---
+
+<figure
+  class:list={['mascot', className]}
+  style={`--mascot-ratio: ${width} / ${height}`}
+  data-mascot={animate ? scene : undefined}
+  data-slug={animate ? slug : undefined}
+>
+  <img
+    class="mascot__poster"
+    src={poster}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding="async"
+    fetchpriority={loading === 'eager' ? 'high' : undefined}
+  />
+  {animate && <div class="mascot__stage" aria-hidden="true"></div>}
+</figure>
+
+<style>
+  .mascot {
+    position: relative;
+    aspect-ratio: var(--mascot-ratio);
+    width: 100%;
+  }
+
+  .mascot__poster,
+  .mascot__stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mascot__poster {
+    object-fit: contain;
+    /* Crossfades out once Lottie has actually painted, so a slow player never
+       shows a gap. Nothing in the real world appears from nothing. */
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  .mascot[data-playing] .mascot__poster {
+    opacity: 0;
+  }
+
+  .mascot__stage {
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  .mascot[data-playing] .mascot__stage {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const nodes = document.querySelectorAll<HTMLElement>('[data-mascot]');
+
+  // Reduced motion: do not merely pause — never download the player at all.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (nodes.length && !reduced.matches) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          const anim = (el as any)._diwche;
+
+          if (entry.isIntersecting) {
+            if (anim) anim.play();
+            else mount(el);
+          } else if (anim) {
+            anim.pause();
+          }
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    for (const node of nodes) observer.observe(node);
+  }
+
+  async function mount(el: HTMLElement) {
+    const scene = el.dataset.mascot;
+    const slug = el.dataset.slug;
+    const stage = el.querySelector<HTMLElement>('.mascot__stage');
+    if (!scene || !slug || !stage) return;
+
+    // Guard against a second IntersectionObserver callback racing the import.
+    if ((el as any)._diwcheLoading) return;
+    (el as any)._diwcheLoading = true;
+
+    const lottie = (await import('lottie-web/build/player/lottie_light')).default;
+
+    const anim = lottie.loadAnimation({
+      container: stage,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: `/mascot/lottie/${scene}.json`,
+      assetsPath: `/mascot/assets/${slug}/`,
+      rendererSettings: { progressiveLoad: true, preserveAspectRatio: 'xMidYMid meet' },
+    });
+
+    // A missing image renders as an invisible layer rather than throwing, so keep
+    // the poster up and say so loudly instead of shipping a blank rectangle.
+    anim.addEventListener('data_failed', () => {
+      console.error(`[diwche] ${scene}: layer data failed to load — keeping poster`);
+      el.removeAttribute('data-playing');
+    });
+
+    anim.addEventListener('DOMLoaded', () => {
+      // Name-derived offset so a grid of mascots never pulses in unison.
+      const seed = [...scene].reduce((a, c) => a + c.charCodeAt(0), 0);
+      anim.goToAndPlay(seed % anim.totalFrames, true);
+    });
+
+    // DOMLoaded fires before the layer images arrive under progressiveLoad, so
+    // crossfading there shows a half-drawn scene — the character with no desk or
+    // bookshelf behind him. Wait until every layer has actually painted.
+    let revealed = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      el.setAttribute('data-playing', '');
+    };
+
+    anim.addEventListener('loaded_images', reveal);
+    // Safety net: if `loaded_images` never fires, don't strand the poster forever.
+    setTimeout(reveal, 2000);
+
+    (el as any)._diwche = anim;
+  }
+</script>
