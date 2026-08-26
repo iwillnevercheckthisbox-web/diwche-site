@@ -5,6 +5,13 @@
 
 :root {
   color-scheme: dark;
+  /* Dark is the identity (DNA §2) and stays the fallback when no theme has been
+     resolved. The light ladder is at the bottom of this file, under
+     [data-theme='light'] — an inline script in Base.astro stamps that attribute
+     before first paint, so there is exactly one place to define each palette and
+     no flash. Without JS the site is dark, which is the honest default.
+     Note this is a deliberate departure from DNA §2's "the site does not offer a
+     toggle" — asked for directly. */
 
   /* ---- Palette: Sapphire & Champagne -------------------------------------
      The names are the ones this site has always used; only the values moved.
@@ -93,6 +100,55 @@
   --dur-fast: 160ms;
   --dur: 220ms;
   --dur-slow: 420ms;
+}
+
+/* ---- The light room -------------------------------------------------------
+   Same identity, different room: the neutral ladder inverts, sapphire is
+   unchanged because it holds on both grounds, and champagne darkens — #C9A668 on
+   near-white is a highlight nobody can see. Only values move; every rule in
+   DNA.md §2 still applies, including that nothing is pure black or pure white. */
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --paper: #f7f6f2;
+  --paper-2: #fdfcf9;
+  --paper-3: #efede6;
+  --paper-4: #f2f0e9;
+  --ink: #14171f;
+  --ink-2: #4b5468;
+  --ink-3: #7a8398;
+  --rule: #d8d6cc;
+  --rule-soft: #e8e6de;
+
+  /* Champagne and bronze swap jobs. On near-black the deep bronze was the border
+     and the pale gold was the text; on near-white it is the other way round. */
+  --horn: #8a6a2c;
+  --horn-soft: #6e5322;
+  --horn-deep: #c9a668;
+
+  --accent: #0f52ba;
+  --accent-soft: #2f66cc;
+  --accent-dim: #0a2f6e;
+  --btn-text: #f3f6ff;
+  --alarm: #b3392f;
+
+  --shine: rgba(255, 255, 255, 0.85);
+  --shine-strong: rgba(255, 255, 255, 0.95);
+  /* A white sheen on a near-white card is nothing at all, so the light sheen
+     lifts at the top-left and shades at the bottom-right instead. Same job as
+     the dark one — stop a raised surface reading as a flat rectangle. */
+  --sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.9) 0%, rgba(20, 23, 31, 0.022) 100%);
+
+  --glow-1: rgba(15, 82, 186, 0.1);
+  --glow-2: rgba(201, 166, 104, 0.2);
+  --tag-bg: rgba(15, 82, 186, 0.08);
+  --tag-border: rgba(15, 82, 186, 0.2);
+  --btn-shadow: 0 0 0 1px rgba(201, 166, 104, 0.45), 0 14px 30px -12px rgba(15, 82, 186, 0.4);
+
+  --shadow-frame: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 26px 60px -26px rgba(20, 23, 31, 0.28);
+  --shadow-frame-lift: 0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 34px 74px -26px rgba(20, 23, 31, 0.34);
 }
 
 /* Reduced motion: movement goes, opacity stays. Never a blanket `animation: none`

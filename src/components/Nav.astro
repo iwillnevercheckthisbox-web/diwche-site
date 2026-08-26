@@ -25,6 +25,19 @@ const path = Astro.url.pathname;
       }
     </nav>
 
+    <button class="nav__theme" type="button" aria-label="Switch to the light theme">
+      <svg class="nav__icon nav__icon--sun" viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="3.6" />
+        <g stroke-linecap="round">
+          <path d="M10 1.8v2M10 16.2v2M18.2 10h-2M3.8 10h-2" />
+          <path d="M15.8 4.2l-1.4 1.4M5.6 14.4l-1.4 1.4M15.8 15.8l-1.4-1.4M5.6 5.6L4.2 4.2" />
+        </g>
+      </svg>
+      <svg class="nav__icon nav__icon--moon" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M16.5 12.4A7 7 0 0 1 7.6 3.5a7 7 0 1 0 8.9 8.9z" />
+      </svg>
+    </button>
+
     <a class="btn nav__cta" href="/#pricing">Request a demo</a>
   </div>
 </header>
@@ -53,6 +66,54 @@ const path = Astro.url.pathname;
     max-width: var(--width);
     margin-inline: auto;
     padding: var(--s-3) var(--s-5);
+  }
+
+  /* The theme switch. A quiet icon button — it is a preference, not an action,
+     so it never competes with the CTA beside it. */
+  .nav__theme {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: var(--r-2);
+    color: var(--ink-2);
+    transition:
+      color var(--dur) ease,
+      background-color var(--dur) ease;
+  }
+
+  .nav__icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+  }
+
+  .nav__icon--moon {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* Show the room you would switch *to*, not the one you are in. */
+  .nav__icon--sun {
+    display: none;
+  }
+
+  :global([data-theme='dark']) .nav__icon--sun {
+    display: block;
+  }
+
+  :global([data-theme='dark']) .nav__icon--moon {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav__theme:hover {
+      color: var(--ink);
+      background-color: var(--paper-4);
+    }
   }
 
   /* The one pill on the site (DNA §4). `.btn` itself is 10px everywhere else. */
@@ -99,6 +160,43 @@ const path = Astro.url.pathname;
 </style>
 
 <script>
+  // Theme switch. The resolved theme is already on <html> — set before first
+  // paint in Base.astro — so this only ever flips it and remembers the choice.
+  const GROUND = { dark: '#05070c', light: '#f7f6f2' };
+  const toggle = document.querySelector<HTMLButtonElement>('.nav__theme');
+
+  if (toggle) {
+    const root = document.documentElement;
+
+    const label = () =>
+      toggle.setAttribute(
+        'aria-label',
+        root.dataset.theme === 'dark' ? 'Switch to the light theme' : 'Switch to the dark theme'
+      );
+
+    label();
+
+    toggle.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      label();
+
+      try {
+        localStorage.setItem('diwche-theme', next);
+      } catch (e) {
+        // Private mode. The choice just won't outlive the tab.
+      }
+
+      // The two media-gated <meta> tags can't follow an explicit choice, so once
+      // there is one they are replaced by a single unconditional tag.
+      for (const tag of document.querySelectorAll('meta[name="theme-color"]')) tag.remove();
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = GROUND[next];
+      document.head.appendChild(meta);
+    });
+  }
+
   // Hairline appears only after the page scrolls. rAF-throttled so the scroll
   // listener never does layout work per event.
   const nav = document.querySelector<HTMLElement>('.nav');

@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import Mascot from '../components/Mascot.astro';
-import Screenshot from '../components/Screenshot.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import Card from '../components/Card.astro';
 import QuoteCard from '../components/QuoteCard.astro';
@@ -96,20 +95,12 @@ const faqs = [
         One engine, many accounts. Each with its own feeds, keywords, voice and schedule.
       </p>
 
-      <div class="hero__art">
-        <Mascot
-          scene="01-writing"
-          slug="writing"
-          alt="Diwche, a small horned imp with heavy droopy eyelids, sitting at a desk writing with a quill."
-          width={725}
-          height={613}
-          animate
-          loading="eager"
-        />
+      <figure class="hero__art">
+        <Mascot scene="thinking" loading="eager" />
         <figcaption class="hero__caption">
           Diwche. Does every job in the pipeline. Not impressed by this deadline either.
         </figcaption>
-      </div>
+      </figure>
     </div>
   </section>
 
@@ -125,18 +116,8 @@ const faqs = [
         />
       </div>
 
-      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
-        <Screenshot
-          src="/shots/_placeholder-topics.svg"
-          alt="The Topics page: a list of suggested topics for today, each with a hook and a pillar, beside the account's stated direction."
-          width={1280}
-          height={800}
-          label="diwche — Topics"
-          callouts={[
-            { x: 44, y: 28, text: 'Why this, today', side: 'right' },
-            { x: 40, y: 52, text: 'Make it · Keep · Not this', side: 'right' },
-          ]}
-        />
+      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
+        <Mascot scene="connecting" />
       </div>
     </div>
 
@@ -165,12 +146,7 @@ const faqs = [
       </div>
 
       <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
-        <Mascot
-          scene="07-coloring"
-          alt="Diwche colouring in a finished panel, unhurried."
-          width={384}
-          height={384}
-        />
+        <Mascot scene="working-hard" />
       </div>
     </div>
   </section>
@@ -188,12 +164,7 @@ const faqs = [
       </div>
 
       <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
-        <Mascot
-          scene="08-submitting"
-          alt="Diwche handing over the finished piece, eyes open for once."
-          width={384}
-          height={384}
-        />
+        <Mascot scene="posting" />
       </div>
     </div>
   </section>
@@ -382,14 +353,10 @@ const faqs = [
     min-width: 0;
   }
 
-  /* The pillar scenes are flat panels with their own light ground, so on this
-     near-black page they need an edge or they float. Hairline and radius only —
-     shadows belong under framed screenshots (DNA §4). */
+  /* No frame any more: the scenes are cut out, and the two that keep a dark panel
+     carry their own rounded corners inside the SVG. */
   .pillar__visual--mascot :global(.mascot) {
-    max-width: 300px;
-    border: 1px solid var(--rule-soft);
-    border-radius: var(--r-3);
-    overflow: hidden;
+    max-width: 360px;
   }
 
   .pillar__list {

@@ -82,10 +82,20 @@ the 1px line around a sapphire button. `--alarm` never appears except to describ
    (`--glow-1`), champagne top-right (`--glow-2`). They are what give the page a light source
    and stop `#05070C` reading as dead charcoal. The grain still tiles over the top.
 
-**Dark only.** The identity is light-on-near-black; the site says so honestly with
-`color-scheme: dark` and a matching `theme-color`. The token file carries a light ladder too
-because the *product* has a theme toggle, but the site does not offer one — a marketing page
-should make one confident choice, not ask.
+**Dark is the identity, and now there is a switch.** Light-on-near-black is still what Diwche
+looks like, and it is what a reader gets with no JS and no stated preference. But as of
+2026-08-27 the site carries a theme toggle in the nav — a reversal of the rule this section
+used to state ("a marketing page should make one confident choice, not ask"), made
+deliberately rather than by drift.
+
+The light room is the same identity in different light: the neutral ladder inverts, sapphire is
+unchanged because it holds on both grounds, and champagne darkens to `#8A6A2C` — `#C9A668` on
+near-white is a highlight nobody can see. Everything else in this section still applies,
+including that nothing is pure black or pure white.
+
+Mechanically: the light values live in one block in `tokens.css` under `[data-theme='light']`,
+an inline script in `Base.astro` resolves stored choice → system preference → dark before first
+paint, and `color-scheme` and `theme-color` follow.
 
 ---
 
@@ -177,25 +187,32 @@ Canon lives in `mascot/character/character-bible.md`. What matters for the site:
   site — use them where the copy earns a change of expression, nowhere else.
 - **No text is ever drawn inside an illustration.** Every caption is HTML. This is a canon rule
   and it also keeps the site translatable later.
-- The twelve panels are deliberately twelve different colour schemes. Do not recolour him to
-  brand him; the anatomy is the brand, not the palette.
+- Do not recolour him to brand him; the anatomy is the brand, not the palette.
 
-**Production reality:** only `01-writing` is real cut-out animation. The other eleven are one
-flat upscaled panel with a camera push and the project itself says they are "not to be
-shipped." So — `01-writing` animates in the hero at ≤500px; everywhere else uses the static
-posters from `mascot/dist/fallback/`. Cutting real layers for the other pillar scenes is a
-follow-up job, not a blocker.
+**2026-08-27 — the art was redrawn.** The twelve flat panels are gone. The character is now
+four hand-drawn scenes in `mascot/new resources/`, with curled ram's horns rather than the
+earlier tapering pair. The rules above did not move; only the drawings did.
 
-**Scene mapping** (from `mascot/integration/diwche-situations.ts`):
+**Production reality:** `npm run mascot:build` turns those four JPEGs into self-contained
+animated SVGs in `public/mascot/v2/`. Each carries the cut-out drawing, a float and breathe
+loop, and its own `prefers-reduced-motion` rule, so the site needs no animation player at all —
+`Mascot.astro` is an `<img>`.
 
-| Placement | Scene |
-|---|---|
-| Hero | `01-writing` — animated |
-| Know what to post | `04-brainstorming` |
-| Make it | `07-coloring` |
-| Publish it | `08-submitting` — eyes open, the payoff |
-| Keep it yours | `11-approval` |
-| Error / empty / 404 | `12-print-check` |
+The art stays raster inside the SVG on purpose. Autotracing a colour-quantised copy would
+posterise away the loose ink contour and the pencil hatching, which is the one thing this
+section says is the brand.
+
+Two of the four were drawn on black. Their trousers, ink shading and interiors are the same
+value as the ground, so no flood fill can separate art from background — those two keep a
+near-black panel of their own, with a hairline. On the dark theme it reads as nothing; on the
+light theme it is a deliberate dark panel. The other two cut free and float on either ground.
+
+| Placement | Scene | Treatment |
+|---|---|---|
+| Hero | `thinking` | cut out, contact shadow, ≤500px |
+| Know what to post | `connecting` | dark panel |
+| Make it | `working-hard` | cut out, edges feathered |
+| Publish it | `posting` | dark panel |
 
 ---
 

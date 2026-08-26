@@ -23,7 +23,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#05070c" />
+    <!-- Two entries, so the browser chrome matches the room the reader lands in.
+         The toggle rewrites these when it switches. -->
+    <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Diwche" />
@@ -35,9 +38,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <!-- `.js` gates the scroll-reveal styles, so content is never hidden when
-         scripts fail. Set before first paint to avoid a flash. -->
+         scripts fail. Resolving the theme has to happen here too — before first
+         paint — or the page flashes the wrong room. Stored choice wins, then the
+         system preference, then dark, which is the identity. -->
     <script is:inline>
-      document.documentElement.classList.add('js');
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+
+        var theme = 'dark';
+        try {
+          var saved = localStorage.getItem('diwche-theme');
+          if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+          } else if (matchMedia('(prefers-color-scheme: light)').matches) {
+            theme = 'light';
+          }
+        } catch (e) {
+          /* Private mode can throw on read. Dark is the correct fallback. */
+        }
+
+        root.dataset.theme = theme;
+      })();
     </script>
   </head>
 
