@@ -1,9 +1,11 @@
 ---
+// Only the homepage exists so far, so these point at sections on it rather than
+// at routes that would 404. They become real paths as those pages land.
 const links = [
-  { href: '/product', label: 'Product' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/learn', label: 'Learn' },
-  { href: '/about', label: 'About' },
+  { href: '/#product', label: 'Product' },
+  { href: '/#reliability', label: 'Reliability' },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/#faq', label: 'FAQ' },
 ];
 
 const path = Astro.url.pathname;
@@ -23,7 +25,7 @@ const path = Astro.url.pathname;
       }
     </nav>
 
-    <a class="btn nav__cta" href="/pricing">Request a demo</a>
+    <a class="btn nav__cta" href="/#pricing">Request a demo</a>
   </div>
 </header>
 
@@ -51,6 +53,11 @@ const path = Astro.url.pathname;
     max-width: var(--width);
     margin-inline: auto;
     padding: var(--s-3) var(--s-5);
+  }
+
+  /* The one pill on the site (DNA §4). `.btn` itself is 10px everywhere else. */
+  .nav__cta {
+    border-radius: var(--r-pill);
   }
 
   .nav__brand {

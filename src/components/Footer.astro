@@ -1,28 +1,25 @@
 ---
+// A link with no `href` renders as plain text. That is deliberate: these pages
+// do not exist yet, and a footer full of 404s is worse than an honest label.
+// Give one an href the moment its page ships.
 const groups = [
   {
     title: 'Product',
     links: [
-      { href: '/product', label: 'Everything it does' },
-      { href: '/product/topics', label: 'Topics' },
-      { href: '/product/reels-studio', label: 'Reels Studio' },
-      { href: '/product/voice-lab', label: 'Voice Lab' },
-      { href: '/pricing', label: 'Pricing' },
+      { href: '/#product', label: 'Everything it does' },
+      { label: 'Topics' },
+      { label: 'Reels Studio' },
+      { label: 'Voice Lab' },
+      { href: '/#pricing', label: 'Pricing' },
     ],
   },
   {
     title: 'Learn',
-    links: [
-      { href: '/learn', label: 'Guides' },
-      { href: '/about', label: 'About Diwche' },
-    ],
+    links: [{ href: '/#faq', label: 'FAQ' }, { label: 'Guides' }, { label: 'About Diwche' }],
   },
   {
     title: 'Legal',
-    links: [
-      { href: '/legal/privacy', label: 'Privacy' },
-      { href: '/legal/terms', label: 'Terms' },
-    ],
+    links: [{ label: 'Privacy' }, { label: 'Terms' }],
   },
 ];
 
@@ -45,9 +42,7 @@ const year = new Date().getFullYear();
             <h3 class="eyebrow">{g.title}</h3>
             <ul>
               {g.links.map((l) => (
-                <li>
-                  <a href={l.href}>{l.label}</a>
-                </li>
+                <li>{l.href ? <a href={l.href}>{l.label}</a> : <span class="foot__soon">{l.label}</span>}</li>
               ))}
             </ul>
           </div>
@@ -109,6 +104,12 @@ const year = new Date().getFullYear();
     color: var(--ink-2);
     text-decoration: none;
     transition: color var(--dur) ease;
+  }
+
+  /* Not yet a page. Reads as a label, not a dead link. */
+  .foot__soon {
+    font-size: var(--t-meta);
+    color: var(--ink-3);
   }
 
   @media (hover: hover) and (pointer: fine) {

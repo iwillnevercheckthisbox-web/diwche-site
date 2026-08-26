@@ -129,7 +129,9 @@ button {
   align-items: center;
   gap: var(--s-2);
   padding: 0.7rem 1.35rem;
-  border-radius: var(--r-pill);
+  /* 10px, not a pill. DNA §4: the one pill on the site is the nav CTA, which
+     opts back in itself. */
+  border-radius: var(--r-3);
   /* The one loud sapphire surface on the site. Champagne stays a hairline around it. */
   background: linear-gradient(160deg, var(--accent-soft) 0%, var(--accent) 55%, var(--accent-dim) 100%);
   border: 1px solid var(--horn-deep);
@@ -171,8 +173,9 @@ button {
 }
 
 /* ---- Scroll reveal ------------------------------------------------------- */
-/* Fires once. Opacity + 8px of travel, nothing else. JS adds .is-in; without JS
-   the content is visible by default, so this can never hide content. */
+/* Fires once. Opacity, 8px of travel, and the 0.96 entrance scale — DNA §5 rule
+   3 is explicit that entrances start at 0.96 and never at 0. JS adds .is-in;
+   without JS the content is visible by default, so this can never hide content. */
 
 .reveal {
   opacity: 1;
@@ -180,7 +183,7 @@ button {
 
 .js .reveal {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(8px) scale(0.96);
   transition:
     opacity var(--dur-slow) var(--ease-out),
     transform var(--dur-slow) var(--ease-out);

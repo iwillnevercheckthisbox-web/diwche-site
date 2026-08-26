@@ -32,6 +32,10 @@
   /* ---- Effects ------------------------------------------------------------ */
   --shine: rgba(255, 255, 255, 0.05);
   --shine-strong: rgba(255, 255, 255, 0.10);
+  /* DNA §2, load-bearing: every raised surface carries this. A flat --paper-2
+     with no sheen reads as a grey box rather than glass. One token so the angle
+     and stop can't drift apart across components. */
+  --sheen: linear-gradient(150deg, var(--shine) 0%, transparent 40%);
   --glow-1: rgba(15, 82, 186, 0.16);
   --glow-2: rgba(201, 166, 104, 0.06);
   --tag-bg: rgba(91, 143, 249, 0.10);
