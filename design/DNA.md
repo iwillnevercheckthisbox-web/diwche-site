@@ -1,13 +1,22 @@
 # Diwche — design DNA
 
-The reference brief was craft.do. This document is what we actually took from it, what we
-rejected, and the rules everything on diwche.com follows.
+The rules everything on diwche.com follows.
+
+**2026-08-26 — the identity moved.** The site, the product and the login page all wear
+**Sapphire & Champagne** now: a near-black neutral ladder, sapphire as the one loud accent,
+champagne gold as a highlight only. The warm-paper look this document used to describe is
+gone. §1 records where the old identity came from and why it was replaced; §2 and §4 are the
+current rules. §3 (type), §5 (motion), §6 (mascot) and §7 (voice) are unchanged — the faces,
+the easing and the imp all survived the repaint, because none of them was ever about colour.
 
 ---
 
-## 1. Why this looks the way it does
+## 1. Where this came from
 
-Three independent sources already agreed on a palette before this site existed:
+### The identity it replaced
+
+The reference brief was craft.do, and three independent sources agreed on a warm palette
+before this site existed:
 
 | | craft.do (measured in-browser) | the app, `frontend/src/styles.scss` | the mascot, `character-bible.md` |
 |---|---|---|---|
@@ -18,44 +27,65 @@ Three independent sources already agreed on a palette before this site existed:
 | Radius rule | `10px` | "**no pills, mostly**" — max 10px on content | — |
 | Governing rule | — | — | "nothing is pure black, pure white, or fully saturated" |
 
-So the identity was not invented. It is the app's own token system, warmed toward the
+That identity was not invented either — it was the app's own token system, warmed toward the
 mascot's cream paper, with a serif display face added on top.
 
-**What we took from craft.do:** warm paper instead of white. A serif display at weight 400 —
-never bold — with tight negative tracking. Generous vertical rhythm: one idea per screen,
-sections that breathe. Restraint in colour: one accent, everything else ink on paper.
+### Why it changed
 
-**What we rejected:** craft.do's identity itself. Their warm-paper serif look reads "calm
-personal notebook", and the illustrated sky-and-mountains hero is theirs. Diwche is a
-production studio staffed by a tired imp. Same discipline, different room.
+The same reasoning still holds, and it is why this was a repaint rather than a rebrand:
+**the site follows the product.** The product moved to Sapphire & Champagne, so the site did
+too. What carried over untouched is everything that was never about colour — a serif display at
+weight 400 with tight negative tracking, generous vertical rhythm, one accent and no more,
+radius capped at 10px, and the rule that nothing is pure black, pure white, or fully saturated
+(`--paper` is `#05070C`, not `#000`; `--ink` is `#EEF1F9`, not `#FFF`).
+
+What we still reject is craft.do's identity itself. Diwche is a production studio staffed by a
+tired imp. Same discipline, different room — the room is just darker now.
 
 ---
 
-## 2. Palette
+## 2. Palette — Sapphire & Champagne
 
-Warm paper, warm ink, one accent. Nothing saturated, nothing pure.
+A neutral ladder carries every large surface. Two accents, each with exactly one job.
 
 ```
---paper      #F6F1E4   page ground (the mascot's cream)
---paper-2    #FBFAF7   raised cards, framed screenshots
---paper-3    #EFE8D6   sunken wells, code, quiet bands
---ink        #3A3226   primary text (the mascot's warm near-black)
---ink-2      #6B6459   secondary text
---ink-3      #8F8676   metadata, captions
---rule       #DCD2BC   hairlines
---horn       #C9A35E   the accent — Diwche's horn tan
---horn-deep  #A8823F   accent hover / small text on paper
---accent     #2A3A5A   deep slate — links and focus rings
---alarm      #B4463C   negative states only
+--paper       #05070C   page ground
+--paper-2     #0E131E   raised cards, framed screenshots
+--paper-3     #090D15   sunken wells, code, quiet bands
+--paper-4     #141A28   hover on a raised surface
+--ink         #EEF1F9   primary text
+--ink-2       #97A2BD   secondary text
+--ink-3       #55607D   metadata, captions
+--rule        #2A3450   hairlines
+--rule-soft   #171E2D   the quieter hairline
+--horn        #C9A668   champagne — the highlight
+--horn-soft   #E6C98C   light gold — labels, tag text
+--horn-deep   #6B5527   deep bronze — borders, dim states
+--accent      #0F52BA   sapphire — primary action
+--accent-soft #5B8FF9   periwinkle — glow, hover text, icon fill
+--accent-dim  #0A2F6E   midnight sapphire — gradient ends, borders
+--alarm       #E05A6A   negative states only
 ```
 
-**Accent discipline.** `--horn` is a *highlight*, not a button colour. It underlines, it
-marks, it fills a small dot. Primary buttons are ink on paper, the way the app does it.
-`--alarm` never appears except to describe a failure state.
+**Neither accent is ever a large flat fill.** Sapphire appears as gradients, glows, and small
+elements — the primary button, a focus ring, a link. Champagne appears only as hairlines, tag
+text and borders, stat left-rules, hover underlines, and small marks. `--horn` is a
+*highlight*, not a button colour: it underlines, it marks, it fills a small dot, and it draws
+the 1px line around a sapphire button. `--alarm` never appears except to describe a failure.
 
-**No dark mode.** The whole identity is ink on paper — a dark version would be a different
-brand, not a variant. The site is light-only and says so honestly with
-`color-scheme: light`.
+**Two effects are load-bearing, not decoration.**
+
+1. **The sheen.** Every raised surface carries
+   `linear-gradient(150deg, var(--shine) 0%, transparent 40%)` over it. A flat `--paper-2`
+   fill with no sheen reads as a grey box, not as glass. Do not skip it.
+2. **The ambient glow.** Two wide radial washes on the page ground — sapphire top-left
+   (`--glow-1`), champagne top-right (`--glow-2`). They are what give the page a light source
+   and stop `#05070C` reading as dead charcoal. The grain still tiles over the top.
+
+**Dark only.** The identity is light-on-near-black; the site says so honestly with
+`color-scheme: dark` and a matching `theme-color`. The token file carries a light ladder too
+because the *product* has a theme toggle, but the site does not offer one — a marketing page
+should make one confident choice, not ask.
 
 ---
 
@@ -98,10 +128,13 @@ Rhythm: `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 140`.
 - Section padding: 140px vertical desktop, 80px tablet, 56px mobile.
 - Content max width 1120px; prose max width 68ch; hero copy max 20ch per line.
 - **Radius max 10px** on content surfaces. The one pill on the site is the nav CTA.
-- Borders are 1px `--rule` hairlines. Shadows exist only under framed screenshots, and even
-  there they are wide and faint: `0 24px 60px -24px rgba(58,50,38,.28)`.
-- Paper grain: a single tiled SVG noise at ~2% opacity over the ground. It is what stops
-  `#F6F1E4` from reading as flat beige.
+- Borders are 1px hairlines: `--rule-soft` around a raised surface, `--rule` where a divider
+  has to be seen, `--horn-deep` where a mark is meant to be noticed.
+- Shadows exist only under framed screenshots. Still wide and faint, but deeper than the old
+  warm ones — a shadow on a near-black ground barely registers otherwise — and paired with a
+  1px inset white highlight that gives the surface its top edge (`--shadow-frame`).
+- Grain: a single tiled SVG noise at ~5% over the ground, under the two glow washes. Same job
+  as before, one step stronger because near-black shows less of it than cream did.
 
 ---
 
@@ -183,8 +216,9 @@ Diwche's register, applied to copy: plain, dry, faintly weary. Short sentences.
 Real captures of the app, framed in CSS rather than baked into the PNG — so the frame stays
 crisp at any DPR, the callouts stay editable HTML, and the chrome restyles with the tokens.
 
-- Capture at `deviceScaleFactor: 2`, light theme, one curated demo account, English content.
+- Capture at `deviceScaleFactor: 2`, **dark theme** (the app's default), one curated demo
+  account, English content.
 - Never publish a capture containing a real Instagram handle, token, follower count belonging
   to a client, or any credential. This is a public site.
-- Frames get the wide faint shadow, a 1px `--rule` hairline, 10px radius, and a 28px title bar
-  with three dots in `--rule`.
+- Frames get the wide faint shadow, a 1px `--rule-soft` hairline, 10px radius, and a 28px
+  title bar with three dots in `--horn`.

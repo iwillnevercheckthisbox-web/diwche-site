@@ -28,10 +28,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 
-  /* The paper grain. Without it #F6F1E4 reads as flat beige; at 2% it reads as
-     stock. Inline SVG so it costs no request. */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+  /* The grain, plus the ambient glow. On the old cream ground the grain stopped
+     #F6F1E4 reading as flat beige; on near-black it does the same job against a
+     dead flat charcoal, and the two wide radial washes give the page its light
+     source. Both inline, so neither costs a request. */
+  background-image:
+    radial-gradient(60rem 40rem at 12% -10%, var(--glow-1), transparent 70%),
+    radial-gradient(48rem 34rem at 92% -6%, var(--glow-2), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-attachment: fixed, fixed, scroll;
 }
 
 h1,
@@ -124,8 +130,11 @@ button {
   gap: var(--s-2);
   padding: 0.7rem 1.35rem;
   border-radius: var(--r-pill);
-  background: var(--ink);
-  color: var(--paper-2);
+  /* The one loud sapphire surface on the site. Champagne stays a hairline around it. */
+  background: linear-gradient(160deg, var(--accent-soft) 0%, var(--accent) 55%, var(--accent-dim) 100%);
+  border: 1px solid var(--horn-deep);
+  box-shadow: var(--btn-shadow);
+  color: var(--btn-text);
   font-size: var(--t-meta);
   font-weight: 500;
   letter-spacing: -0.005em;
@@ -133,7 +142,10 @@ button {
   /* Named properties only — never `all`. */
   transition:
     transform var(--dur-fast) var(--ease-out),
-    background-color var(--dur) ease;
+    /* `background`, not `background-color`: the fill is a gradient now, and a
+       background-color transition would simply not run. Still named, never `all`. */
+    background var(--dur) ease,
+    border-color var(--dur) ease;
 }
 
 .btn:active {
@@ -148,12 +160,13 @@ button {
 
 @media (hover: hover) and (pointer: fine) {
   .btn:hover {
-    background: #2b2519;
+    background: linear-gradient(160deg, var(--accent-soft) 0%, var(--accent) 45%, var(--accent-dim) 100%);
+    border-color: var(--horn);
   }
 
   .btn--quiet:hover {
-    background: var(--paper-2);
-    border-color: var(--ink-3);
+    background: var(--paper-4);
+    border-color: var(--rule);
   }
 }
 

@@ -4,20 +4,39 @@
  */
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* ---- Palette: warm paper, warm ink, one accent -------------------------- */
-  --paper: #f6f1e4;
-  --paper-2: #fbfaf7;
-  --paper-3: #efe8d6;
-  --ink: #3a3226;
-  --ink-2: #6b6459;
-  --ink-3: #8f8676;
-  --rule: #dcd2bc;
-  --horn: #c9a35e;
-  --horn-deep: #a8823f;
-  --accent: #2a3a5a;
-  --alarm: #b4463c;
+  /* ---- Palette: Sapphire & Champagne -------------------------------------
+     The names are the ones this site has always used; only the values moved.
+     Sapphire is never a large flat fill — it is gradient, glow and the primary
+     action. Champagne (--horn) stays a highlight: hairlines, marks, small
+     accents, never a button colour. Large surfaces stay neutral. */
+  --paper: #05070c;      /* page ground */
+  --paper-2: #0e131e;    /* raised cards, framed screenshots */
+  --paper-3: #090d15;    /* sunken wells, code, quiet bands */
+  --paper-4: #141a28;    /* hover on a raised surface */
+  --ink: #eef1f9;        /* primary text */
+  --ink-2: #97a2bd;      /* secondary text */
+  --ink-3: #55607d;      /* metadata, captions */
+  --rule: #2a3450;       /* hairlines */
+  --rule-soft: #171e2d;  /* the quieter hairline */
+  --horn: #c9a668;       /* the champagne accent */
+  --horn-deep: #6b5527;  /* deep bronze — borders, dim states */
+  --horn-soft: #e6c98c;  /* light gold — labels, tag text */
+  --accent: #0f52ba;     /* sapphire */
+  --accent-soft: #5b8ff9;
+  --accent-dim: #0a2f6e;
+  --btn-text: #f3f6ff;
+  --alarm: #e05a6a;
+
+  /* ---- Effects ------------------------------------------------------------ */
+  --shine: rgba(255, 255, 255, 0.05);
+  --shine-strong: rgba(255, 255, 255, 0.10);
+  --glow-1: rgba(15, 82, 186, 0.16);
+  --glow-2: rgba(201, 166, 104, 0.06);
+  --tag-bg: rgba(91, 143, 249, 0.10);
+  --tag-border: rgba(91, 143, 249, 0.25);
+  --btn-shadow: 0 0 0 1px rgba(201, 166, 104, 0.3), 0 14px 30px -12px rgba(15, 82, 186, 0.55);
 
   /* ---- Type -------------------------------------------------------------- */
   --font-display: 'Fraunces Variable', Georgia, ui-serif, serif;
@@ -57,8 +76,11 @@
   --r-2: 6px;
   --r-3: 10px;
   --r-pill: 999px; /* nav CTA only */
-  --shadow-frame: 0 24px 60px -24px rgba(58, 50, 38, 0.28);
-  --shadow-frame-lift: 0 32px 72px -26px rgba(58, 50, 38, 0.34);
+  /* Wide and faint, as before — but a shadow on a near-black ground needs to be
+     deeper to register at all, and it is paired with the inset highlight that
+     gives a raised surface its top edge. */
+  --shadow-frame: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 26px 60px -26px rgba(0, 0, 0, 0.85);
+  --shadow-frame-lift: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 34px 74px -26px rgba(0, 0, 0, 0.9);
 
   /* ---- Motion ------------------------------------------------------------ */
   /* Strong curves: the CSS built-ins are too weak to read as intentional. */
