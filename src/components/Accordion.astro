@@ -1,0 +1,99 @@
+---
+/**
+ * FAQ list. Built on <details>/<summary> so it opens without JS, is keyboard
+ * operable for free, and survives find-in-page. One hairline stack, 10px radius.
+ */
+interface Props {
+  items: { q: string; a: string }[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class:list={['acc', className]}>
+  {
+    items.map((item) => (
+      <details class="acc__item" name="faq">
+        <summary class="acc__q">
+          <span>{item.q}</span>
+          <span class="acc__mark" aria-hidden="true" />
+        </summary>
+        <p class="acc__a">{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .acc {
+    display: grid;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    overflow: hidden;
+  }
+
+  .acc__item {
+    background: var(--paper-2);
+  }
+
+  .acc__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-5) var(--s-5);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+    transition: background var(--dur) ease;
+  }
+
+  /* Safari still needs the pseudo-element killed by name. */
+  .acc__q::-webkit-details-marker {
+    display: none;
+  }
+
+  /* The +/− is drawn, not typed: two hairlines, one of which folds away. */
+  .acc__mark {
+    position: relative;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+  }
+
+  .acc__mark::before,
+  .acc__mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1px;
+    background: var(--ink-2);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .acc__mark::after {
+    transform: rotate(90deg);
+  }
+
+  .acc__item[open] .acc__mark::after {
+    transform: rotate(0deg);
+  }
+
+  .acc__a {
+    padding: 0 var(--s-5) var(--s-5);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .acc__q:hover {
+      background: var(--paper-4);
+    }
+  }
+</style>

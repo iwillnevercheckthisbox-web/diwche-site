@@ -1,0 +1,64 @@
+---
+/**
+ * Eyebrow + headline + lead, the one header shape every section on the site uses.
+ * Eyebrow is champagne, headline is Fraunces at 400, lead is --ink-2.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: 'left' | 'center';
+  class?: string;
+}
+
+const { eyebrow, title, lead, align = 'center', class: className = '' } = Astro.props;
+---
+
+<header class:list={['sh', `sh--${align}`, className]}>
+  {eyebrow && <p class="sh__eyebrow">{eyebrow}</p>}
+  <h2 class="sh__title">{title}</h2>
+  {lead && <p class="sh__lead">{lead}</p>}
+</header>
+
+<style>
+  .sh {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 48rem;
+  }
+
+  .sh--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .sh--center .sh__lead {
+    margin-inline: auto;
+  }
+
+  .sh__eyebrow {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    /* Champagne is a highlight — an eyebrow is exactly the size it is allowed. */
+    color: var(--horn);
+    line-height: 1;
+  }
+
+  .sh__title {
+    font-size: var(--t-section);
+    max-width: 20ch;
+  }
+
+  .sh--center .sh__title {
+    margin-inline: auto;
+  }
+
+  .sh__lead {
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+</style>

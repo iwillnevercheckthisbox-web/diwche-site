@@ -2,14 +2,74 @@
 import Base from '../layouts/Base.astro';
 import Mascot from '../components/Mascot.astro';
 import Screenshot from '../components/Screenshot.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Card from '../components/Card.astro';
+import QuoteCard from '../components/QuoteCard.astro';
+import PricingCard from '../components/PricingCard.astro';
+import Accordion from '../components/Accordion.astro';
 
-// Phase 0: hero + one pillar only. The remaining three pillars, the pipeline
-// walkthrough and the pricing teaser land in Phase 1, once the look is signed off.
+// The homepage pattern from the kit: nav, hero, three alternating pillar rows,
+// a house line, the reliability row, pricing, FAQ, footer. Prices are marked as
+// placeholders because none have been decided — see DNA §7.
+
 const capabilities = [
   { name: 'Topics', text: 'Ten topics every morning, with a hook and a reason it matters today.' },
   { name: 'Insights', text: 'What actually worked — by source, persona, format and hour.' },
   { name: 'RSS Pipeline', text: 'Your feeds, filtered to the keywords you care about.' },
   { name: 'Scraper', text: 'The accounts you admire, read once and never posted to.' },
+];
+
+const trust = [
+  {
+    title: 'Per-account isolation',
+    text: 'One account failing never touches the others. That is an architectural rule, not a setting.',
+  },
+  {
+    title: 'It never posts twice',
+    text: 'Every article is checked against what that account has already published before anything is made.',
+  },
+  {
+    title: 'Optional review gate',
+    text: 'Turn it on and nothing reaches Instagram until you have looked at it.',
+  },
+];
+
+const tiers = [
+  {
+    name: 'Starter',
+    description: 'One or two accounts, and you look at everything before it goes out.',
+    features: ['A few accounts', 'Feeds, keywords and banners', 'Manual review on by default'],
+  },
+  {
+    name: 'Studio',
+    description: 'Reels, a recorded voice, and a schedule that runs without you.',
+    features: ['More accounts', 'Reels and voice', 'Scheduled, unattended posting'],
+    highlighted: true,
+  },
+  {
+    name: 'Agency',
+    description: 'Many accounts, each with its own feeds, keywords, voice and look.',
+    features: ['Many accounts', 'Everything in Studio', 'Per-account templates'],
+  },
+];
+
+const faqs = [
+  {
+    q: 'What counts as an account?',
+    a: 'One connected Instagram account, with its own feeds, keywords, voice and schedule. Accounts do not share anything.',
+  },
+  {
+    q: 'Do I have to paste an access token?',
+    a: 'No. Connecting opens Facebook, you sign in there and pick the account to post to. Diwche renews the token itself after that.',
+  },
+  {
+    q: 'What language does it post in?',
+    a: 'Whichever you set per account. Articles are translated before the caption is written, and the layout follows the direction of that language.',
+  },
+  {
+    q: 'Is there a trial?',
+    a: 'Ask at the demo. Pricing is not settled, so neither is the trial.',
+  },
 ];
 ---
 
@@ -19,21 +79,22 @@ const capabilities = [
 >
   <!-- ================================================================== HERO -->
   <section class="hero">
+    <div class="hero__wash" aria-hidden="true"></div>
+
     <div class="wrap hero__inner">
-      <div class="hero__copy">
-        <h1 class="hero__title">It runs your Instagram accounts. You take the credit.</h1>
-        <p class="lead hero__lead">
-          Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the
-          reel, and posts it. On schedule, in your language, in your look.
-        </p>
-        <div class="hero__actions">
-          <a class="btn" href="/pricing">Request access</a>
-          <a class="btn btn--quiet" href="/product">See everything it does</a>
-        </div>
-        <p class="hero__meta">
-          One engine, many accounts. Each with its own feeds, keywords, voice and schedule.
-        </p>
+      <p class="hero__badge">Diwche</p>
+      <h1 class="hero__title">It runs your Instagram accounts. You take the credit.</h1>
+      <p class="lead hero__lead">
+        Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the
+        reel, and posts it. On schedule, in your language, in your look.
+      </p>
+      <div class="hero__actions">
+        <a class="btn" href="/pricing">Request a demo</a>
+        <a class="btn btn--quiet" href="/product">See how it works</a>
       </div>
+      <p class="hero__meta">
+        One engine, many accounts. Each with its own feeds, keywords, voice and schedule.
+      </p>
 
       <div class="hero__art">
         <Mascot
@@ -54,18 +115,17 @@ const capabilities = [
 
   <!-- ============================================================= PILLAR 01 -->
   <section class="section pillar">
-    <div class="wrap">
-      <header class="pillar__head reveal">
-        <p class="eyebrow">01 — Know what to post</p>
-        <h2 class="pillar__title">It reads the internet so you don't.</h2>
-        <p class="lead">
-          Diwche watches your feeds, the accounts you admire and your own numbers. Every morning it
-          hands you about ten topics, each with a hook, a format and a reason it matters today. You
-          say make it, keep it, or not this — and tomorrow's list is different.
-        </p>
-      </header>
+    <div class="wrap pillar__row">
+      <div class="pillar__copy reveal">
+        <SectionHeader
+          align="left"
+          eyebrow="01 — Know what to post"
+          title="It reads the internet so you don't."
+          lead="Diwche watches your feeds, the accounts you admire and your own numbers. Every morning it hands you about ten topics, each with a hook, a format and a reason it matters today. You say make it, keep it, or not this — and tomorrow's list is different."
+        />
+      </div>
 
-      <div class="pillar__shot reveal" style="--reveal-delay: 60ms">
+      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
         <Screenshot
           src="/shots/_placeholder-topics.svg"
           alt="The Topics page: a list of suggested topics for today, each with a hook and a pillar, beside the account's stated direction."
@@ -78,13 +138,93 @@ const capabilities = [
           ]}
         />
       </div>
+    </div>
 
-      <ul class="pillar__list">
+    <ul class="wrap pillar__list">
+      {
+        capabilities.map((c, i) => (
+          <li class="cap reveal" style={`--reveal-delay: ${i * 50}ms`}>
+            <h3 class="cap__name">{c.name}</h3>
+            <p class="cap__text">{c.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ============================================================= PILLAR 02 -->
+  <section class="section pillar">
+    <div class="wrap pillar__row pillar__row--flip">
+      <div class="pillar__copy reveal">
+        <SectionHeader
+          align="left"
+          eyebrow="02 — Make it"
+          title="Copy, images, reels and voice — in that account's own voice."
+          lead="Fetch, filter, dedupe, translate, generate, post, log. Seven steps, run per account, unattended. Each account keeps its own template, its own palette and its own way of talking, so two accounts fed the same story do not come out looking like each other."
+        />
+      </div>
+
+      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
+        <Mascot
+          scene="07-coloring"
+          alt="Diwche colouring in a finished panel, unhurried."
+          width={384}
+          height={384}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= PILLAR 03 -->
+  <section class="section pillar">
+    <div class="wrap pillar__row">
+      <div class="pillar__copy reveal">
+        <SectionHeader
+          align="left"
+          eyebrow="03 — Publish it"
+          title="Real Instagram sign-in. No token pasting."
+          lead="Connecting an account opens Facebook, where you sign in and choose the page to post to. Diwche keeps that connection alive on its own, so nothing quietly stops publishing three weeks later."
+        />
+      </div>
+
+      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
+        <Mascot
+          scene="08-submitting"
+          alt="Diwche handing over the finished piece, eyes open for once."
+          width={384}
+          height={384}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================= QUOTE -->
+  <div class="wrap quote-slot reveal">
+    <QuoteCard
+      text="It reads 40 feeds an hour and throws away the 38 stories that aren't yours."
+    />
+  </div>
+
+  <!-- =========================================================== RELIABILITY -->
+  <section class="section">
+    <div class="wrap">
+      <div class="reveal">
+        <SectionHeader
+          align="left"
+          eyebrow="Reliability"
+          title="Built to fail safely"
+          lead="Most of what Diwche does happens while nobody is watching. So the interesting question is what it does when something goes wrong."
+        />
+      </div>
+
+      <ul class="grid-3">
         {
-          capabilities.map((c, i) => (
-            <li class="cap reveal" style={`--reveal-delay: ${i * 50}ms`}>
-              <h3 class="cap__name">{c.name}</h3>
-              <p class="cap__text">{c.text}</p>
+          trust.map((t, i) => (
+            <li class="reveal" style={`--reveal-delay: ${i * 50}ms`}>
+              <Card class="trust">
+                <h3 class="trust__title">{t.title}</h3>
+                <p class="trust__text">{t.text}</p>
+              </Card>
             </li>
           ))
         }
@@ -92,41 +232,100 @@ const capabilities = [
     </div>
   </section>
 
-  <p class="phase-note wrap">
-    Phase 0 — hero and one pillar, for the look. Three pillars, the pipeline walkthrough and real
-    screenshots follow once this is approved.
-  </p>
+  <!-- =============================================================== PRICING -->
+  <section class="section" id="pricing">
+    <div class="wrap">
+      <div class="reveal">
+        <SectionHeader
+          eyebrow="Pricing"
+          title="Placeholder figures, real tiers"
+          lead="No prices have been decided yet. The shape of the tiers has. Every one of them ends in a demo, not a checkout."
+        />
+      </div>
+
+      <ul class="grid-3">
+        {
+          tiers.map((t, i) => (
+            <li class="reveal" style={`--reveal-delay: ${i * 50}ms`}>
+              <PricingCard
+                name={t.name}
+                description={t.description}
+                features={t.features}
+                highlighted={t.highlighted}
+              />
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="pricing__note">Terms are not final. Neither is the number of accounts in a tier.</p>
+    </div>
+  </section>
+
+  <!-- =================================================================== FAQ -->
+  <section class="section faq">
+    <div class="wrap faq__inner reveal">
+      <SectionHeader
+        align="left"
+        eyebrow="FAQ"
+        title="A few questions"
+        lead="Anything not here, ask at the demo."
+      />
+      <Accordion items={faqs} class="faq__list" />
+    </div>
+  </section>
 </Base>
 
 <style>
   /* ---- Hero -------------------------------------------------------------- */
 
   .hero {
-    padding-block: clamp(3rem, 1rem + 8vw, 7rem) clamp(2rem, 1rem + 5vw, 5rem);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(3rem, 1rem + 8vw, 6.5rem) clamp(2rem, 1rem + 5vw, 5rem);
+    text-align: center;
   }
 
-  .hero__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: clamp(2rem, 1rem + 4vw, 5rem);
-    align-items: center;
+  /* The hero's own light source, over the page's ambient wash: sapphire from the
+     top left, champagne from the top right, both falling off well before the fold. */
+  .hero__wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      radial-gradient(56rem 34rem at 8% 0%, var(--glow-1), transparent 60%),
+      radial-gradient(56rem 34rem at 92% 0%, var(--glow-2), transparent 60%);
+  }
+
+  .hero__badge {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+    line-height: 1;
   }
 
   .hero__title {
+    margin-top: var(--s-5);
+    margin-inline: auto;
     font-size: var(--t-hero);
     line-height: 1;
     letter-spacing: -0.035em;
-    max-width: 15ch;
+    max-width: 18ch;
   }
 
   .hero__lead {
     margin-top: var(--s-5);
-    max-width: 44ch;
+    margin-inline: auto;
+    max-width: 52ch;
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--s-3);
     margin-top: var(--s-6);
   }
@@ -135,16 +334,17 @@ const capabilities = [
     margin-top: var(--s-5);
     font-size: var(--t-meta);
     color: var(--ink-3);
-    max-width: 40ch;
+    max-width: 44ch;
+    margin-inline: auto;
   }
 
   .hero__art {
     /* The panel art is crisp to ~500px and soft past it (source is 243x168).
-       `width: 100%` is load-bearing: with only `margin-inline: auto` the grid
-       item stops stretching and shrink-to-fits to the caption's width. */
+       `width: 100%` is load-bearing: with only `margin-inline: auto` the item
+       shrink-to-fits to the caption's width instead of stretching. */
     width: 100%;
     max-width: 500px;
-    margin-inline: auto;
+    margin: var(--s-8) auto 0;
   }
 
   .hero__caption {
@@ -152,35 +352,49 @@ const capabilities = [
     font-size: var(--t-meta);
     line-height: 1.5;
     color: var(--ink-3);
-    text-align: center;
     max-width: 34ch;
     margin-inline: auto;
   }
 
-  /* ---- Pillar ------------------------------------------------------------ */
+  /* ---- Pillars ----------------------------------------------------------- */
+  /* Two columns, alternating side. The row is the rhythm of the whole page.
+     Half the section rhythm each, so two stacked pillars add up to one gap
+     rather than two — otherwise the page reads as a list of lonely rows. */
 
-  .pillar__head {
-    max-width: 62ch;
+  .pillar {
+    padding-block: calc(var(--section-y) / 2);
   }
 
-  .pillar__title {
-    margin-top: var(--s-4);
-    font-size: var(--t-section);
-    max-width: 18ch;
+  .pillar__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 3.5rem);
+    align-items: center;
   }
 
-  .pillar__head .lead {
-    margin-top: var(--s-5);
-    max-width: 58ch;
+  .pillar__row--flip .pillar__copy {
+    order: 2;
   }
 
-  .pillar__shot {
-    margin-top: var(--s-8);
+  .pillar__visual {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  /* The pillar scenes are flat panels with their own light ground, so on this
+     near-black page they need an edge or they float. Hairline and radius only —
+     shadows belong under framed screenshots (DNA §4). */
+  .pillar__visual--mascot :global(.mascot) {
+    max-width: 300px;
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-3);
+    overflow: hidden;
   }
 
   .pillar__list {
     list-style: none;
-    padding: 0;
+    padding-inline: var(--s-5);
     margin-top: var(--s-8);
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -204,37 +418,84 @@ const capabilities = [
     color: var(--ink-2);
   }
 
-  /* ---- Phase note (temporary, removed in Phase 1) ------------------------- */
+  /* ---- Quote ------------------------------------------------------------- */
 
-  .phase-note {
-    display: block;
+  .quote-slot {
+    max-width: 46rem;
+    margin-block: calc(var(--section-y) / 2);
+  }
+
+  /* ---- Three-up rows (reliability, pricing) ------------------------------ */
+
+  .grid-3 {
+    list-style: none;
+    padding: 0;
     margin-top: var(--s-8);
-    padding-top: var(--s-4);
-    border-top: 1px dashed var(--rule);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  .grid-3 > li {
+    display: flex;
+  }
+
+  .grid-3 > li > :global(*) {
+    width: 100%;
+  }
+
+  .trust__title {
+    font-size: 1.375rem;
+  }
+
+  .trust__text {
+    margin-top: var(--s-3);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .pricing__note {
+    margin-top: var(--s-6);
+    text-align: center;
     font-size: var(--t-meta);
     color: var(--ink-3);
-    max-width: 62ch;
+  }
+
+  /* ---- FAQ --------------------------------------------------------------- */
+
+  /* The footer brings its own top margin; a full section pad here would stack. */
+  .faq {
+    padding-bottom: 0;
+  }
+
+  .faq__inner {
+    max-width: 44rem;
+  }
+
+  .faq__list {
+    margin-top: var(--s-6);
   }
 
   /* ---- Responsive -------------------------------------------------------- */
 
   @media (max-width: 900px) {
-    .hero__inner {
+    .pillar__row {
       grid-template-columns: 1fr;
       gap: var(--s-7);
     }
 
-    .hero__art {
-      order: -1;
-      max-width: 380px;
-    }
-
-    .hero__title {
-      max-width: 18ch;
+    /* On one column the picture always follows its copy, flipped row or not. */
+    .pillar__row--flip .pillar__copy {
+      order: 0;
     }
 
     .pillar__list {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: 1fr;
     }
   }
 

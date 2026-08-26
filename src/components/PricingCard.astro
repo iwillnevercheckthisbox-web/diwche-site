@@ -1,0 +1,156 @@
+---
+/**
+ * A tier. The figures are placeholders on purpose and say so — the site does not
+ * pretend to a price list that has not been decided (DNA §7: say the mechanism).
+ * Every tier ends in a demo, never a checkout.
+ */
+interface Props {
+  name: string;
+  price?: string;
+  period?: string;
+  description?: string;
+  features?: string[];
+  ctaLabel?: string;
+  href?: string;
+  highlighted?: boolean;
+  placeholderPrice?: boolean;
+}
+
+const {
+  name,
+  price = '$—',
+  period = '/mo',
+  description,
+  features = [],
+  ctaLabel = 'Request a demo',
+  href = '/pricing',
+  highlighted = false,
+  placeholderPrice = true,
+} = Astro.props;
+---
+
+<div class:list={['tier', { 'tier--lead': highlighted }]}>
+  {highlighted && <div class="tier__sheen" aria-hidden="true"></div>}
+
+  <div class="tier__head">
+    <p class="tier__name">{name}</p>
+    <p class="tier__price">
+      <span class="tier__figure">{price}</span>
+      <span class="tier__period">{period}</span>
+    </p>
+    {placeholderPrice && <p class="tier__placeholder">placeholder figure</p>}
+  </div>
+
+  {description && <p class="tier__text">{description}</p>}
+
+  <ul class="tier__features">
+    {
+      features.map((f) => (
+        <li>
+          <span class="tier__dash" aria-hidden="true">—</span>
+          {f}
+        </li>
+      ))
+    }
+  </ul>
+
+  <a class:list={['btn', { 'btn--quiet': !highlighted }, 'tier__cta']} href={href}>{ctaLabel}</a>
+</div>
+
+<style>
+  .tier {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+    padding: var(--s-6);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition:
+      transform var(--dur) var(--ease-out),
+      border-color var(--dur) ease;
+  }
+
+  .tier--lead {
+    border-color: var(--accent);
+  }
+
+  .tier__sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(135deg, var(--shine), transparent 55%);
+  }
+
+  .tier > *:not(.tier__sheen) {
+    position: relative;
+  }
+
+  .tier__name {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+  }
+
+  .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-1);
+    margin-top: var(--s-2);
+  }
+
+  .tier__figure {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 2.5rem;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .tier__period {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+  }
+
+  .tier__placeholder {
+    margin-top: var(--s-1);
+    font-size: 0.75rem;
+    color: var(--horn);
+  }
+
+  .tier__text {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .tier__features {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .tier__features li {
+    display: flex;
+    gap: var(--s-2);
+    font-size: var(--t-meta);
+    line-height: 1.5;
+  }
+
+  .tier__dash {
+    color: var(--accent-soft);
+  }
+
+  .tier__cta {
+    margin-top: auto;
+    justify-content: center;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tier:hover {
+      transform: translateY(-4px);
+    }
+  }
+</style>
