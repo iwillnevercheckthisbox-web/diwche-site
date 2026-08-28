@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "hero-camera",
+    "width": 489,
+    "height": 485,
+    "alt": "Diwche at his desk, one eye behind a camera and a quill in the other hand, a clockwork owl on his shoulder."
+  },
+  {
+    "slug": "pilot-crowd",
+    "width": 572,
+    "height": 694,
+    "alt": "Diwche standing still while a dozen small people climb over him, measuring and mending as they go."
+  },
+  {
+    "slug": "topics-thinking",
+    "width": 630,
+    "height": 840,
+    "alt": "Diwche with a finger to his temple, deciding whether a topic is worth the day."
+  },
+  {
+    "slug": "create-writing",
+    "width": 840,
+    "height": 794,
+    "alt": "Diwche hunched over a ledger under a lamp, writing by quill among charts and maps."
+  },
+  {
+    "slug": "publish-mailbox",
+    "width": 721,
+    "height": 840,
+    "alt": "Diwche posting a wax-sealed parcel into a mailbox, glyphs curling out of the slot."
+  }
+]

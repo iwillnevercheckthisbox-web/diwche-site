@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "mascot:build": "python3 scripts/build-mascot.py",
+    "art:build": "python3 scripts/build-art.py",
     "mascot:sync": "node scripts/sync-mascot.mjs && node scripts/render-poster.mjs",
     "shoot": "node scripts/shoot.mjs"
   },

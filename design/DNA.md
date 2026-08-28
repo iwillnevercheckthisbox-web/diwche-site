@@ -207,12 +207,23 @@ value as the ground, so no flood fill can separate art from background — those
 near-black panel of their own, with a hairline. On the dark theme it reads as nothing; on the
 light theme it is a deliberate dark panel. The other two cut free and float on either ground.
 
-| Placement | Scene | Treatment |
+**2026-08-27, later the same day — the homepage moved to a second set of drawings.**
+Five new illustrations arrived with the landing-page copy, already cut out on transparency.
+They live in `art/source/`, are built to WebP by `npm run art:build`, and are placed by
+`Art.astro`. The mascot pipeline (`mascot/`, `public/mascot/v2/`, `Mascot.astro`) is
+untouched and still the canon build for the four animated scenes — the homepage simply no
+longer uses it. Every rule in this section still applies to both sets.
+
+| Placement | Drawing | Treatment |
 |---|---|---|
-| Hero | `thinking` | cut out, contact shadow, ≤500px |
-| Know what to post | `connecting` | dark panel |
-| Make it | `working-hard` | cut out, edges feathered |
-| Publish it | `posting` | dark panel |
+| Hero | `hero-camera` | cut out, ≤460px, eager |
+| Ten-creator pilot | `pilot-crowd` | cut out, ≤340px |
+| Discover your next big topic | `topics-thinking` | cut out, ≤360px |
+| Create it your way | `create-writing` | cut out, ≤360px |
+| Publish and schedule | `publish-mailbox` | cut out, ≤360px |
+
+The horns from the same set are the nav mark and the touch icon (`public/brand/horns.png`).
+The favicon stays the drawn SVG — it has to hold at 16px, which a painting does not.
 
 ---
 
@@ -225,6 +236,19 @@ Diwche's register, applied to copy: plain, dry, faintly weary. Short sentences.
   38 stories that don't match you" beats "powerful intelligent filtering".
 - Headlines are sentences, not slogans. Sentence case, never Title Case.
 - The product is **Diwche**. Never "the platform", never "our solution".
+
+**2026-08-27 — the homepage copy is a stated exception.** The landing-page text was written
+outside this document and adopted as given: it is Title Case, it says "effortlessly", "ultimate
+content engine" and "high-performing", and the hero is a slogan rather than a sentence. That is
+a deliberate decision about the marketing page, not drift — everything else on the site, and
+every section of the homepage that was not replaced, still follows the rules above. Revisit it
+when the copy is next rewritten.
+
+**2026-08-28 — rewritten, exception lifted.** The hero, the pilot section, the capability
+names, and the AI-positioning section were rewritten to follow the rules above: sentence case,
+no hype adjectives, mechanism over adjective, product named as Diwche. The two remaining
+untouched pillar rows and the reliability/pricing sections were already in voice and did not
+need changing.
 
 ---
 

@@ -1,21 +1,33 @@
 ---
 import Base from '../layouts/Base.astro';
-import Mascot from '../components/Mascot.astro';
+import Art from '../components/Art.astro';
+import TrustBar from '../components/TrustBar.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import Card from '../components/Card.astro';
 import QuoteCard from '../components/QuoteCard.astro';
 import PricingCard from '../components/PricingCard.astro';
 import Accordion from '../components/Accordion.astro';
 
-// The homepage pattern from the kit: nav, hero, three alternating pillar rows,
-// a house line, the reliability row, pricing, FAQ, footer. Prices are marked as
-// placeholders because none have been decided — see DNA §7.
+// The homepage: nav, hero, the Meta band, the ten-creator pilot, three
+// alternating pillar rows, a house line, reliability, pricing, FAQ, footer.
+// Prices are marked as placeholders because none have been decided — see DNA §7.
 
 const capabilities = [
   { name: 'Topics', text: 'Ten topics every morning, with a hook and a reason it matters today.' },
   { name: 'Insights', text: 'What actually worked — by source, persona, format and hour.' },
-  { name: 'RSS Pipeline', text: 'Your feeds, filtered to the keywords you care about.' },
-  { name: 'Scraper', text: 'The accounts you admire, read once and never posted to.' },
+  { name: 'Story scan', text: 'Your feeds, filtered to the keywords you care about.' },
+  { name: 'Peer read', text: 'The accounts you admire, read once and never posted to.' },
+];
+
+const paths = [
+  {
+    title: 'Already posting',
+    text: 'You have followers and real engagement. Run Diwche on that account for a month, free, in exchange for telling us what breaks.',
+  },
+  {
+    title: 'Not started yet',
+    text: 'You have a strong idea and no page. We help you build the account itself — identity, feeds, voice — also free, because we would rather prove this on accounts we believe in.',
+  },
 ];
 
 const trust = [
@@ -67,40 +79,72 @@ const faqs = [
   },
   {
     q: 'Is there a trial?',
-    a: 'Ask at the demo. Pricing is not settled, so neither is the trial.',
+    a: 'The early-access phase is the trial: a full month, the whole platform, no cost — on your existing account or a new one we help you build. After that, ask at the demo, pricing is not settled.',
+  },
+  {
+    q: 'What does "AI-driven" actually mean here?',
+    a: 'AI does the labour: it reads the feeds, writes the draft, cuts the reel. What it posts and how it says it is shaped by patterns from real accounts that already grew this way, not a model guessing alone.',
   },
 ];
 ---
 
 <Base
-  title="Diwche — it runs your Instagram accounts"
-  description="Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the reel, and posts it. On schedule, in your language, in your look."
+  title="Diwche — a manager for one Instagram account. Yours."
+  description="Diwche runs one Instagram account at a time — reading your feeds, writing and designing the post, and putting it up on schedule, tuned to what has worked on accounts like yours."
 >
   <!-- ================================================================== HERO -->
   <section class="hero">
     <div class="hero__wash" aria-hidden="true"></div>
 
     <div class="wrap hero__inner">
-      <p class="hero__badge">Diwche</p>
-      <h1 class="hero__title">It runs your Instagram accounts. You take the credit.</h1>
+      <h1 class="hero__title">
+        A manager for one account.<br /><span class="hero__title-accent">Not a template for everyone's.</span>
+      </h1>
       <p class="lead hero__lead">
-        Diwche reads the feeds, picks the story, writes the script, records the voice, cuts the
-        reel, and posts it. On schedule, in your language, in your look.
+        Diwche reads your feeds, writes and designs the post, and puts it up on schedule — tuned
+        to what has actually worked on accounts like yours, not a model's first guess.
       </p>
       <div class="hero__actions">
-        <a class="btn" href="#pricing">Request a demo</a>
-        <a class="btn btn--quiet" href="#product">See how it works</a>
+        <a class="btn" href="#pilot">See if you qualify</a>
+        <a class="btn btn--quiet" href="#pricing">See pricing</a>
       </div>
-      <p class="hero__meta">
-        One engine, many accounts. Each with its own feeds, keywords, voice and schedule.
-      </p>
 
       <figure class="hero__art">
-        <Mascot scene="thinking" loading="eager" />
-        <figcaption class="hero__caption">
-          Diwche. Does every job in the pipeline. Not impressed by this deadline either.
-        </figcaption>
+        <Art name="hero-camera" loading="eager" />
       </figure>
+    </div>
+  </section>
+
+  <!-- ============================================================ META BAND -->
+  <TrustBar />
+
+  <!-- ================================================================= PILOT -->
+  <section class="section pilot" id="pilot">
+    <div class="wrap pilot__inner">
+      <div class="reveal">
+        <SectionHeader
+          eyebrow="Early access"
+          title="Ten spots. One month. No cost."
+          lead="We are onboarding a small number of accounts personally, not opening a waitlist. Two ways in."
+        />
+      </div>
+
+      <div class="pilot__art reveal" style="--reveal-delay: 60ms">
+        <Art name="pilot-crowd" />
+      </div>
+
+      <ul class="pilot__paths reveal" style="--reveal-delay: 100ms">
+        {
+          paths.map((p, i) => (
+            <li style={`--reveal-delay: ${i * 50}ms`}>
+              <Card class="path">
+                <h3 class="path__title">{p.title}</h3>
+                <p class="path__text">{p.text}</p>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
@@ -110,14 +154,14 @@ const faqs = [
       <div class="pillar__copy reveal">
         <SectionHeader
           align="left"
-          eyebrow="01 — Know what to post"
-          title="It reads the internet so you don't."
-          lead="Diwche watches your feeds, the accounts you admire and your own numbers. Every morning it hands you about ten topics, each with a hook, a format and a reason it matters today. You say make it, keep it, or not this — and tomorrow's list is different."
+          eyebrow="01 — Discover your next big topic"
+          title="Find ideas worth posting without spending hours researching."
+          lead="Enter any niche or topic, and Diwche handles the heavy lifting. It scans your feed, tracks accounts you admire, and delivers tailored suggestions alongside clear rules on what to post — and what to avoid. If you don't like the suggestions, you are never locked in: paste an article link you love, or steer the research in a new direction whenever you want."
         />
       </div>
 
-      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
-        <Mascot scene="connecting" />
+      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
+        <Art name="topics-thinking" />
       </div>
     </div>
 
@@ -139,14 +183,14 @@ const faqs = [
       <div class="pillar__copy reveal">
         <SectionHeader
           align="left"
-          eyebrow="02 — Make it"
-          title="Copy, images, reels and voice — in that account's own voice."
-          lead="Fetch, filter, dedupe, translate, generate, post, log. Seven steps, run per account, unattended. Each account keeps its own template, its own palette and its own way of talking, so two accounts fed the same story do not come out looking like each other."
+          eyebrow="02 — Create it your way"
+          title="Turn any topic into a finished post, carousel or reel."
+          lead="Take a topic Diwche found, pull in one of your tracked feeds, or start from scratch with your own prompt. Diwche writes and designs single posts, carousels, reels and stories, all matched to the voice and look you set for that account."
         />
       </div>
 
-      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
-        <Mascot scene="working-hard" />
+      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
+        <Art name="create-writing" />
       </div>
     </div>
   </section>
@@ -157,15 +201,27 @@ const faqs = [
       <div class="pillar__copy reveal">
         <SectionHeader
           align="left"
-          eyebrow="03 — Publish it"
-          title="Real Instagram sign-in. No token pasting."
-          lead="Connecting an account opens Facebook, where you sign in and choose the page to post to. Diwche keeps that connection alive on its own, so nothing quietly stops publishing three weeks later."
+          eyebrow="03 — Publish and schedule"
+          title="Connect your account once and let Diwche handle the timing."
+          lead="Link your Instagram securely through Facebook, with no token to paste. Publish immediately, or schedule for peak engagement times; Diwche keeps the connection alive in the background, so your queue stays automated without dropping off."
         />
       </div>
 
-      <div class="pillar__visual pillar__visual--mascot reveal" style="--reveal-delay: 60ms">
-        <Mascot scene="posting" />
+      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
+        <Art name="publish-mailbox" />
       </div>
+    </div>
+  </section>
+
+  <!-- =============================================================== APPROACH -->
+  <section class="section" id="approach">
+    <div class="wrap reveal">
+      <SectionHeader
+        align="left"
+        eyebrow="How it thinks"
+        title="AI does the labour. The judgment is borrowed from people who already do this."
+        lead="Diwche does not write from nothing and hope. What it posts, how it says it and when it sends it are shaped by patterns pulled from real accounts that already grew this way. AI reads the feeds, writes the draft and cuts the reel — it does not decide your strategy alone."
+      />
     </div>
   </section>
 
@@ -269,28 +325,25 @@ const faqs = [
       radial-gradient(56rem 34rem at 92% 0%, var(--glow-2), transparent 60%);
   }
 
-  .hero__badge {
-    font-size: var(--t-eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--horn);
-    line-height: 1;
-  }
-
   .hero__title {
-    margin-top: var(--s-5);
     margin-inline: auto;
     font-size: var(--t-hero);
-    line-height: 1;
+    line-height: 1.06;
     letter-spacing: -0.035em;
     max-width: 18ch;
+  }
+
+  /* The second line carries the one accent in the hero. Periwinkle rather than
+     flat sapphire: --accent on near-black is a colour you have to lean in to
+     read, and this line is half the headline. */
+  .hero__title-accent {
+    color: var(--accent-soft);
   }
 
   .hero__lead {
     margin-top: var(--s-5);
     margin-inline: auto;
-    max-width: 52ch;
+    max-width: 56ch;
   }
 
   .hero__actions {
@@ -301,30 +354,57 @@ const faqs = [
     margin-top: var(--s-6);
   }
 
-  .hero__meta {
-    margin-top: var(--s-5);
-    font-size: var(--t-meta);
-    color: var(--ink-3);
-    max-width: 44ch;
-    margin-inline: auto;
-  }
-
   .hero__art {
-    /* The panel art is crisp to ~500px and soft past it (source is 243x168).
-       `width: 100%` is load-bearing: with only `margin-inline: auto` the item
-       shrink-to-fits to the caption's width instead of stretching. */
+    /* `width: 100%` is load-bearing: without it the figure shrink-to-fits its
+       content box instead of taking the column. */
     width: 100%;
-    max-width: 500px;
+    max-width: 460px;
     margin: var(--s-8) auto 0;
   }
 
-  .hero__caption {
-    margin-top: var(--s-4);
-    font-size: var(--t-meta);
-    line-height: 1.5;
-    color: var(--ink-3);
-    max-width: 34ch;
-    margin-inline: auto;
+  /* ---- Pilot ------------------------------------------------------------- */
+
+  .pilot__inner {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* The drawing is a crowd, so it needs less width than a single figure would to
+     read at the same scale. */
+  .pilot__art {
+    width: 100%;
+    max-width: 340px;
+    margin-top: var(--s-7);
+  }
+
+  .pilot__paths {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--s-8);
+    width: 100%;
+    max-width: 46rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+    text-align: left;
+  }
+
+  .path__title {
+    font-size: 1.375rem;
+  }
+
+  .path__text {
+    margin-top: var(--s-3);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 640px) {
+    .pilot__paths {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ---- Pillars ----------------------------------------------------------- */
@@ -353,9 +433,8 @@ const faqs = [
     min-width: 0;
   }
 
-  /* No frame any more: the scenes are cut out, and the two that keep a dark panel
-     carry their own rounded corners inside the SVG. */
-  .pillar__visual--mascot :global(.mascot) {
+  /* No frame: every drawing is cut out and floats on the page ground. */
+  .pillar__visual :global(.art) {
     max-width: 360px;
   }
 

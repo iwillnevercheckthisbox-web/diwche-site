@@ -1,0 +1,45 @@
+---
+/**
+ * One of the landing-page drawings.
+ *
+ * Same idea as Mascot.astro — an <img> and nothing more, with the intrinsic size
+ * taken from the build manifest so nothing shifts as the page loads. The
+ * difference is only in the source material: the mascot scenes are animated SVGs
+ * built out of `mascot/new resources/`, these are still WebP built out of
+ * `art/source/` by `npm run art:build`.
+ *
+ * They are cut out and float on either theme, so there is no panel and no frame.
+ */
+import manifest from '../../public/art/manifest.json';
+
+interface Props {
+  name: string;
+  /** Overrides the description that ships with the drawing. */
+  alt?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { name, alt, class: className = '', loading = 'lazy' } = Astro.props;
+
+const art = manifest.find((m) => m.slug === name);
+if (!art) throw new Error(`unknown drawing "${name}" — run npm run art:build`);
+---
+
+<img
+  class:list={['art', className]}
+  src={`/art/${name}.webp`}
+  alt={alt ?? art.alt}
+  width={art.width}
+  height={art.height}
+  loading={loading}
+  decoding="async"
+  fetchpriority={loading === 'eager' ? 'high' : undefined}
+/>
+
+<style>
+  .art {
+    width: 100%;
+    height: auto;
+  }
+</style>

@@ -2,7 +2,8 @@
 // Only the homepage exists so far, so these point at sections on it rather than
 // at routes that would 404. They become real paths as those pages land.
 const links = [
-  { href: '/#product', label: 'Product' },
+  { href: '/#product', label: 'Features' },
+  { href: '/#pilot', label: 'Early access' },
   { href: '/#reliability', label: 'Reliability' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#faq', label: 'FAQ' },
@@ -13,7 +14,10 @@ const path = Astro.url.pathname;
 
 <header class="nav">
   <div class="nav__inner">
-    <a class="nav__brand" href="/">Diwche</a>
+    <a class="nav__brand" href="/">
+      <img class="nav__mark" src="/brand/horns.png" alt="" width="256" height="166" />
+      Diwche
+    </a>
 
     <nav class="nav__links" aria-label="Main">
       {
@@ -38,7 +42,7 @@ const path = Astro.url.pathname;
       </svg>
     </button>
 
-    <a class="btn nav__cta" href="/#pricing">Request a demo</a>
+    <a class="btn nav__cta" href="/#pilot">Book a demo</a>
   </div>
 </header>
 
@@ -122,12 +126,23 @@ const path = Astro.url.pathname;
   }
 
   .nav__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
     font-family: var(--font-display);
     font-variation-settings: var(--display-axes);
     font-size: 1.5rem;
     letter-spacing: -0.04em;
     text-decoration: none;
     margin-right: auto;
+  }
+
+  /* The horns are the mark — the anatomy is the brand (DNA §6), so the logo is
+     the drawing rather than a letterform. Decorative: the wordmark beside it
+     already says the name. */
+  .nav__mark {
+    width: 28px;
+    height: auto;
   }
 
   .nav__links {
