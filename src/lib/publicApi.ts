@@ -184,8 +184,14 @@ export function makePost(id: string, topicId: string) {
  */
 export type Answers = Record<string, string | string[]>;
 
-export function saveLead(id: string, email: string, consent: boolean, answers: Answers = {}) {
-  return post<{ ok: true }>(`/audit/${id}/lead`, { email, consent, answers });
+export function saveLead(
+  id: string,
+  email: string,
+  consent: boolean,
+  answers: Answers = {},
+  turnstile: string | null = null,
+) {
+  return post<{ ok: true }>(`/audit/${id}/lead`, { email, consent, answers, turnstile });
 }
 
 /**
@@ -199,9 +205,10 @@ export function saveWaitingLead(
   handle: string,
   email: string,
   consent: boolean,
-  answers: Answers = {}
+  answers: Answers = {},
+  turnstile: string | null = null
 ) {
-  return post<{ ok: true }>('/lead', { handle, email, consent, answers });
+  return post<{ ok: true }>('/lead', { handle, email, consent, answers, turnstile });
 }
 
 export function requestProof(id: string) {

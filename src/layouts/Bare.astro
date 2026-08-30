@@ -18,10 +18,19 @@ interface Props {
 
 const { title, description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+/**
+ * Proof-of-human, when there is a key for it.
+ *
+ * Nothing third-party is loaded without one, so an unconfigured build is the
+ * page exactly as it was. The backend decides whether a missing token is
+ * acceptable — this only mints one.
+ */
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_KEY ?? '';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-turnstile-key={turnstileKey || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -35,6 +44,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/brand/horns.png" />
+
+    {
+      turnstileKey && (
+        <script
+          is:inline
+          async
+          defer
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        />
+      )
+    }
 
     <script is:inline>
       (function () {

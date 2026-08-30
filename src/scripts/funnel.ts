@@ -498,7 +498,14 @@ function run(root: HTMLElement) {
     // Too few posts to say anything honest is a legitimate answer, and a
     // skipped panel is better than a number we do not have.
     const projection = value.projection;
-    if (!projection || !wrap) return;
+    if (!wrap) return;
+    const none = screen?.querySelector<HTMLElement>('[data-projection-none]');
+    if (!projection) {
+      // Never an empty card under a heading promising a plan.
+      if (none) none.hidden = false;
+      return;
+    }
+    if (none) none.hidden = true;
     wrap.hidden = false;
     if (headline) headline.textContent = projection.headline;
     if (assumption) assumption.textContent = projection.assumption;
@@ -552,7 +559,7 @@ function run(root: HTMLElement) {
     submit.textContent = 'One moment…';
 
     try {
-      if (auditId) await saveLead(auditId, email, consent, answers);
+      if (auditId) await saveLead(auditId, email, consent, answers, await turnstileToken());
       if (result) {
         result.facts = result.facts.map((f) => ({ ...f, locked: false }));
         renderFacts(result.facts);
@@ -587,7 +594,7 @@ function run(root: HTMLElement) {
     if (error) error.hidden = true;
     submit.disabled = true;
     try {
-      await saveWaitingLead(handle, email, consent, answers);
+      await saveWaitingLead(handle, email, consent, answers, await turnstileToken());
       submit.textContent = 'He has it';
     } catch (err) {
       if (error) {
@@ -648,10 +655,15 @@ function run(root: HTMLElement) {
     }
   });
 
-  root.querySelector<HTMLElement>('[data-retry]')?.addEventListener('click', () => {
-    forget();
-    location.reload();
-  });
+  // Both ends of the walk offer a way out of it. Forgetting first matters: the
+  // resume state would otherwise drop the next visitor straight back onto the
+  // screen they just asked to leave.
+  for (const el of root.querySelectorAll<HTMLElement>('[data-retry], [data-restart]')) {
+    el.addEventListener('click', () => {
+      forget();
+      location.reload();
+    });
+  }
 
   // ---- Start ------------------------------------------------------------------------
 
@@ -700,18 +712,94 @@ function run(root: HTMLElement) {
  *
  * Nothing third-party is loaded until a site key exists on the document, and
  * the backend — never this — decides whether a missing token is acceptable.
+ * That split matters: a page can always be made to say it has a token, so this
+ * is a way to give one, never a gate.
+ *
+ * The widget is rendered once into a hidden container and reused. Its mode is
+ * set in the Cloudflare dashboard, not here; in the invisible and
+ * non-interactive modes the callback fires on its own and nothing is shown.
  */
+interface TurnstileApi {
+  render: (el: HTMLElement, params: Record<string, unknown>) => string;
+  reset: (id: string) => void;
+}
+
+let widget: { id: string; api: TurnstileApi } | null = null;
+let pending: ((token: string | null) => void) | null = null;
+
+/**
+ * Hand whatever the widget produced to whoever is waiting.
+ *
+ * This is module-level rather than a closure inside the render call on purpose:
+ * the widget is rendered once and reset for every later token, so its callbacks
+ * belong to the first request forever. Routing through here means a reset
+ * answers the call that asked for it.
+ */
+function settle(token: string | null) {
+  const waiting = pending;
+  pending = null;
+  waiting?.(token);
+}
+
 async function turnstileToken(): Promise<string | null> {
   const key = document.documentElement.dataset.turnstileKey;
-  const turnstile = (
-    window as unknown as { turnstile?: { execute: (o: unknown) => Promise<string> } }
-  ).turnstile;
-  if (!key || !turnstile) return null;
-  try {
-    return await turnstile.execute({ sitekey: key });
-  } catch {
-    return null;
+  if (!key) return null;
+
+  const api = await waitForTurnstile();
+  if (!api) return null;
+
+  return new Promise<string | null>((resolve) => {
+    // One outstanding request at a time. The funnel never asks twice at once,
+    // and handing an old caller a new token would be a lie about which call it
+    // belongs to.
+    settle(null);
+    pending = resolve;
+
+    // Nothing waits forever on a third party. A null means the backend decides,
+    // which is where that decision belongs anyway.
+    const bail = window.setTimeout(() => {
+      if (pending === resolve) settle(null);
+    }, 8000);
+    const stopWaiting = () => window.clearTimeout(bail);
+    const originalResolve = resolve;
+    resolve = ((token: string | null) => {
+      stopWaiting();
+      originalResolve(token);
+    }) as typeof resolve;
+    pending = resolve;
+
+    try {
+      if (widget) {
+        // A token is single-use, so a second read needs a fresh one.
+        widget.api.reset(widget.id);
+        return;
+      }
+      const host = document.createElement('div');
+      host.style.display = 'none';
+      document.body.append(host);
+      widget = {
+        api,
+        id: api.render(host, {
+          sitekey: key,
+          callback: (token: string) => settle(token),
+          'error-callback': () => settle(null),
+          'timeout-callback': () => settle(null),
+          'expired-callback': () => settle(null),
+        }),
+      };
+    } catch {
+      settle(null);
+    }
+  });
+}
+
+/** The script is async, so it may not have arrived by the time the handle is typed. */
+async function waitForTurnstile(): Promise<TurnstileApi | null> {
+  const has = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile ?? null;
+  for (let i = 0; i < 40 && !has(); i++) {
+    await new Promise((r) => setTimeout(r, 100));
   }
+  return has();
 }
 
 function messageFor(err: unknown): string {

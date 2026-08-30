@@ -23,7 +23,13 @@ COPY public ./public
 # homepage does not link to it. Flip it by passing
 # `--build-arg PUBLIC_READ=on` from the workflow, once /api/public/* is served.
 ARG PUBLIC_READ
+# The Turnstile site key is public by nature — it is read out of the page. The
+# secret that verifies the token it mints lives only on the backend. With this
+# unset the page loads nothing from Cloudflare and mints no token, and the
+# backend decides whether that is acceptable.
+ARG PUBLIC_TURNSTILE_KEY
 ENV PUBLIC_READ=$PUBLIC_READ
+ENV PUBLIC_TURNSTILE_KEY=$PUBLIC_TURNSTILE_KEY
 
 RUN npm run build
 

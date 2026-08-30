@@ -360,6 +360,15 @@ const tips = [
               <p class="screen__eyebrow">What he would do</p>
               <h1 class="screen__title" data-plan-headline>Here is the offer.</h1>
 
+              <!-- A page can be too new, too quiet, or already running well enough
+                   that there is no honest gap to draw. Saying so is better than
+                   an empty card, and the offer below stands either way. -->
+              <p class="screen__lead" data-projection-none hidden>
+                He would rather show you than promise you. There is not a gap on this page big
+                enough to draw — so what he found, and what he would do with it, go to your
+                address instead.
+              </p>
+
               <div class="proj" data-projection hidden>
                 <!-- Two bars, not a spreadsheet. A reader who makes things for a
                      living does not want a row carried to one decimal place. -->
@@ -419,6 +428,13 @@ const tips = [
                   Nothing is connected to your account, and nothing is posted, until you say so.
                 </p>
               </div>
+
+              <!-- The walk ends here, so it has to say where the door is. -->
+              <p class="ways">
+                <button class="ways__link" type="button" data-restart>Read another page</button>
+                <span class="ways__sep" aria-hidden="true">·</span>
+                <a class="ways__link" href="/">Back to diwche.com</a>
+              </p>
             </div>
           )}
 
@@ -452,6 +468,10 @@ const tips = [
               <button class="btn btn--quiet btn--wide" type="button" data-retry>
                 Try another page
               </button>
+
+              <p class="ways">
+                <a class="ways__link" href="/">Back to diwche.com</a>
+              </p>
             </div>
           )}
         </section>
@@ -1274,6 +1294,33 @@ const tips = [
     border-radius: 50%;
     background: var(--horn-soft);
     transform: translateY(-2px);
+  }
+
+  .ways {
+    margin-top: var(--s-5);
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: var(--s-3);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .ways__link {
+    font: inherit;
+    color: var(--ink-3);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+  }
+
+  .ways__link:hover {
+    color: var(--ink-2);
+    text-decoration-color: var(--horn);
   }
 
   .proj__working {
