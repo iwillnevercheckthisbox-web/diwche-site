@@ -7,26 +7,24 @@ import Card from '../components/Card.astro';
 import QuoteCard from '../components/QuoteCard.astro';
 import PricingCard from '../components/PricingCard.astro';
 import Accordion from '../components/Accordion.astro';
-import Stage from '../components/show/Stage.astro';
 
 /**
  * The read is only offered when there is something behind it.
  *
- * The show talks to `/api/public/*`, which the backend does not serve yet.
- * Shipping the field before that exists would put a call to action on the live
- * site whose only outcome is an apology, so this defaults to off and the page
- * falls back to the CTAs it had. Build with `PUBLIC_READ=on` — and deploy the
- * backend first.
+ * The funnel at /read talks to `/api/public/*`, which the backend does not
+ * serve yet. Pointing the hero at a walk that cannot finish would put a call to
+ * action on the live site whose only outcome is an apology, so this defaults to
+ * off and the CTA falls back to the section below. Build with `PUBLIC_READ=on`
+ * — and deploy the backend first.
  */
 const readEnabled = import.meta.env.PUBLIC_READ === 'on';
 
-// The homepage: nav, hero, the show, the Meta band, the offer, three
-// alternating pillar rows, a house line, reliability, pricing, FAQ, footer.
+// The homepage: nav, hero, the Meta band, the offer, three alternating pillar
+// rows, a house line, reliability, pricing, FAQ, footer.
 //
-// The hero asks for one thing — a handle — and everything below it is the
-// introduction that plays while that page is being read. With JS off, or before
-// a handle is given, the static sections below are the whole page and nothing
-// is missing.
+// The hero's job is to get someone into the funnel at /read, where the actual
+// argument is made one screen at a time. This page is what a reader gets if
+// they would rather look around first.
 //
 // Prices are marked as placeholders because none have been decided — see DNA §7.
 
@@ -124,55 +122,18 @@ const faqs = [
         while you keep every word and frame.
       </p>
 
-      <!-- One field. The whole page below is the answer to it. `novalidate`
-           because the browser's own bubble cannot say this in his voice. -->
-      {readEnabled && (
-      <form class="handle" data-handle-form novalidate>
-        <div class="handle__row">
-          <div class="handle__field">
-            <span class="handle__at" aria-hidden="true">@</span>
-            <label class="handle__sr" for="handle">Your Instagram handle</label>
-            <input
-              class="handle__input"
-              id="handle"
-              name="handle"
-              type="text"
-              inputmode="text"
-              autocomplete="off"
-              autocapitalize="off"
-              autocorrect="off"
-              spellcheck="false"
-              maxlength="30"
-              placeholder="yourhandle"
-            />
-          </div>
-          <button class="btn handle__go" type="submit">Let him look. It is free.</button>
-        </div>
-        <p class="handle__error" data-handle-error hidden></p>
-        <p class="handle__note">
-          No password, nothing to connect — he reads only what your profile already shows.
-          <button class="handle__link" type="button" data-no-page>
-            No page yet? Bring him an idea.
-          </button>
-        </p>
-      </form>
-      )}
-
-      {!readEnabled && (
-        <div class="hero__actions">
-          <a class="btn" href="#pilot">See what he would do for your page</a>
-          <a class="btn btn--quiet" href="#pricing">See pricing</a>
-        </div>
-      )}
+      <div class="hero__actions">
+        <a class="btn" href={readEnabled ? '/read' : '#pilot'}>
+          {readEnabled ? 'Let him read your page' : 'See what he would do for your page'}
+        </a>
+        <a class="btn btn--quiet" href="#pricing">See pricing</a>
+      </div>
 
       <figure class="hero__art">
         <Art name="hero-camera" loading="eager" />
       </figure>
     </div>
   </section>
-
-  <!-- ================================================================== SHOW -->
-  {readEnabled && <Stage />}
 
   <!-- ============================================================ META BAND -->
   <TrustBar />
@@ -405,140 +366,12 @@ const faqs = [
     max-width: 56ch;
   }
 
-  /* The fallback pair, shown only while the read is switched off. */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--s-3);
     margin-top: var(--s-6);
-  }
-
-  /* ---- The one field ------------------------------------------------------
-     This is the only input on the site, so it carries more weight than a form
-     control usually would: it is sized like the lead paragraph, not like a
-     settings field, and the button next to it says what happens rather than
-     naming an action. */
-
-  .handle {
-    margin-top: var(--s-6);
-    display: grid;
-    gap: var(--s-3);
-    justify-items: center;
-  }
-
-  .handle__row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--s-3);
-    width: 100%;
-  }
-
-  .handle__field {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    min-width: min(20rem, 100%);
-    padding-inline: var(--s-4);
-    background: var(--paper-2);
-    background-image: var(--sheen);
-    border: 1px solid var(--rule);
-    border-radius: var(--r-3);
-    transition: border-color var(--dur) ease;
-  }
-
-  .handle__field:focus-within {
-    border-color: var(--accent-soft);
-  }
-
-  .handle__at {
-    color: var(--ink-3);
-    font-size: var(--t-lead);
-    line-height: 1;
-  }
-
-  .handle__input {
-    flex: 1;
-    min-width: 0;
-    padding: 0.85rem 0.25rem;
-    background: none;
-    border: none;
-    color: var(--ink);
-    font: inherit;
-    font-size: var(--t-lead);
-    letter-spacing: -0.01em;
-  }
-
-  .handle__input:focus {
-    outline: none;
-  }
-
-  .handle__input::placeholder {
-    color: var(--ink-3);
-  }
-
-  .handle__go {
-    flex: none;
-  }
-
-  .handle__sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .handle__error {
-    font-size: var(--t-meta);
-    color: var(--alarm);
-  }
-
-  .handle__note {
-    max-width: 46ch;
-    font-size: var(--t-meta);
-    color: var(--ink-3);
-    text-align: center;
-  }
-
-  /* A button that reads as a link: it is a second route into the same show, not
-     a second call to action competing with the first. */
-  .handle__link {
-    padding: 0;
-    color: var(--ink-2);
-    font: inherit;
-    font-size: var(--t-meta);
-    text-decoration: underline;
-    text-decoration-color: var(--rule);
-    text-underline-offset: 0.2em;
-    transition: color var(--dur) ease;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .handle__link:hover {
-      color: var(--ink);
-      text-decoration-color: var(--horn);
-    }
-  }
-
-  @media (max-width: 560px) {
-    .handle__row {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .handle__go {
-      justify-content: center;
-    }
-  }
-
-  /* Once the show starts the drawing has done its job, and it is the only thing
-     between the field and the stage. Taking it out of the flow closes that gap
-     so the first scene lands where the eye already is. */
-  :global(body[data-showing]) .hero__art {
-    display: none;
   }
 
   .hero__art {
@@ -739,10 +572,3 @@ const faqs = [
     }
   }
 </style>
-
-<script>
-  // The show is the only scripted thing on the page. It does nothing at all
-  // until a handle is submitted, and the static sections stand on their own
-  // if it never loads.
-  import '../scripts/show';
-</script>

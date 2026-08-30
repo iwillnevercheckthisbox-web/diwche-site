@@ -1,0 +1,76 @@
+---
+/**
+ * The layout for the funnel: no nav, no footer, no way out but forward.
+ *
+ * A funnel that carries the site's navigation invites the reader to leave it,
+ * so this shares Base.astro's head — fonts, theme resolution before first
+ * paint, meta — and nothing else. The page owns the whole viewport.
+ */
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/geist';
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <!-- The funnel is not a page anyone should land on from a search result;
+         it only means anything walked through from the start. -->
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/horns.png" />
+
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme = 'dark';
+        try {
+          var saved = localStorage.getItem('diwche-theme');
+          if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+          } else if (matchMedia('(prefers-color-scheme: light)').matches) {
+            theme = 'light';
+          }
+        } catch (e) {
+          /* Private mode can throw on read. Dark is the correct fallback. */
+        }
+        root.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+
+  <body class="bare">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* The funnel fills the window and never scrolls the document: each screen
+     scrolls inside itself if it has to, so the progress bar and the back arrow
+     stay where they were put. `dvh` rather than `vh` so the mobile URL bar
+     collapsing does not cut a screen off at the bottom. */
+  body.bare {
+    min-height: 100dvh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+</style>

@@ -103,12 +103,13 @@ stops being the only thing that matters.
 
 ## The public read
 
-The hero's handle field and the show behind it are built only when
+The funnel at `/read` — and the hero CTA that points at it — is built only when
 `PUBLIC_READ=on` is set at build time. It defaults to **off**, because the show
 talks to `/api/public/*` on the backend and that does not exist yet — shipping
 the field before it does would put a call to action on the live site whose only
-outcome is an apology. With the flag off the hero falls back to its previous
-two CTAs and nothing else on the page changes.
+outcome is an apology. With the flag off the hero CTA points at the offer
+section instead, and `/read` renders a short "not yet" page rather than a walk
+that cannot finish.
 
 To turn it on, in this order:
 

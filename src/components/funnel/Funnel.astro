@@ -1,0 +1,1232 @@
+---
+/**
+ * The read, as a funnel.
+ *
+ * One screen at a time, full viewport, tap an answer and it advances. The
+ * shape is deliberate and borrowed: questions in short runs, an insight screen
+ * between each run where the product gets to say one thing, the handle asked
+ * early so the read runs underneath the rest of the questions, then an
+ * analysing screen that is a real short wait rather than a staged one, the
+ * findings, and the offer.
+ *
+ * Everything renders at build time and starts hidden; `src/scripts/funnel.ts`
+ * owns which screen is live. The insight screens are the whole marketing
+ * argument, so they are written here rather than fetched.
+ */
+import Screenshot from '../Screenshot.astro';
+import { ICONS } from './icons';
+
+interface Option {
+  value: string;
+  label: string;
+  sub?: string;
+  icon: keyof typeof ICONS;
+}
+
+type Screen =
+  | {
+      id: string;
+      kind: 'question';
+      eyebrow: string;
+      title: string;
+      /** Several answers allowed, so it needs a button rather than advancing on tap. */
+      multi?: boolean;
+      options: Option[];
+    }
+  | {
+      id: string;
+      kind: 'insight';
+      eyebrow: string;
+      title: string;
+      lead: string;
+      shot: string;
+      label: string;
+      alt: string;
+    }
+  | { id: string; kind: 'start' | 'analyzing' | 'result' | 'plan' | 'error' };
+
+const screens: Screen[] = [
+  {
+    id: 'goal',
+    kind: 'question',
+    eyebrow: 'First',
+    title: 'Whose page are we talking about?',
+    options: [
+      { value: 'mine', label: 'Mine', sub: 'I post as myself, or as my own brand', icon: 'mine' },
+      { value: 'client', label: 'A client’s', sub: 'I run pages for other people', icon: 'client' },
+      { value: 'new', label: 'There isn’t one yet', sub: 'I have a subject and no page', icon: 'seed' },
+    ],
+  },
+  {
+    id: 'makes',
+    kind: 'question',
+    eyebrow: 'What you make',
+    title: 'What goes out at the moment?',
+    multi: true,
+    options: [
+      { value: 'reels', label: 'Reels', icon: 'reel' },
+      { value: 'carousels', label: 'Carousels', icon: 'carousel' },
+      { value: 'photos', label: 'Single photos', icon: 'photo' },
+      { value: 'stories', label: 'Stories', icon: 'story' },
+      { value: 'none', label: 'Nothing regular', icon: 'none' },
+    ],
+  },
+  { id: 'start', kind: 'start' },
+  {
+    id: 'insight-ideas',
+    kind: 'insight',
+    eyebrow: 'Ideas',
+    title: 'Every morning, topics that are yours.',
+    lead: 'He knows your page and the people who answer it, so what he brings you is not what he brings anyone else. Make one, keep one, or tell him why not — tomorrow’s change because of what you said today.',
+    shot: '_placeholder-ideas',
+    label: 'Ideas',
+    alt: 'The Ideas page, a column of suggested topics.',
+  },
+  {
+    id: 'hardest',
+    kind: 'question',
+    eyebrow: 'Where it goes wrong',
+    title: 'Which part eats your week?',
+    multi: true,
+    options: [
+      { value: 'ideas', label: 'Thinking of something to post', icon: 'idea' },
+      { value: 'filming', label: 'Filming it', icon: 'camera' },
+      { value: 'editing', label: 'Editing it', icon: 'cut' },
+      { value: 'captions', label: 'Writing the words', icon: 'words' },
+      { value: 'timing', label: 'Actually posting on time', icon: 'clock' },
+    ],
+  },
+  {
+    id: 'insight-d1',
+    kind: 'insight',
+    eyebrow: 'D1 Studio',
+    title: 'Say it once. He cuts the rest.',
+    lead: 'Read your script to the camera and he takes out the pauses, the stumbles and the retakes — then shows you every cut he made and why, because an edit nobody can inspect is one nobody can trust.',
+    shot: '_placeholder-d1',
+    label: 'D1 Studio',
+    alt: 'The D1 Studio review screen, listing each cut it made.',
+  },
+  {
+    id: 'cadence',
+    kind: 'question',
+    eyebrow: 'The pace',
+    title: 'How often would you like to go out?',
+    options: [
+      { value: 'daily', label: 'Every day', icon: 'daily' },
+      { value: 'few', label: 'A few times a week', icon: 'weekly' },
+      { value: 'weekly', label: 'Once a week', icon: 'clock' },
+      { value: 'unsure', label: 'Whenever there is something worth saying', icon: 'shrug' },
+    ],
+  },
+  {
+    id: 'insight-studios',
+    kind: 'insight',
+    eyebrow: 'The studios',
+    title: 'Your colours, your words, your voice.',
+    lead: 'Captions word by word, in your language, right to left where that is how it reads. Palettes, fonts and characters set once and kept everywhere. He can speak in your own voice when you would rather not record — and you can change any frame of it.',
+    shot: '_placeholder-studios',
+    label: 'Visual Studio',
+    alt: 'The editor, with an artboard and an inspector.',
+  },
+  {
+    id: 'captions',
+    kind: 'question',
+    eyebrow: 'The words',
+    title: 'Who writes them today?',
+    options: [
+      { value: 'me', label: 'I do', icon: 'mine' },
+      { value: 'someone', label: 'Someone on my team', icon: 'client' },
+      { value: 'ai', label: 'Something automatic', icon: 'spark' },
+      { value: 'nobody', label: 'Barely anyone — they go out thin', icon: 'shrug' },
+    ],
+  },
+  {
+    id: 'insight-performance',
+    kind: 'insight',
+    eyebrow: 'Performance',
+    title: 'After a post, a sentence. Not a graph.',
+    lead: 'He tells you what worked, why, and what to do again. He is not trying to replace the numbers Instagram already shows you — he is telling you what they mean.',
+    shot: '_placeholder-performance',
+    label: 'Performance',
+    alt: 'A sentence about a post, above the bars it came from.',
+  },
+  { id: 'analyzing', kind: 'analyzing' },
+  { id: 'result', kind: 'result' },
+  { id: 'plan', kind: 'plan' },
+  { id: 'error', kind: 'error' },
+];
+
+// The error screen is a destination, never a step, so it is outside the count.
+const counted = screens.filter((s) => s.kind !== 'error');
+
+const tips = [
+  'He does not replace Instagram’s graphs. He tells you what they mean.',
+  'Nothing he makes is final. Every word, colour and frame stays yours.',
+  'The more you tell him, the less he repeats himself.',
+  'He never posts the same story twice, on any page.',
+];
+---
+
+<div class="funnel" data-funnel data-total={counted.length}>
+  <!-- ================================================================== BAR -->
+  <header class="bar">
+    <button class="bar__back" type="button" data-back aria-label="Back a step">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19l-7-7 7-7" /></svg>
+    </button>
+    <div class="bar__track" role="presentation"><i data-progress></i></div>
+    <p class="bar__count"><b data-step-now>1</b> / {counted.length}</p>
+  </header>
+
+  <!-- ============================================================== SCREENS -->
+  <main class="stage">
+    {
+      screens.map((screen) => (
+        <section class="screen" data-screen={screen.id} data-kind={screen.kind} hidden>
+          {screen.kind === 'question' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow">{screen.eyebrow}</p>
+              <h1 class="screen__title">{screen.title}</h1>
+              {screen.multi && <p class="screen__hint">Pick as many as are true.</p>}
+              <div class:list={['options', screen.options.length > 4 && 'options--tight']}>
+                {screen.options.map((o) => (
+                  <button
+                    class="option"
+                    type="button"
+                    data-option={o.value}
+                    aria-pressed={screen.multi ? 'false' : undefined}
+                  >
+                    <span class="option__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" set:html={ICONS[o.icon]} />
+                    </span>
+                    <span class="option__text">
+                      <span class="option__label">{o.label}</span>
+                      {o.sub && <span class="option__sub">{o.sub}</span>}
+                    </span>
+                    <span class="option__tick" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7" /></svg>
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {screen.multi && (
+                <button class="btn btn--wide" type="button" data-continue disabled>
+                  Continue
+                </button>
+              )}
+            </div>
+          )}
+
+          {screen.kind === 'insight' && (
+            <div class="screen__inner screen__inner--wide">
+              <p class="screen__eyebrow">{screen.eyebrow}</p>
+              <h1 class="screen__title">{screen.title}</h1>
+              <p class="screen__lead">{screen.lead}</p>
+              <div class="screen__shot">
+                <Screenshot
+                  src={`/shots/${screen.shot}.svg`}
+                  alt={screen.alt}
+                  width={1280}
+                  height={800}
+                  label={screen.label}
+                />
+              </div>
+              <button class="btn btn--wide" type="button" data-next>Got it</button>
+            </div>
+          )}
+
+          {screen.kind === 'start' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow">Your page</p>
+              <h1 class="screen__title" data-start-title>Which page should he read?</h1>
+              <p class="screen__lead" data-start-lead>
+                He reads only what your profile already shows. No password, and nothing is
+                connected until you say so.
+              </p>
+
+              <form class="start" data-start-form novalidate>
+                <div class="start__field" data-handle-wrap>
+                  <span class="start__at" aria-hidden="true">@</span>
+                  <label class="sr" for="handle">Your Instagram handle</label>
+                  <input
+                    class="start__input"
+                    id="handle"
+                    name="handle"
+                    type="text"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    maxlength="30"
+                    placeholder="yourhandle"
+                  />
+                </div>
+
+                <!-- The same screen, for someone with no page: he cannot read what
+                     does not exist, so he is given the subject instead. -->
+                <div data-idea-wrap hidden>
+                  <label class="sr" for="idea">What is it about?</label>
+                  <textarea
+                    class="start__area"
+                    id="idea"
+                    name="idea"
+                    rows="3"
+                    maxlength="400"
+                    placeholder="A sentence is enough."></textarea>
+                </div>
+
+                <p class="field__error" data-start-error hidden></p>
+                <button class="btn btn--wide" type="submit">Let him look</button>
+              </form>
+            </div>
+          )}
+
+          {screen.kind === 'analyzing' && (
+            <div class="screen__inner">
+              <div class="ring" role="presentation">
+                <svg viewBox="0 0 120 120">
+                  <circle class="ring__track" cx="60" cy="60" r="52" />
+                  <circle class="ring__fill" cx="60" cy="60" r="52" data-ring />
+                </svg>
+                <p class="ring__pct"><b data-pct>0</b>%</p>
+              </div>
+              <h1 class="screen__title screen__title--mid" data-analyzing-line>
+                Finding the page…
+              </h1>
+              <p class="screen__tip" data-tip>{tips[0]}</p>
+              <script type="application/json" data-tips set:html={JSON.stringify(tips)} />
+            </div>
+          )}
+
+          {screen.kind === 'result' && (
+            <div class="screen__inner screen__inner--wide">
+              <p class="screen__eyebrow">Here is what he noticed</p>
+              <h1 class="screen__title" data-result-headline />
+              <div class="facts" data-facts />
+              <div class="topics" data-topics hidden />
+
+              <form class="lead" data-lead-form novalidate>
+                <p class="lead__title" data-lead-title>
+                  Two more, and what he would do about them.
+                </p>
+                <label class="sr" for="email">Your email address</label>
+                <input
+                  class="start__input start__input--boxed"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  placeholder="you@example.com"
+                  required
+                />
+                <label class="lead__consent">
+                  <input type="checkbox" data-consent />
+                  <span>
+                    Diwche may email me this read and what it offers. No one else gets this
+                    address.
+                  </span>
+                </label>
+                <p class="field__error" data-lead-error hidden></p>
+                <button class="btn btn--wide" type="submit" data-lead-submit>
+                  Show me the rest
+                </button>
+              </form>
+            </div>
+          )}
+
+          {screen.kind === 'plan' && (
+            <div class="screen__inner screen__inner--wide">
+              <p class="screen__eyebrow">What he would do</p>
+              <h1 class="screen__title" data-plan-headline>Here is the offer.</h1>
+
+              <div class="proj" data-projection hidden>
+                <table class="proj__table">
+                  <thead>
+                    <tr>
+                      <th scope="col">&nbsp;</th>
+                      <th scope="col">Now</th>
+                      <th scope="col">With him</th>
+                    </tr>
+                  </thead>
+                  <tbody data-projection-rows />
+                </table>
+                <!-- Never fine print: a projection without the assumption beside
+                     it is the kind of number this whole page argues against. -->
+                <p class="proj__assumption" data-projection-assumption />
+              </div>
+
+              <div class="offer">
+                <p class="offer__text">
+                  Send this to <b data-proof-account>@tiffje.app</b> on Instagram, from the account
+                  he just read. That is the whole check — then the trial is yours, free.
+                </p>
+                <p class="offer__code"><span data-proof-code>····</span></p>
+                <div class="offer__actions">
+                  <button class="btn btn--quiet" type="button" data-copy-code>Copy the code</button>
+                  <a class="btn" data-proof-link href="https://ig.me/m/tiffje.app" target="_blank" rel="noopener">
+                    Open the message
+                  </a>
+                </div>
+                <p class="offer__small">
+                  Not ready? The read is already on its way to the address you left.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {screen.kind === 'error' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow screen__eyebrow--alarm">He stopped</p>
+              <h1 class="screen__title" data-error-message />
+
+              <form class="lead" data-waiting-form novalidate hidden>
+                <p class="lead__title">Leave an address and he will send the read when he can.</p>
+                <label class="sr" for="waiting-email">Your email address</label>
+                <input
+                  class="start__input start__input--boxed"
+                  id="waiting-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                  required
+                />
+                <label class="lead__consent">
+                  <input type="checkbox" data-waiting-consent />
+                  <span>Diwche may email me this read. No one else gets this address.</span>
+                </label>
+                <p class="field__error" data-waiting-error hidden></p>
+                <button class="btn btn--wide" type="submit" data-waiting-submit>
+                  Send it when he can
+                </button>
+              </form>
+
+              <button class="btn btn--quiet btn--wide" type="button" data-retry>
+                Try another page
+              </button>
+            </div>
+          )}
+        </section>
+      ))
+    }
+  </main>
+
+  <!-- ===================================================== CLONED AT RUNTIME -->
+  <template data-tpl="fact">
+    <article class="fact">
+      <p class="fact__label" data-f="label"></p>
+      <p class="fact__value" data-f="value"></p>
+      <p class="fact__text" data-f="text"></p>
+      <div class="meter" data-f="meter" hidden>
+        <div class="meter__track"><i class="meter__fill" data-f="meter-fill"></i></div>
+        <i class="meter__mark" data-f="meter-mark"></i>
+        <p class="meter__legend" data-f="meter-legend"></p>
+      </div>
+    </article>
+  </template>
+
+  <template data-tpl="topic">
+    <article class="topic">
+      <span class="topic__format" data-f="format"></span>
+      <p class="topic__title" data-f="title"></p>
+      <p class="topic__hook" data-f="hook"></p>
+    </article>
+  </template>
+
+  <template data-tpl="proj-row">
+    <tr>
+      <th scope="row" data-f="label"></th>
+      <td data-f="now"></td>
+      <td class="is-then" data-f="then"></td>
+    </tr>
+  </template>
+</div>
+
+<style>
+  .funnel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ---- The bar ------------------------------------------------------------ */
+
+  .bar {
+    flex: none;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr 3.5rem;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-5);
+    padding-top: max(var(--s-4), env(safe-area-inset-top));
+    border-bottom: 1px solid var(--rule-soft);
+    background: var(--paper);
+  }
+
+  .bar__back {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--r-3);
+    color: var(--ink-2);
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      color var(--dur) ease,
+      opacity var(--dur) ease;
+  }
+
+  .bar__back svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .bar__back:active {
+    transform: scale(0.98);
+  }
+
+  /* Kept in the layout rather than removed, so the bar never reflows when the
+     first step or the result takes the arrow away. */
+  .bar__back[data-off] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bar__track {
+    height: 3px;
+    background: var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar__track i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-soft) 100%);
+    /* Width, not transform: a 3px rule has no layout to thrash, and a scaled
+       bar smears its own gradient. */
+    transition: width var(--dur-slow) var(--ease-in-out);
+  }
+
+  .bar__count {
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar__count b {
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+
+  .bar__count[data-off] {
+    opacity: 0;
+  }
+
+  /* ---- The stage ---------------------------------------------------------- */
+
+  /* One grid cell holds every screen, so a screen entering does not have to be
+     positioned absolutely and the stage keeps its own scroll. */
+  .stage {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Anchored to the top, not centred. Screens carry different numbers of
+     options, and centring moves the question up and down between them — the
+     one element that should not move in a stepper is the question. */
+  .screen {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: clamp(var(--s-5), 5vh, var(--s-8)) var(--s-5) var(--s-6);
+    padding-bottom: max(var(--s-6), env(safe-area-inset-bottom));
+  }
+
+  /* The two screens that are a moment rather than a step do sit centred: there
+     is no list under them whose length could shift anything. */
+  .screen[data-kind='analyzing'],
+  .screen[data-kind='error'] {
+    justify-content: center;
+  }
+
+  .screen[data-live] {
+    animation: screen-in var(--dur-slow) var(--ease-out) both;
+  }
+
+  /* Going back should not look like going forward. */
+  .screen[data-live][data-reverse] {
+    animation-name: screen-back;
+  }
+
+  @keyframes screen-in {
+    from {
+      opacity: 0;
+      transform: translateX(16px) scale(0.98);
+    }
+  }
+
+  @keyframes screen-back {
+    from {
+      opacity: 0;
+      transform: translateX(-16px) scale(0.98);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .screen[data-live],
+    .screen[data-live][data-reverse] {
+      animation-name: screen-fade;
+    }
+
+    @keyframes screen-fade {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+
+  .screen__inner {
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+
+  .screen__inner--wide {
+    max-width: 44rem;
+  }
+
+  .screen__eyebrow {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+    line-height: 1;
+  }
+
+  .screen__eyebrow--alarm {
+    color: var(--alarm);
+  }
+
+  .screen__title {
+    font-size: var(--t-subhead);
+    line-height: 1.14;
+    max-width: 22ch;
+  }
+
+  .screen__title--mid {
+    text-align: center;
+    max-width: 24ch;
+    margin-inline: auto;
+  }
+
+  .screen__lead {
+    font-size: var(--t-meta);
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 54ch;
+  }
+
+  .screen__hint {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: calc(var(--s-2) * -1);
+  }
+
+  .screen__shot {
+    margin-block: var(--s-2);
+  }
+
+  /* ---- Options ------------------------------------------------------------ */
+
+  .options {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  .options--tight {
+    gap: var(--s-2);
+  }
+
+  .option {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-4);
+    text-align: left;
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      border-color var(--dur) ease,
+      background-color var(--dur) ease;
+  }
+
+  .option:active {
+    transform: scale(0.98);
+  }
+
+  /* Champagne marks the choice — a border where a mark is meant to be noticed,
+     which is the one place DNA §4 allows a coloured hairline. */
+  .option[data-chosen] {
+    border-color: var(--horn);
+    background-color: var(--paper-4);
+  }
+
+  .option__icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--r-2);
+    background: var(--paper-3);
+    border: 1px solid var(--rule-soft);
+    color: var(--accent-soft);
+  }
+
+  .option[data-chosen] .option__icon {
+    color: var(--horn);
+    border-color: var(--horn-deep);
+  }
+
+  .option__icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .option__text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .option__label {
+    font-size: var(--t-body);
+    line-height: 1.3;
+  }
+
+  .option__sub {
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  .option__tick {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    color: var(--paper);
+    opacity: 0;
+    transition: opacity var(--dur) ease;
+  }
+
+  .option[data-chosen] .option__tick {
+    opacity: 1;
+    background: var(--horn);
+    border-color: var(--horn);
+  }
+
+  .option__tick svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* A single-answer screen advances on tap, so a tick that lingers is a lie
+     about what is still selectable. */
+  .screen:not([data-multi]) .option__tick {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .option:hover {
+      border-color: var(--horn-deep);
+      background-color: var(--paper-4);
+    }
+
+    .bar__back:hover {
+      color: var(--ink);
+    }
+  }
+
+  .btn--wide {
+    justify-content: center;
+    width: 100%;
+    padding-block: 0.85rem;
+    margin-top: var(--s-2);
+  }
+
+  .btn--wide:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .field__error {
+    font-size: 12px;
+    color: var(--alarm);
+  }
+
+  /* ---- The handle ---------------------------------------------------------- */
+
+  .start {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  .start__field {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition: border-color var(--dur) ease;
+  }
+
+  .start__field:focus-within {
+    border-color: var(--accent-soft);
+  }
+
+  .start__at {
+    color: var(--ink-3);
+    font-size: var(--t-lead);
+    line-height: 1;
+  }
+
+  .start__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.85rem 0.25rem;
+    background: none;
+    border: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-lead);
+  }
+
+  .start__input:focus {
+    outline: none;
+  }
+
+  .start__input::placeholder,
+  .start__area::placeholder {
+    color: var(--ink-3);
+  }
+
+  .start__input--boxed {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    background: var(--paper-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    font-size: var(--t-meta);
+  }
+
+  .start__input--boxed:focus {
+    outline: none;
+    border-color: var(--accent-soft);
+  }
+
+  .start__area {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    background: var(--paper-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .start__area:focus {
+    outline: none;
+    border-color: var(--accent-soft);
+  }
+
+  /* ---- Analysing ----------------------------------------------------------- */
+
+  .ring {
+    position: relative;
+    width: 9.5rem;
+    height: 9.5rem;
+    margin-inline: auto;
+  }
+
+  .ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .ring circle {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
+  .ring__track {
+    stroke: var(--rule-soft);
+  }
+
+  .ring__fill {
+    stroke: var(--accent-soft);
+    stroke-dasharray: 327;
+    stroke-dashoffset: 327;
+    transition: stroke-dashoffset 900ms var(--ease-in-out);
+  }
+
+  .ring__pct {
+    position: absolute;
+    inset: 0;
+    /* Flex, not grid: in a grid the bare "%" text node becomes its own item and
+       sits under the number instead of beside it. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .screen__tip {
+    text-align: center;
+    max-width: 40ch;
+    margin-inline: auto;
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    transition: opacity var(--dur) var(--ease-out);
+  }
+
+  .screen__tip[data-fading] {
+    opacity: 0;
+  }
+
+  /* ---- Findings ------------------------------------------------------------ */
+
+  .facts,
+  .topics {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  @media (min-width: 46rem) {
+    .facts,
+    .topics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .fact {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--horn);
+    border-radius: var(--r-3);
+  }
+
+  .fact__label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+
+  .fact__value {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.75rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .fact__text {
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  /* Legible as a shape, not as a sentence: enough to want it, not to take it. */
+  .fact[data-locked] .fact__value,
+  .fact[data-locked] .fact__text {
+    filter: blur(6px);
+    user-select: none;
+  }
+
+  .fact[data-locked] .fact__label::after {
+    content: ' · held back';
+    white-space: nowrap;
+    color: var(--horn-deep);
+  }
+
+  .meter {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+    margin-top: var(--s-1);
+  }
+
+  .meter__track {
+    height: 6px;
+    background: var(--paper-3);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent-soft));
+    transition: width var(--dur-slow) var(--ease-out);
+  }
+
+  .meter__mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 8px;
+    background: var(--horn);
+  }
+
+  .meter__legend {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.3;
+  }
+
+  .topic {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .topic__format {
+    justify-self: start;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn-soft);
+    padding: 3px 8px;
+    border: 1px solid var(--tag-border);
+    background: var(--tag-bg);
+    border-radius: var(--r-1);
+    line-height: 1.4;
+  }
+
+  .topic__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.2rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .topic__hook {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  /* ---- Lead and plan -------------------------------------------------------- */
+
+  .lead {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-3);
+    padding: var(--s-5);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .lead__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .lead__consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-2);
+    align-items: start;
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+
+  .proj {
+    padding: var(--s-5);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .proj__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-meta);
+  }
+
+  .proj__table th,
+  .proj__table td {
+    padding: var(--s-3) var(--s-2);
+    text-align: right;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .proj__table thead th {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .proj__table th:first-child,
+  .proj__table tbody th {
+    text-align: left;
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+
+  .proj__table .is-then {
+    color: var(--horn-soft);
+  }
+
+  .proj__assumption {
+    margin-top: var(--s-4);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule-soft);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-3);
+  }
+
+  .offer {
+    margin-top: var(--s-4);
+    padding: var(--s-5);
+    text-align: center;
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .offer__text {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .offer__text b {
+    font-weight: 500;
+    color: var(--horn);
+  }
+
+  .offer__code {
+    margin: var(--s-4) 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 2.5rem;
+    letter-spacing: 0.22em;
+  }
+
+  .offer__actions {
+    display: flex;
+    gap: var(--s-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .offer__small {
+    margin-top: var(--s-4);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  /* A full-width button is right at phone width, where it is the thumb target.
+     On the wide screens it would be a 44rem slab. */
+  @media (min-width: 46rem) {
+    .screen__inner--wide .btn--wide {
+      max-width: 22rem;
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .screen {
+      padding-inline: var(--s-4);
+    }
+
+    .option {
+      padding: var(--s-3);
+      gap: var(--s-3);
+    }
+  }
+</style>

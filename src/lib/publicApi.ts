@@ -160,8 +160,18 @@ export function makePost(id: string, topicId: string) {
   return post<PostPreview>(`/audit/${id}/post`, { topicId });
 }
 
-export function saveLead(id: string, email: string, consent: boolean) {
-  return post<{ ok: true }>(`/audit/${id}/lead`, { email, consent });
+/**
+ * The answers ride along with the address.
+ *
+ * What someone told the funnel — whose page it is, what they make, which part
+ * of the week it eats — is the difference between a list of addresses and a
+ * list of people worth writing to, so it is stored with the lead rather than
+ * thrown away at the last screen.
+ */
+export type Answers = Record<string, string | string[]>;
+
+export function saveLead(id: string, email: string, consent: boolean, answers: Answers = {}) {
+  return post<{ ok: true }>(`/audit/${id}/lead`, { email, consent, answers });
 }
 
 /**
@@ -171,8 +181,13 @@ export function saveLead(id: string, email: string, consent: boolean) {
  * cap is our problem, not theirs, so the address is still worth taking and the
  * read still owed. Same table, no audit attached.
  */
-export function saveWaitingLead(handle: string, email: string, consent: boolean) {
-  return post<{ ok: true }>('/lead', { handle, email, consent });
+export function saveWaitingLead(
+  handle: string,
+  email: string,
+  consent: boolean,
+  answers: Answers = {}
+) {
+  return post<{ ok: true }>('/lead', { handle, email, consent, answers });
 }
 
 export function requestProof(id: string) {
