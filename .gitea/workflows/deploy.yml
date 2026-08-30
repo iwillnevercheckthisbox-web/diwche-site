@@ -40,7 +40,11 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t "${{ steps.vars.outputs.image }}" .
+          # PUBLIC_READ=on builds the funnel at /read and points the hero CTA at it.
+          # Off, the page still exists and still walks, but carries a preview banner and
+          # nothing links to it. Turned on now that /api/public/* is served and a source
+          # account can be nominated in Admin.
+          docker build --build-arg PUBLIC_READ=on -t "${{ steps.vars.outputs.image }}" .
           docker tag "${{ steps.vars.outputs.image }}" "${{ steps.vars.outputs.latest }}" || true
           docker push "${{ steps.vars.outputs.image }}"
           docker push "${{ steps.vars.outputs.latest }}" || true
