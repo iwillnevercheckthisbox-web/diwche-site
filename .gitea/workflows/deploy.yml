@@ -78,7 +78,15 @@ jobs:
 
       - name: Deploy to NAS
         uses: https://github.com/appleboy/ssh-action@master
+        # READ_GATE travels as an environment variable rather than being pasted
+        # into the script text. It is chosen by a person, so it may contain a
+        # quote or a backslash, and a secret interpolated into a shell command
+        # can break the command around it — which here means the old container is
+        # already gone and the new one never starts.
+        env:
+          READ_GATE: ${{ secrets.READ_GATE }}
         with:
+          envs: READ_GATE
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           password: ${{ secrets.SSH_PASS }}
@@ -97,6 +105,21 @@ jobs:
             echo "Pulling new image..."
             docker pull "$TARGET_IMAGE"
 
+            # Checked before anything is torn down. The value is substituted into
+            # an nginx directive, where a bare quote or backslash makes the config
+            # invalid and the container refuses to start — and by then the site is
+            # already off the air. Refusing the deploy costs nothing; finding out
+            # after the swap costs the site.
+            case "$READ_GATE" in
+              *'"'*|*'\'*|*'$'*)
+                echo "READ_GATE contains a double quote, a backslash or a dollar sign."
+                echo "The first two make the nginx config invalid; a dollar sign can be eaten by"
+                echo "envsubst, which would change the header silently and refuse every read."
+                echo "Use letters, digits and dashes."
+                exit 1
+                ;;
+            esac
+
             echo "Stopping old container..."
             docker stop diwche-site || true
             docker rm   diwche-site || true
@@ -114,7 +137,7 @@ jobs:
               --name diwche-site \
               --restart always \
               -p 5659:80 \
-              -e READ_GATE="${{ secrets.READ_GATE }}" \
+              -e READ_GATE="$READ_GATE" \
               "$TARGET_IMAGE"
 
             echo "Waiting for nginx..."
