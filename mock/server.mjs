@@ -359,7 +359,7 @@ const server = createServer(async (req, res) => {
 
   const proofMatch = path.match(/^\/audit\/([^/]+)\/proof$/);
   if (req.method === 'POST' && proofMatch) {
-    return send(res, 200, { code: '4821', account: 'tiffje.app', expiresInSeconds: 600 });
+    return send(res, 200, { code: '4821', account: 'diwche.app', expiresInSeconds: 600 });
   }
 
   send(res, 404, { kind: 'error', message: 'No such route.' });
