@@ -377,19 +377,31 @@ const tips = [
               </div>
 
               <div class="offer">
-                <p class="offer__text">
-                  Send this to <b data-proof-account>@diwche.app</b> on Instagram, from the account
-                  he just read. That is the whole check — then the trial is yours, free.
-                </p>
-                <p class="offer__code"><span data-proof-code>····</span></p>
-                <div class="offer__actions">
-                  <button class="btn btn--quiet" type="button" data-copy-code>Copy the code</button>
-                  <a class="btn" data-proof-link href="https://ig.me/m/diwche.app" target="_blank" rel="noopener">
-                    Open the message
-                  </a>
+                <!-- Only shown once there is a code to show. Proving the page is
+                     yours needs Instagram's messaging permission, and until that
+                     is granted there is nothing here but theatre — so the close
+                     falls back to the address, which is real either way. -->
+                <div data-proof-block hidden>
+                  <p class="offer__text">
+                    Send this to <b data-proof-account>@diwche.app</b> on Instagram, from the account
+                    he just read. That is the whole check — then the trial is yours, free.
+                  </p>
+                  <p class="offer__code"><span data-proof-code>····</span></p>
+                  <div class="offer__actions">
+                    <button class="btn btn--quiet" type="button" data-copy-code>Copy the code</button>
+                    <a class="btn" data-proof-link href="https://ig.me/m/diwche.app" target="_blank" rel="noopener">
+                      Open the message
+                    </a>
+                  </div>
                 </div>
+
+                <p class="offer__text" data-proof-fallback hidden>
+                  He has what he needs. The read, and what he would do with the page, are on their
+                  way to the address you left — and the trial comes with them.
+                </p>
+
                 <p class="offer__small">
-                  Not ready? The read is already on its way to the address you left.
+                  Nothing is connected to your account, and nothing is posted, until you say so.
                 </p>
               </div>
             </div>

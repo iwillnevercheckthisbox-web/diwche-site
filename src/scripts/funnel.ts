@@ -590,7 +590,18 @@ function run(root: HTMLElement) {
 
   async function toPlan() {
     go(steps.findIndex((s) => s.dataset.kind === 'plan'));
-    if (!auditId) return;
+    const block = root.querySelector<HTMLElement>('[data-proof-block]');
+    const fallback = root.querySelector<HTMLElement>('[data-proof-fallback]');
+
+    const showFallback = () => {
+      if (block) block.hidden = true;
+      if (fallback) fallback.hidden = false;
+    };
+
+    if (!auditId) {
+      showFallback();
+      return;
+    }
     try {
       const proof = await requestProof(auditId);
       const code = root.querySelector<HTMLElement>('[data-proof-code]');
@@ -599,10 +610,13 @@ function run(root: HTMLElement) {
       if (code) code.textContent = proof.code;
       if (account) account.textContent = `@${proof.account}`;
       if (link) link.href = `https://ig.me/m/${proof.account}`;
+      if (block) block.hidden = false;
+      if (fallback) fallback.hidden = true;
     } catch {
-      // The offer still stands without a code on screen; the email carries it.
-      const code = root.querySelector<HTMLElement>('[data-proof-code]');
-      if (code) code.textContent = '—';
+      // Proving ownership needs a permission we do not have yet. Showing a code
+      // nobody can act on would be worse than closing on the address, which is
+      // real: an unverified read still reaches them.
+      showFallback();
     }
   }
 
