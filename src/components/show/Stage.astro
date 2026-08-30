@@ -1,0 +1,1074 @@
+---
+/**
+ * The show: everything that happens after a visitor puts a handle in the hero.
+ *
+ * The whole thing renders at build time and starts hidden. `src/scripts/show.ts`
+ * is the only thing that moves it between acts, and the only thing that fills
+ * the parts that depend on the visitor's own page — those are cloned from the
+ * <template> blocks at the bottom rather than built as strings, so the markup
+ * stays here with its styles.
+ *
+ * With JavaScript off, the stage never appears and the landing page below it is
+ * untouched. Nothing here is the only route to any information.
+ */
+import Scene from './Scene.astro';
+import Card from '../Card.astro';
+
+// The introduction, one beat per scene. No counts anywhere in this copy: what
+// the product does must not need a number to be true, so "fresh topics" rather
+// than a figure that changes the day we ship a different one.
+const scenes = [
+  {
+    shot: '_placeholder-ideas',
+    label: 'Ideas',
+    alt: 'The Ideas page, a column of suggested topics.',
+    name: 'Ideas',
+    text: 'He knows your page and your people. Every morning, topics nobody else gets.',
+  },
+  {
+    shot: '_placeholder-d1',
+    label: 'D1 Studio',
+    alt: 'The D1 Studio review screen, listing each cut it made.',
+    name: 'D1 Studio',
+    text: 'Say it once to the camera. He removes the pauses and stumbles — and shows you each cut, so you can trust it.',
+  },
+  {
+    shot: '_placeholder-voice',
+    label: 'Voice',
+    alt: 'A waveform above a transcript.',
+    name: 'Voice',
+    text: 'He hears you, cleans you, and can speak in your voice when you would rather not record.',
+  },
+  {
+    shot: '_placeholder-studios',
+    label: 'Studios',
+    alt: 'The editor, with an artboard and an inspector.',
+    name: 'The studios',
+    text: 'Captions word by word, in your language. Your colours, your fonts, your characters — set once, kept everywhere.',
+  },
+  {
+    shot: '_placeholder-performance',
+    label: 'Performance',
+    alt: 'A sentence about a post, above the bars it came from.',
+    name: 'Performance',
+    text: 'After a post, he tells you what worked and why. Not a graph. A sentence.',
+  },
+];
+
+// Shown between scenes. Same rule as the scene copy: no counts, and each one
+// says a mechanism rather than an adjective.
+const tips = [
+  'He does not replace Instagram’s graphs. He tells you what they mean.',
+  'Nothing he makes is final. Every word, colour and frame stays yours.',
+  'The more you tell him, the less he repeats himself.',
+];
+
+const behalf = [
+  { name: 'Scheduling', text: 'Posts and stories go out at the times that suited your page, not a default.' },
+  { name: 'Replies', text: 'Comments get answered in your voice. You can watch a reply before it is ever sent.' },
+  { name: 'Sources', text: 'He reads your feeds and keeps the facts he can stand behind.' },
+  { name: 'Never twice', text: 'Nothing is published that your page has already published.' },
+];
+---
+
+<section class="stage" id="stage" data-state="idle" hidden>
+  <div class="wrap stage__inner">
+    <!-- ======================================================== ACT: READING -->
+    <div class="act" data-act="read" hidden>
+      <div class="reader">
+        <p class="reader__who">
+          <span data-reader-verb>Reading</span> <b data-handle-out>your page</b>
+        </p>
+        <p class="reader__line" data-progress-line aria-live="polite">Finding the page…</p>
+        <div class="reader__bar" role="presentation"><i data-progress-bar></i></div>
+      </div>
+
+      <div class="scenes">
+        {scenes.map((s) => <Scene {...s} />)}
+      </div>
+
+      <p class="tip" data-tip>{tips[0]}</p>
+      <script type="application/json" data-tips set:html={JSON.stringify(tips)} />
+    </div>
+
+    <!-- ========================================================= ACT: REVEAL -->
+    <div class="act" data-act="reveal" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">Here is what he noticed</p>
+        <h2 class="act__title" data-reveal-headline></h2>
+      </header>
+
+      <div class="facts" data-facts></div>
+
+      <div class="unlock" data-unlock>
+        <Card class="unlock__card">
+          <p class="unlock__title">Two more, and what he would do about them.</p>
+          <p class="unlock__text">
+            Leave an address and he will finish the read. If the page is yours, he has a gift for
+            you as well.
+          </p>
+          <form class="unlock__form" data-lead-form novalidate>
+            <label class="sr" for="lead-email">Your email address</label>
+            <input
+              class="field"
+              id="lead-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="you@example.com"
+              required
+            />
+            <button class="btn" type="submit" data-lead-submit>Finish the read</button>
+            <p class="unlock__consent">
+              <label>
+                <input type="checkbox" name="consent" data-lead-consent />
+                <span>Diwche may email me about this read and what it offers. No one else gets this address.</span>
+              </label>
+            </p>
+            <p class="field__error" data-lead-error hidden></p>
+          </form>
+        </Card>
+      </div>
+
+      <div class="act__next" data-next="branch" hidden>
+        <button class="btn" type="button" data-go="branch">Now the interesting part</button>
+      </div>
+    </div>
+
+    <!-- ========================================================= ACT: BRANCH -->
+    <div class="act" data-act="branch" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">What should he think about</p>
+        <h2 class="act__title">Where would you like him to start?</h2>
+      </header>
+
+      <div class="branch">
+        <button class="branch__card" type="button" data-branch="page">
+          <span class="branch__name">From what already worked</span>
+          <span class="branch__text">
+            He takes the shapes your own page has been rewarded for, and finds what has not been
+            made yet.
+          </span>
+        </button>
+        <button class="branch__card" type="button" data-branch="idea">
+          <span class="branch__name">From an idea of yours</span>
+          <span class="branch__text">
+            You have something in mind. He tells you the angle on it that your audience will
+            actually stop for.
+          </span>
+        </button>
+      </div>
+
+      <form class="idea" data-idea-form hidden>
+        <label class="sr" for="idea-text">What is it about?</label>
+        <textarea
+          class="field field--area"
+          id="idea-text"
+          name="idea"
+          rows="3"
+          maxlength="400"
+          placeholder="A sentence is enough."></textarea>
+        <button class="btn" type="submit">Give it to him</button>
+      </form>
+    </div>
+
+    <!-- ========================================================= ACT: TOPICS -->
+    <div class="act" data-act="topics" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">He has been thinking</p>
+        <h2 class="act__title">Pick one and watch it become a post.</h2>
+      </header>
+      <div class="topics" data-topics></div>
+    </div>
+
+    <!-- =========================================================== ACT: POST -->
+    <div class="act" data-act="post" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">From a line to a post</p>
+        <h2 class="act__title" data-post-title></h2>
+      </header>
+
+      <div class="post" data-post hidden>
+        <Card class="post__col">
+          <p class="post__label">What you say</p>
+          <ol class="post__script" data-post-script></ol>
+        </Card>
+        <Card class="post__col">
+          <p class="post__label">What they see</p>
+          <div class="slides" data-post-slides></div>
+          <p class="post__label post__label--spaced">The caption</p>
+          <p class="post__caption" data-post-caption></p>
+        </Card>
+      </div>
+
+      <p class="post__wait" data-post-wait>He is writing it…</p>
+
+      <div class="act__next">
+        <button class="btn" type="button" data-go="behalf">And while you sleep</button>
+      </div>
+    </div>
+
+    <!-- ========================================================= ACT: BEHALF -->
+    <div class="act" data-act="behalf" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">Done on your behalf</p>
+        <h2 class="act__title">The part you never have to be awake for.</h2>
+      </header>
+      <div class="behalf">
+        {
+          behalf.map((b) => (
+            <Card class="behalf__card">
+              <p class="behalf__name">{b.name}</p>
+              <p class="behalf__text">{b.text}</p>
+            </Card>
+          ))
+        }
+      </div>
+      <div class="act__next">
+        <button class="btn" type="button" data-go="projection">What that adds up to</button>
+      </div>
+    </div>
+
+    <!-- ===================================================== ACT: PROJECTION -->
+    <div class="act" data-act="projection" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">If nothing else changed</p>
+        <h2 class="act__title" data-projection-headline></h2>
+      </header>
+
+      <Card class="proj">
+        <table class="proj__table">
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col">Now</th>
+              <th scope="col">With him</th>
+            </tr>
+          </thead>
+          <tbody data-projection-rows></tbody>
+        </table>
+        <!-- The assumption is not fine print. A projection without its
+             assumption printed next to it is the kind of number this page
+             exists to argue against. -->
+        <p class="proj__assumption" data-projection-assumption></p>
+      </Card>
+
+      <div class="act__next">
+        <button class="btn" type="button" data-go="offer">What happens now</button>
+      </div>
+    </div>
+
+    <!-- ========================================================== ACT: OFFER -->
+    <div class="act" data-act="offer" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--horn">One last thing</p>
+        <h2 class="act__title">Prove the page is yours and he will set it up free.</h2>
+      </header>
+
+      <Card class="offer">
+        <p class="offer__text">
+          Send this to <b data-proof-account>@tiffje.app</b> on Instagram, from the account he just
+          read. That is the whole check — he never asks for a password, and nothing is connected
+          until you say so.
+        </p>
+        <p class="offer__code"><span data-proof-code>····</span></p>
+        <div class="offer__actions">
+          <button class="btn btn--quiet" type="button" data-copy-code>Copy the code</button>
+          <a class="btn" data-proof-link href="https://ig.me/m/tiffje.app" target="_blank" rel="noopener">
+            Open the message
+          </a>
+        </div>
+        <p class="offer__small">
+          Not ready? The read is already on its way to the address you left.
+        </p>
+      </Card>
+    </div>
+
+    <!-- ========================================================== ACT: ERROR -->
+    <div class="act" data-act="error" hidden>
+      <header class="act__head">
+        <p class="eyebrow eyebrow--alarm">He stopped</p>
+        <h2 class="act__title" data-error-message></h2>
+      </header>
+      <!-- Only for the day's cap: the visitor did nothing wrong and still wants
+           the thing, so the address is worth taking and the read is still owed. -->
+      <div class="waiting" data-waiting hidden>
+        <Card class="waiting__card">
+          <p class="waiting__text">
+            Leave an address and he will send the read when he is free again.
+          </p>
+          <form class="unlock__form" data-waiting-form novalidate>
+            <label class="sr" for="waiting-email">Your email address</label>
+            <input
+              class="field"
+              id="waiting-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="you@example.com"
+              required
+            />
+            <button class="btn" type="submit" data-waiting-submit>Send it when he can</button>
+            <p class="unlock__consent">
+              <label>
+                <input type="checkbox" name="consent" data-waiting-consent />
+                <span>Diwche may email me this read and what it offers. No one else gets this address.</span>
+              </label>
+            </p>
+            <p class="field__error" data-waiting-error hidden></p>
+          </form>
+        </Card>
+      </div>
+
+      <div class="act__next">
+        <button class="btn btn--quiet" type="button" data-retry>Try another page</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== CLONED AT RUNTIME -->
+  <template data-tpl="fact">
+    <article class="fact">
+      <div class="fact__sheen" aria-hidden="true"></div>
+      <div class="fact__body">
+        <p class="fact__label" data-f="label"></p>
+        <p class="fact__value" data-f="value"></p>
+        <p class="fact__text" data-f="text"></p>
+        <div class="meter" data-f="meter" hidden>
+          <div class="meter__track"><i class="meter__fill" data-f="meter-fill"></i></div>
+          <i class="meter__mark" data-f="meter-mark"></i>
+          <p class="meter__legend" data-f="meter-legend"></p>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template data-tpl="topic">
+    <button class="topic" type="button">
+      <span class="topic__sheen" aria-hidden="true"></span>
+      <span class="topic__body">
+        <span class="topic__format" data-f="format"></span>
+        <span class="topic__title" data-f="title"></span>
+        <span class="topic__hook" data-f="hook"></span>
+        <span class="topic__why" data-f="why"></span>
+      </span>
+    </button>
+  </template>
+
+  <template data-tpl="slide">
+    <div class="slide">
+      <p class="slide__title" data-f="title"></p>
+      <p class="slide__body" data-f="body"></p>
+    </div>
+  </template>
+
+  <template data-tpl="proj-row">
+    <tr>
+      <th scope="row" data-f="label"></th>
+      <td data-f="now"></td>
+      <td class="is-then" data-f="then"></td>
+    </tr>
+  </template>
+</section>
+
+<style>
+  .stage {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .stage__inner {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .act {
+    display: grid;
+    gap: var(--s-7);
+    /* The nav is fixed, so an act scrolled to `block: start` would tuck its own
+       first line underneath it. */
+    scroll-margin-top: 7.5rem;
+  }
+
+  /* Acts arrive; they never slide out. The visitor is moving forward through
+     them, so only the entrance is animated. */
+  .act[data-live] {
+    animation: act-in var(--dur-slow) var(--ease-out) both;
+  }
+
+  @keyframes act-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+    }
+  }
+
+  .act__head {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 46rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .act__title {
+    font-size: var(--t-section);
+    max-width: 22ch;
+    margin-inline: auto;
+  }
+
+  .act__next {
+    display: flex;
+    justify-content: center;
+  }
+
+  .eyebrow--horn {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+    line-height: 1;
+  }
+
+  .eyebrow--alarm {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    /* The only place --alarm is allowed: describing a failure. */
+    color: var(--alarm);
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- Reading ----------------------------------------------------------- */
+
+  .reader {
+    display: grid;
+    gap: var(--s-3);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .reader__who {
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+
+  .reader__who b {
+    font-weight: 500;
+    color: var(--horn);
+  }
+
+  .reader__line {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--t-subhead);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+
+  .reader__bar {
+    width: min(340px, 70vw);
+    height: 2px;
+    background: var(--rule-soft);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .reader__bar i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-soft) 100%);
+    /* Width is the one exception to the transform-only rule: a two-pixel rule
+       has no layout to thrash, and a scaled bar would smear its own gradient. */
+    transition: width 900ms var(--ease-in-out);
+  }
+
+  /* A beat has to be readable in one look: the capture, the sentence under it,
+     and the line saying what he is doing, all inside one viewport. Left at full
+     width the capture alone is taller than the screen and the sentence never
+     shares it. */
+  .scenes {
+    display: grid;
+    align-items: start;
+    min-height: 26rem;
+  }
+
+  .tip {
+    max-width: 44ch;
+    margin-inline: auto;
+    text-align: center;
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    transition: opacity var(--dur) var(--ease-out);
+  }
+
+  .tip[data-fading] {
+    opacity: 0;
+  }
+
+  /* ---- Facts ------------------------------------------------------------- */
+
+  /* Five facts. `auto-fit` would put four on a wide screen and leave the fifth
+     alone on its own row; three columns splits them 3 + 2, which reads as a
+     deliberate shape rather than a leftover. */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  @media (min-width: 62rem) {
+    .facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .fact {
+    position: relative;
+    overflow: hidden;
+    padding: var(--s-5);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    /* Champagne as a left rule: a mark meant to be noticed, which DNA §4 allows
+       and the kit does not. */
+    border-left: 2px solid var(--horn);
+    border-radius: var(--r-3);
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+
+  .fact__sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--sheen);
+  }
+
+  .fact__body {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .fact__label {
+    font-size: var(--t-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+
+  .fact__value {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--t-subhead);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .fact__text {
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  /* A locked fact is legible as a shape but not as a sentence: enough to want
+     it, not enough to take it. */
+  .fact[data-locked] .fact__value,
+  .fact[data-locked] .fact__text {
+    filter: blur(6px);
+    user-select: none;
+  }
+
+  .fact[data-locked] .fact__label::after {
+    content: ' · held back';
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    color: var(--horn-deep);
+  }
+
+  .meter {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+    margin-top: var(--s-2);
+  }
+
+  .meter__track {
+    height: 6px;
+    background: var(--paper-3);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent-soft));
+    transition: width var(--dur-slow) var(--ease-out);
+  }
+
+  .meter__mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 8px;
+    background: var(--horn);
+  }
+
+  .meter__legend {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+
+  /* ---- Forms ------------------------------------------------------------- */
+
+  .unlock {
+    max-width: 34rem;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .unlock__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--t-subhead);
+    letter-spacing: -0.03em;
+    line-height: 1.18;
+  }
+
+  .unlock__text {
+    margin-top: var(--s-3);
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+  }
+
+  .unlock__form {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+
+  .unlock__consent {
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+
+  .unlock__consent label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-2);
+    align-items: start;
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    background: var(--paper-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-meta);
+    transition: border-color var(--dur) ease;
+  }
+
+  .field::placeholder {
+    color: var(--ink-3);
+  }
+
+  .field:focus {
+    border-color: var(--accent-soft);
+  }
+
+  .field--area {
+    resize: vertical;
+    min-height: 6rem;
+    line-height: 1.5;
+  }
+
+  .field__error {
+    font-size: 12px;
+    color: var(--alarm);
+  }
+
+  /* ---- Branch ------------------------------------------------------------ */
+
+  .branch {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .branch__card {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-6);
+    text-align: left;
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition:
+      transform var(--dur) var(--ease-out),
+      border-color var(--dur) ease;
+  }
+
+  .branch__card:active {
+    transform: scale(0.98);
+  }
+
+  .branch__card[data-chosen] {
+    border-color: var(--horn);
+  }
+
+  .branch__name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--t-subhead);
+    letter-spacing: -0.03em;
+    line-height: 1.18;
+  }
+
+  .branch__text {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .idea {
+    display: grid;
+    gap: var(--s-3);
+    max-width: 34rem;
+    margin-inline: auto;
+    width: 100%;
+    justify-items: stretch;
+  }
+
+  .idea .btn {
+    justify-self: center;
+  }
+
+  /* ---- Topics ------------------------------------------------------------ */
+
+  .topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .topic {
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition:
+      transform var(--dur) var(--ease-out),
+      border-color var(--dur) ease;
+  }
+
+  .topic__sheen {
+    position: absolute;
+    inset: 0;
+    background-image: var(--sheen);
+  }
+
+  .topic__body {
+    position: relative;
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-6);
+  }
+
+  .topic:active {
+    transform: scale(0.98);
+  }
+
+  .topic[data-chosen] {
+    border-color: var(--horn);
+  }
+
+  .topic__format {
+    justify-self: start;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn-soft);
+    padding: 3px 8px;
+    border: 1px solid var(--tag-border);
+    background: var(--tag-bg);
+    border-radius: var(--r-1);
+    line-height: 1.4;
+  }
+
+  .topic__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .topic__hook {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .topic__why {
+    font-size: 12px;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule-soft);
+    padding-top: var(--s-3);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .branch__card:hover,
+    .topic:hover {
+      transform: translateY(-3px);
+      border-color: var(--horn-deep);
+    }
+  }
+
+  /* ---- Post -------------------------------------------------------------- */
+
+  .post {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .post__label {
+    font-size: var(--t-eyebrow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+
+  .post__label--spaced {
+    margin-top: var(--s-5);
+  }
+
+  .post__script {
+    display: grid;
+    gap: var(--s-3);
+    margin: var(--s-4) 0 0;
+    padding-left: var(--s-4);
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .post__script li::marker {
+    color: var(--horn);
+  }
+
+  .slides {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+  }
+
+  .slide {
+    aspect-ratio: 4 / 5;
+    padding: var(--s-3);
+    background: var(--paper-3);
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-2);
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+  }
+
+  .slide__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 0.95rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .slide__body {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+
+  .post__caption {
+    margin-top: var(--s-3);
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .post__wait {
+    text-align: center;
+    color: var(--ink-3);
+    font-size: var(--t-meta);
+  }
+
+  /* ---- On your behalf ---------------------------------------------------- */
+
+  .behalf {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .behalf__name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+  }
+
+  .behalf__text {
+    margin-top: var(--s-3);
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  /* ---- Projection -------------------------------------------------------- */
+
+  /* `.proj` and `.offer` are handed to <Card>, so they land on Card's own root
+     element and carry Card's scope, not this file's — a plain `.proj {}` here
+     never matches. Scoping through `.stage` keeps the selector local while
+     still reaching across the component boundary. */
+  .stage :global(.proj) {
+    max-width: 44rem;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .proj__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-meta);
+  }
+
+  .proj__table th,
+  .proj__table td {
+    padding: var(--s-3) var(--s-2);
+    text-align: right;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .proj__table thead th {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .proj__table th:first-child,
+  .proj__table tbody th {
+    text-align: left;
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+
+  .proj__table .is-then {
+    color: var(--horn-soft);
+  }
+
+  .proj__assumption {
+    margin-top: var(--s-4);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule-soft);
+    padding-top: var(--s-4);
+  }
+
+  .waiting {
+    max-width: 34rem;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .waiting__text {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  /* ---- Offer ------------------------------------------------------------- */
+
+  .stage :global(.offer) {
+    max-width: 34rem;
+    margin-inline: auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .offer__text {
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .offer__text b {
+    font-weight: 500;
+    color: var(--horn);
+  }
+
+  .offer__code {
+    margin: var(--s-5) 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 3rem;
+    letter-spacing: 0.22em;
+    color: var(--ink);
+  }
+
+  .offer__actions {
+    display: flex;
+    gap: var(--s-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .offer__small {
+    margin-top: var(--s-5);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 720px) {
+    .scenes {
+      min-height: 24rem;
+    }
+
+    .slides {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -15,6 +15,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* `hidden` is a UA rule at the lowest possible specificity, so any class that
+   sets `display` silently beats it — a grid or flex component with the
+   attribute on it stays on screen. Everything that hides itself on this site
+   uses the attribute, so it has to win. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   min-height: 100vh;
   background-color: var(--paper);

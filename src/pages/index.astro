@@ -7,13 +7,20 @@ import Card from '../components/Card.astro';
 import QuoteCard from '../components/QuoteCard.astro';
 import PricingCard from '../components/PricingCard.astro';
 import Accordion from '../components/Accordion.astro';
+import Stage from '../components/show/Stage.astro';
 
-// The homepage: nav, hero, the Meta band, the ten-creator pilot, three
+// The homepage: nav, hero, the show, the Meta band, the offer, three
 // alternating pillar rows, a house line, reliability, pricing, FAQ, footer.
+//
+// The hero asks for one thing — a handle — and everything below it is the
+// introduction that plays while that page is being read. With JS off, or before
+// a handle is given, the static sections below are the whole page and nothing
+// is missing.
+//
 // Prices are marked as placeholders because none have been decided — see DNA §7.
 
 const capabilities = [
-  { name: 'Topics', text: 'Ten topics every morning, with a hook and a reason it matters today.' },
+  { name: 'Ideas', text: 'Fresh topics every morning, each with a hook and a reason it matters today.' },
   { name: 'Insights', text: 'What actually worked — by source, persona, format and hour.' },
   { name: 'Story scan', text: 'Your feeds, filtered to the keywords you care about.' },
   { name: 'Peer read', text: 'The accounts you admire, read once and never posted to.' },
@@ -22,11 +29,11 @@ const capabilities = [
 const paths = [
   {
     title: 'Already posting',
-    text: 'You have followers and real engagement. Run Diwche on that account for a month, free, in exchange for telling us what breaks.',
+    text: 'He reads the account first and tells you what he found. If you want him on it after that, the trial is free and nothing is connected until you say so.',
   },
   {
     title: 'Not started yet',
-    text: 'You have a strong idea and no page. We help you build the account itself — identity, feeds, voice — also free, because we would rather prove this on accounts we believe in.',
+    text: 'You have a subject and no page. He works out the angles worth building it on, and helps you build the account itself — identity, feeds, voice. Also free to start.',
   },
 ];
 
@@ -70,8 +77,8 @@ const faqs = [
     a: 'One connected Instagram account, with its own feeds, keywords, voice and schedule. Accounts do not share anything.',
   },
   {
-    q: 'Do I have to paste an access token?',
-    a: 'No. Connecting opens Facebook, you sign in there and pick the account to post to. Diwche renews the token itself after that.',
+    q: 'What do you need to read my page?',
+    a: 'The handle, and nothing else. Everything read at that stage is what any visitor to your profile can see. To prove the page is yours you send a short code to us on Instagram — there is no password anywhere in this, and nothing is connected until you choose to connect it.',
   },
   {
     q: 'What language does it post in?',
@@ -79,7 +86,7 @@ const faqs = [
   },
   {
     q: 'Is there a trial?',
-    a: 'The early-access phase is the trial: a full month, the whole platform, no cost — on your existing account or a new one we help you build. After that, ask at the demo, pricing is not settled.',
+    a: 'Yes. The read itself is free and needs nothing from you but a handle. If you want Diwche to act on what it found, the trial that follows is free too — the length is set when you are invited. Pricing after that is not settled.',
   },
   {
     q: 'What does "AI-driven" actually mean here?',
@@ -98,22 +105,54 @@ const faqs = [
 
     <div class="wrap hero__inner">
       <h1 class="hero__title">
-        A manager for one account.<br /><span class="hero__title-accent">Not a template for everyone's.</span>
+        Some pages have a <span class="hero__title-accent">Diw</span>.
       </h1>
       <p class="lead hero__lead">
-        Diwche reads your feeds, writes and designs the post, and puts it up on schedule — tuned
-        to what has actually worked on accounts like yours, not a model's first guess.
+        He reads what you have made and what your audience answered. He remembers. Each morning he
+        brings topics that are yours, not everyone's — then writes, shoots, captions and schedules,
+        while you keep every word and frame.
       </p>
-      <div class="hero__actions">
-        <a class="btn" href="#pilot">See if you qualify</a>
-        <a class="btn btn--quiet" href="#pricing">See pricing</a>
-      </div>
+
+      <!-- One field. The whole page below is the answer to it. `novalidate`
+           because the browser's own bubble cannot say this in his voice. -->
+      <form class="handle" data-handle-form novalidate>
+        <div class="handle__row">
+          <div class="handle__field">
+            <span class="handle__at" aria-hidden="true">@</span>
+            <label class="handle__sr" for="handle">Your Instagram handle</label>
+            <input
+              class="handle__input"
+              id="handle"
+              name="handle"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              maxlength="30"
+              placeholder="yourhandle"
+            />
+          </div>
+          <button class="btn handle__go" type="submit">Let him look. It is free.</button>
+        </div>
+        <p class="handle__error" data-handle-error hidden></p>
+        <p class="handle__note">
+          No password, nothing to connect — he reads only what your profile already shows.
+          <button class="handle__link" type="button" data-no-page>
+            No page yet? Bring him an idea.
+          </button>
+        </p>
+      </form>
 
       <figure class="hero__art">
         <Art name="hero-camera" loading="eager" />
       </figure>
     </div>
   </section>
+
+  <!-- ================================================================== SHOW -->
+  <Stage />
 
   <!-- ============================================================ META BAND -->
   <TrustBar />
@@ -123,9 +162,9 @@ const faqs = [
     <div class="wrap pilot__inner">
       <div class="reveal">
         <SectionHeader
-          eyebrow="Early access"
-          title="Ten spots. One month. No cost."
-          lead="We are onboarding a small number of accounts personally, not opening a waitlist. Two ways in."
+          eyebrow="What it costs to find out"
+          title="He reads your page before you pay him anything."
+          lead="Give him a handle. He reads what is public, tells you what he found, and offers a free trial if you want him to act on it. Two ways in."
         />
       </div>
 
@@ -346,12 +385,131 @@ const faqs = [
     max-width: 56ch;
   }
 
-  .hero__actions {
+  /* ---- The one field ------------------------------------------------------
+     This is the only input on the site, so it carries more weight than a form
+     control usually would: it is sized like the lead paragraph, not like a
+     settings field, and the button next to it says what happens rather than
+     naming an action. */
+
+  .handle {
+    margin-top: var(--s-6);
+    display: grid;
+    gap: var(--s-3);
+    justify-items: center;
+  }
+
+  .handle__row {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--s-3);
-    margin-top: var(--s-6);
+    width: 100%;
+  }
+
+  .handle__field {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: min(20rem, 100%);
+    padding-inline: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    transition: border-color var(--dur) ease;
+  }
+
+  .handle__field:focus-within {
+    border-color: var(--accent-soft);
+  }
+
+  .handle__at {
+    color: var(--ink-3);
+    font-size: var(--t-lead);
+    line-height: 1;
+  }
+
+  .handle__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.85rem 0.25rem;
+    background: none;
+    border: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-lead);
+    letter-spacing: -0.01em;
+  }
+
+  .handle__input:focus {
+    outline: none;
+  }
+
+  .handle__input::placeholder {
+    color: var(--ink-3);
+  }
+
+  .handle__go {
+    flex: none;
+  }
+
+  .handle__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .handle__error {
+    font-size: var(--t-meta);
+    color: var(--alarm);
+  }
+
+  .handle__note {
+    max-width: 46ch;
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    text-align: center;
+  }
+
+  /* A button that reads as a link: it is a second route into the same show, not
+     a second call to action competing with the first. */
+  .handle__link {
+    padding: 0;
+    color: var(--ink-2);
+    font: inherit;
+    font-size: var(--t-meta);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 0.2em;
+    transition: color var(--dur) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .handle__link:hover {
+      color: var(--ink);
+      text-decoration-color: var(--horn);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .handle__row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .handle__go {
+      justify-content: center;
+    }
+  }
+
+  /* Once the show starts the drawing has done its job, and it is the only thing
+     between the field and the stage. Taking it out of the flow closes that gap
+     so the first scene lands where the eye already is. */
+  :global(body[data-showing]) .hero__art {
+    display: none;
   }
 
   .hero__art {
@@ -552,3 +710,10 @@ const faqs = [
     }
   }
 </style>
+
+<script>
+  // The show is the only scripted thing on the page. It does nothing at all
+  // until a handle is submitted, and the static sections stand on their own
+  // if it never loads.
+  import '../scripts/show';
+</script>

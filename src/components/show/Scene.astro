@@ -1,0 +1,102 @@
+---
+/**
+ * One beat of the introduction, shown while the Diw reads the visitor's page.
+ *
+ * A scene is a framed capture and a single sentence. Only one is ever on screen;
+ * the player in `src/scripts/show.ts` owns which. Everything renders at build
+ * time and starts hidden, so a scene never waits on JS to exist — only to be
+ * revealed.
+ */
+import Screenshot from '../Screenshot.astro';
+
+interface Props {
+  /** File under /shots, without the extension. */
+  shot: string;
+  label: string;
+  alt: string;
+  name: string;
+  text: string;
+}
+
+const { shot, label, alt, name, text } = Astro.props;
+---
+
+<article class="scene" data-scene aria-hidden="true">
+  <div class="scene__shot">
+    <Screenshot src={`/shots/${shot}.svg`} alt={alt} width={1280} height={800} label={label} />
+  </div>
+  <div class="scene__say">
+    <p class="scene__name">{name}</p>
+    <p class="scene__text">{text}</p>
+  </div>
+</article>
+
+<style>
+  /* Scenes stack in one grid cell so a cross-fade needs no absolute positioning
+     and the container keeps the height of the tallest. */
+  .scene {
+    grid-area: 1 / 1;
+    display: grid;
+    gap: var(--s-5);
+    align-content: start;
+    opacity: 0;
+    /* DNA §5 rule 3: entrances start at 0.96, never at 0. */
+    transform: translateY(10px) scale(0.96);
+    pointer-events: none;
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out);
+  }
+
+  .scene[data-in] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* Leaving is the same distance in the other direction, so the sequence reads
+     as one thing moving through rather than a stack of unrelated cards. */
+  .scene[data-out] {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+
+  .scene__shot {
+    width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
+  }
+
+  .scene__say {
+    display: grid;
+    gap: var(--s-2);
+    max-width: 54ch;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .scene__name {
+    font-size: var(--t-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+    line-height: 1;
+  }
+
+  .scene__text {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--t-subhead);
+    letter-spacing: -0.03em;
+    line-height: 1.18;
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene,
+    .scene[data-out] {
+      transform: none;
+    }
+  }
+</style>

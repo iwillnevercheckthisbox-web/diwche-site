@@ -250,6 +250,23 @@ no hype adjectives, mechanism over adjective, product named as Diwche. The two r
 untouched pillar rows and the reliability/pricing sections were already in voice and did not
 need changing.
 
+**2026-08-30 — the narrator, and two rules that came with him.** The homepage now speaks about
+**the Diw** in the third person — "he reads what you have made", "he remembers" — rather than
+describing a product in the abstract. The register for that voice is *mystic and dry*, not
+weary: the deadpan above was the imp's joke, and a creature with this name can carry a little
+of the uncanny without becoming a mascot that mugs. Everything else in this section still
+holds — no exclamation marks, no hype adjectives, sentence case, mechanism over adjective.
+
+Two rules follow from it:
+
+1. **He is the Diw, never a jinn, never "the AI", never "the platform".** The product is still
+   Diwche; the Diw is how the page refers to what it does. Both spellings appear on the same
+   page on purpose — the company and the creature.
+2. **No counts in marketing copy.** "Fresh topics every morning", never "ten topics"; "a small
+   number of spots", never "ten spots". A figure in a headline becomes a promise the day it
+   changes, and these numbers are configuration, not identity. Numbers *about the reader's own
+   page* are the opposite case and must be exact — see §9.
+
 ---
 
 ## 8. Screenshots
@@ -263,3 +280,23 @@ crisp at any DPR, the callouts stay editable HTML, and the chrome restyles with 
   to a client, or any credential. This is a public site.
 - Frames get the wide faint shadow, a 1px `--rule-soft` hairline, 10px radius, and a 28px
   title bar with three dots in `--horn`.
+
+---
+
+## 9. The read
+
+The homepage asks for an Instagram handle and shows the visitor what Diwche found on their own
+page. That is the one place on this site where numbers are the point, so it has its own rules.
+
+- **Every figure is computed, never written by a model.** The backend does the arithmetic and
+  hands the model only the finished facts to phrase. A number that cannot be derived from what
+  was actually read does not go on screen.
+- **A projection always prints its assumption beside it**, in full, not as fine print. "About
+  340 more responses a month" is only honest next to the sentence saying what was held constant.
+- **Say what was not read.** Reach, saves, shares and follower activity are invisible from
+  outside an account. They are named as what he sees once connected, never estimated.
+- **The wait is the introduction, not a spinner.** While a page is being read, the site shows
+  one capture and one sentence at a time. If the read lands early the remaining scenes shorten;
+  if it runs long they keep cycling. Neither case shows a stalled frame.
+- **`--alarm` appears only for a page that is private, missing, or a limit we hit** — the three
+  states that are genuinely a stop, one of which is our fault and still takes the address.
