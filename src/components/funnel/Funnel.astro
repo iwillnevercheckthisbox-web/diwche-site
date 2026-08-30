@@ -361,19 +361,34 @@ const tips = [
               <h1 class="screen__title" data-plan-headline>Here is the offer.</h1>
 
               <div class="proj" data-projection hidden>
-                <table class="proj__table">
-                  <thead>
-                    <tr>
-                      <th scope="col">&nbsp;</th>
-                      <th scope="col">Now</th>
-                      <th scope="col">With him</th>
-                    </tr>
-                  </thead>
-                  <tbody data-projection-rows />
-                </table>
-                <!-- Never fine print: a projection without the assumption beside
-                     it is the kind of number this whole page argues against. -->
-                <p class="proj__assumption" data-projection-assumption />
+                <!-- Two bars, not a spreadsheet. A reader who makes things for a
+                     living does not want a row carried to one decimal place. -->
+                <div class="gain">
+                  <div class="gain__col" data-bar="now">
+                    <p class="gain__label" data-bar-label></p>
+                    <div class="gain__track"><div class="gain__fill" data-bar-fill></div></div>
+                    <p class="gain__amount" data-bar-amount></p>
+                    <p class="gain__pace" data-bar-pace></p>
+                  </div>
+                  <div class="gain__col gain__col--then" data-bar="then">
+                    <p class="gain__label" data-bar-label></p>
+                    <div class="gain__track"><div class="gain__fill" data-bar-fill></div></div>
+                    <p class="gain__amount" data-bar-amount></p>
+                    <p class="gain__pace" data-bar-pace></p>
+                  </div>
+                </div>
+
+                <!-- The interesting half. The number is the claim; these are the
+                     reason it is not just a number. -->
+                <ul class="moves" data-projection-moves></ul>
+
+                <!-- Never fine print, but never the loudest thing on the screen
+                     either: a projection ships with its assumption, folded away
+                     for whoever wants to check the working. -->
+                <details class="proj__working">
+                  <summary>How he worked that out</summary>
+                  <p data-projection-assumption />
+                </details>
               </div>
 
               <div class="offer">
@@ -466,12 +481,8 @@ const tips = [
     </article>
   </template>
 
-  <template data-tpl="proj-row">
-    <tr>
-      <th scope="row" data-f="label"></th>
-      <td data-f="now"></td>
-      <td class="is-then" data-f="then"></td>
-    </tr>
+  <template data-tpl="move">
+    <li class="moves__item"><span data-f="text"></span></li>
   </template>
 </div>
 
@@ -1172,20 +1183,13 @@ const tips = [
     border-radius: var(--r-3);
   }
 
-  .proj__table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--t-meta);
+  .gain {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-5);
   }
 
-  .proj__table th,
-  .proj__table td {
-    padding: var(--s-3) var(--s-2);
-    text-align: right;
-    border-bottom: 1px solid var(--rule-soft);
-  }
-
-  .proj__table thead th {
+  .gain__label {
     font-family: var(--font-sans);
     font-size: 11px;
     font-weight: 500;
@@ -1194,24 +1198,112 @@ const tips = [
     color: var(--ink-3);
   }
 
-  .proj__table th:first-child,
-  .proj__table tbody th {
-    text-align: left;
-    font-weight: 400;
+  /* A fixed-height track with the fill growing up from the baseline, so the two
+     columns are read against each other rather than against the card edge. */
+  .gain__track {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    max-width: 92px;
+    height: 84px;
+    margin-top: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .gain__fill {
+    width: 100%;
+    /* Full height, then scaled to the share it represents. The floor lives in
+       the script, so an honest near-zero still draws something. */
+    height: 100%;
+    background: var(--rule-soft);
+    border-top: 2px solid var(--rule);
+    transform: scaleY(var(--grown, 0));
+    transform-origin: bottom;
+    transition: transform 720ms var(--ease-out);
+  }
+
+  /* A tint and a bright edge, not a slab of paint: the number is what the eye
+     should land on, and the champagne is only there to say which one is which. */
+  .gain__col--then .gain__fill {
+    background: color-mix(in srgb, var(--horn) 14%, transparent);
+    border-top-color: var(--horn);
+  }
+
+  .gain__amount {
+    margin-top: var(--s-3);
+    font-family: var(--font-display);
+    font-size: 30px;
+    line-height: 1.1;
+    color: var(--ink-1, var(--ink));
+  }
+
+  .gain__col--then .gain__amount {
+    color: var(--horn);
+  }
+
+  .gain__pace {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .moves {
+    margin-top: var(--s-5);
+    padding: var(--s-4) 0 0;
+    border-top: 1px solid var(--rule-soft);
+    display: grid;
+    gap: var(--s-3);
+    list-style: none;
+  }
+
+  .moves__item {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: var(--s-3);
+    align-items: baseline;
+    font-size: var(--t-meta);
+    line-height: 1.55;
     color: var(--ink-2);
   }
 
-  .proj__table .is-then {
-    color: var(--horn-soft);
+  .moves__item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--horn-soft);
+    transform: translateY(-2px);
   }
 
-  .proj__assumption {
+  .proj__working {
     margin-top: var(--s-4);
     padding-top: var(--s-4);
     border-top: 1px solid var(--rule-soft);
     font-size: 12px;
     line-height: 1.6;
     color: var(--ink-3);
+  }
+
+  .proj__working summary {
+    cursor: pointer;
+    color: var(--ink-3);
+  }
+
+  .proj__working p {
+    margin-top: var(--s-3);
+  }
+
+  @media (max-width: 520px) {
+    .bar__amount {
+      font-size: 22px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar__fill {
+      transition: none;
+    }
   }
 
   .offer {

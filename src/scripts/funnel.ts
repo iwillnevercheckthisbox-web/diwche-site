@@ -492,24 +492,40 @@ function run(root: HTMLElement) {
   function renderProjection(value: AuditResult) {
     const screen = steps.find((s) => s.dataset.kind === 'plan');
     const wrap = screen?.querySelector<HTMLElement>('[data-projection]');
-    const rows = screen?.querySelector<HTMLElement>('[data-projection-rows]');
     const assumption = screen?.querySelector<HTMLElement>('[data-projection-assumption]');
     const headline = screen?.querySelector<HTMLElement>('[data-plan-headline]');
 
     // Too few posts to say anything honest is a legitimate answer, and a
     // skipped panel is better than a number we do not have.
-    if (!value.projection || !wrap) return;
+    const projection = value.projection;
+    if (!projection || !wrap) return;
     wrap.hidden = false;
-    if (headline) headline.textContent = value.projection.headline;
-    if (assumption) assumption.textContent = value.projection.assumption;
-    if (!rows) return;
-    rows.textContent = '';
-    for (const row of value.projection.rows) {
-      const el = tpl('proj-row');
-      field(el, 'label')!.textContent = row.label;
-      field(el, 'now')!.textContent = row.now;
-      field(el, 'then')!.textContent = row.then;
-      rows.append(el);
+    if (headline) headline.textContent = projection.headline;
+    if (assumption) assumption.textContent = projection.assumption;
+
+    // Both bars are scaled to the taller one, so the difference between them is
+    // the whole picture and neither is drawn against an invented ceiling.
+    const tallest = Math.max(projection.now.value, projection.then.value, 1);
+    for (const [key, side] of [['now', projection.now], ['then', projection.then]] as const) {
+      const bar = wrap.querySelector<HTMLElement>(`[data-bar="${key}"]`);
+      if (!bar) continue;
+      bar.querySelector<HTMLElement>('[data-bar-label]')!.textContent = side.label;
+      bar.querySelector<HTMLElement>('[data-bar-amount]')!.textContent = side.amount;
+      bar.querySelector<HTMLElement>('[data-bar-pace]')!.textContent = side.pace;
+      const fill = bar.querySelector<HTMLElement>('[data-bar-fill]')!;
+      // Next frame, so the transition has a zero to grow from.
+      requestAnimationFrame(() =>
+        fill.style.setProperty('--grown', String(Math.max(0.04, side.value / tallest))),
+      );
+    }
+
+    const moves = wrap.querySelector<HTMLElement>('[data-projection-moves]');
+    if (!moves) return;
+    moves.textContent = '';
+    for (const move of projection.moves) {
+      const el = tpl('move');
+      field(el, 'text')!.textContent = move;
+      moves.append(el);
     }
   }
 

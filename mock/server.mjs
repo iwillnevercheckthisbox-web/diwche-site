@@ -76,13 +76,15 @@ const strong = (handle) => ({
     },
   ],
   projection: {
-    headline: 'about 340 more responses a month',
+    headline: 'about 340 more likes and comments a month',
     assumption:
       'That is your own reel rate, applied to a steadier month at the pace pages your size keep. It assumes nothing improves — only that you keep doing the thing that already works for you, and keep doing it.',
-    rows: [
-      { label: 'Posts a month', now: '9', then: '20' },
-      { label: 'Reels among them', now: '2', then: '9' },
-      { label: 'Responses a month', now: '≈ 610', then: '≈ 950' },
+    now: { label: 'Now', value: 610, amount: '610', pace: 'about 9 posts a month' },
+    then: { label: 'With him', value: 950, amount: '950', pace: 'about 20 posts a month' },
+    moves: [
+      'He brings you a topic every morning, so about 20 posts a month stops waiting on you having an idea.',
+      'He shoots, captions and lays out your reels — the format your page already answers to.',
+      'He goes back to the post that did 4.1× your own median, and builds from its shape.',
     ],
   },
   verified: false,
@@ -128,13 +130,14 @@ const weak = (handle) => ({
     },
   ],
   projection: {
-    headline: 'about 120 more responses a month',
+    headline: 'about 120 more likes and comments a month',
     assumption:
       'That is your own best-performing shape — shorter captions, posted in the evening — applied to the same number of posts you already make. It assumes you post no more than you do today.',
-    rows: [
-      { label: 'Posts a month', now: '12', then: '12' },
-      { label: 'Response rate', now: '0.6%', then: '0.9%' },
-      { label: 'Responses a month', now: '≈ 210', then: '≈ 330' },
+    now: { label: 'Now', value: 210, amount: '210', pace: 'about 12 posts a month' },
+    then: { label: 'With him', value: 330, amount: '330', pace: 'about 12 posts a month' },
+    moves: [
+      'He writes to the caption length your own best posts run to.',
+      'He schedules for the hours your best posts actually landed in.',
     ],
   },
   verified: false,

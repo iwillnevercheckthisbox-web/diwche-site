@@ -39,12 +39,26 @@ export interface Fact {
   meter?: { value: number; max: number; benchmark?: number; benchmarkLabel?: string };
 }
 
+export interface Side {
+  label: string;
+  value: number;
+  amount: string;
+  pace: string;
+}
+
 export interface Projection {
-  /** e.g. "about 340 more interactions a month" */
+  /** e.g. "about 340 more likes and comments a month" */
   headline: string;
   /** The assumption behind it, printed in full. No projection ships without one. */
   assumption: string;
-  rows: Array<{ label: string; now: string; then: string }>;
+  /**
+   * The two sides of the comparison. `value` draws the bar, `amount` is what a
+   * person reads — the backend formats both so nothing here has to round.
+   */
+  now: Side;
+  then: Side;
+  /** What he would actually do to get there. A number nobody can act on is just a number. */
+  moves: string[];
 }
 
 export interface AuditResult {
