@@ -38,13 +38,39 @@ jobs:
             -u "${{ vars.REGISTRY_USER }}" \
             --password-stdin
 
+      # The base images come from Docker Hub, and the runner's DNS resolver has been
+      # answering SERVFAIL for registry-1.docker.io — "server misbehaving" from
+      # 192.168.1.1. It is intermittent, and when it hits, BuildKit cannot even read
+      # the image metadata, so the build dies before the first layer and the deploy is
+      # skipped silently. Pulling them first, with retries, turns a transient DNS
+      # failure into a slower build instead of a lost deploy.
+      - name: Pull base images
+        run: |
+          for image in node:22-alpine nginx:alpine; do
+            ok=""
+            for attempt in 1 2 3 4; do
+              if docker pull "$image"; then ok="yes"; break; fi
+              echo "Could not pull $image (attempt $attempt) — retrying in 10s"
+              sleep 10
+            done
+            if [ -z "$ok" ]; then
+              # Not fatal on its own: an image already on this host builds fine without
+              # the registry. The build below is what decides.
+              echo "::warning::Could not pull $image; relying on whatever is cached locally"
+            fi
+          done
+
       - name: Build and push Docker image
         run: |
           # PUBLIC_READ=on builds the funnel at /read and points the hero CTA at it.
           # Off, the page still exists and still walks, but carries a preview banner and
           # nothing links to it. Turned on now that /api/public/* is served and a source
           # account can be nominated in Admin.
-          docker build --build-arg PUBLIC_READ=on -t "${{ steps.vars.outputs.image }}" .
+          #
+          # BuildKit is off for this one build so that a base image already on the host is
+          # used as-is. BuildKit resolves metadata from the registry even when the image is
+          # cached, which is exactly the call that fails when DNS is unwell.
+          DOCKER_BUILDKIT=0 docker build --build-arg PUBLIC_READ=on -t "${{ steps.vars.outputs.image }}" .
           docker tag "${{ steps.vars.outputs.image }}" "${{ steps.vars.outputs.latest }}" || true
           docker push "${{ steps.vars.outputs.image }}"
           docker push "${{ steps.vars.outputs.latest }}" || true
