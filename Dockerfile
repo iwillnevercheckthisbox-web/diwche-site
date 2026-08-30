@@ -37,7 +37,12 @@ FROM nginx:alpine
 LABEL maintainer="Diwche"
 
 COPY --from=build /app/dist/ /usr/share/nginx/html/
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# A template, not a finished config: nginx's own entrypoint runs envsubst over
+# /etc/nginx/templates/*.template at container start, so READ_GATE arrives from
+# the environment at `docker run` rather than being baked into the image. Only
+# variables that exist in the environment are substituted, which is why $host
+# and $remote_addr survive untouched.
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY security-headers.conf /etc/nginx/conf.d/security-headers.conf
 
 # nginx listens on 80 inside the container; the host maps 5659:80 in docker run

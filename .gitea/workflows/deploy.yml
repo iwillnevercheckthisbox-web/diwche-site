@@ -114,6 +114,7 @@ jobs:
               --name diwche-site \
               --restart always \
               -p 5659:80 \
+              -e READ_GATE="${{ secrets.READ_GATE }}" \
               "$TARGET_IMAGE"
 
             echo "Waiting for nginx..."

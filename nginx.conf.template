@@ -52,6 +52,19 @@ server {
         # notice, because curl sends no Origin.
         proxy_set_header Origin "";
 
+        # The one credential in this whole flow, and the browser never sees it.
+        #
+        # Set here, server side, on the way to the backend — not in the page, not in
+        # any JavaScript, not in a response header. The backend refuses /api/public/*
+        # without it, which means the read cannot be called on the backend's own
+        # hostname at all: this proxy is the only door, and it is the door with the
+        # rate limiter on it.
+        #
+        # Substituted at container start by nginx's own entrypoint from READ_GATE in
+        # the environment. Empty here means the backend must also be unconfigured, or
+        # every read is refused.
+        proxy_set_header X-Diwche-Read "${READ_GATE}";
+
         # The read streams its progress, so nothing may sit in a buffer waiting
         # to be flushed, and the read itself can outlast a default timeout.
         proxy_buffering off;
