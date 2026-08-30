@@ -100,3 +100,26 @@ to regenerate them:
 `/shots/*` keep stable filenames across deploys, so they revalidate hourly. HTML is never
 cached. If you ever add Cloudflare edge caching, purge it on deploy or the HTML rule above
 stops being the only thing that matters.
+
+## The public read
+
+The hero's handle field and the show behind it are built only when
+`PUBLIC_READ=on` is set at build time. It defaults to **off**, because the show
+talks to `/api/public/*` on the backend and that does not exist yet — shipping
+the field before it does would put a call to action on the live site whose only
+outcome is an apology. With the flag off the hero falls back to its previous
+two CTAs and nothing else on the page changes.
+
+To turn it on, in this order:
+
+1. Deploy the backend with `/api/public/**` served (`com.sma.publicaudit`).
+2. Confirm the NAS address and port in the `location /api/public/` block in
+   `nginx.conf` still match that container.
+3. Set `PUBLIC_READ=on` for the build step in `.gitea/workflows/deploy.yml`.
+4. Set the Turnstile site key on the document root
+   (`data-turnstile-key`) — until it is present the page loads no third-party
+   script at all, and the backend decides whether a missing token is acceptable.
+
+Locally `npm run dev` sets the flag on for you and serves `/api/public/*` from
+`mock/server.mjs`. Point it at a real backend with
+`PUBLIC_API_ORIGIN=http://host:5556 npm run dev`, which skips the fixtures.

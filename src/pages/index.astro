@@ -9,6 +9,17 @@ import PricingCard from '../components/PricingCard.astro';
 import Accordion from '../components/Accordion.astro';
 import Stage from '../components/show/Stage.astro';
 
+/**
+ * The read is only offered when there is something behind it.
+ *
+ * The show talks to `/api/public/*`, which the backend does not serve yet.
+ * Shipping the field before that exists would put a call to action on the live
+ * site whose only outcome is an apology, so this defaults to off and the page
+ * falls back to the CTAs it had. Build with `PUBLIC_READ=on` — and deploy the
+ * backend first.
+ */
+const readEnabled = import.meta.env.PUBLIC_READ === 'on';
+
 // The homepage: nav, hero, the show, the Meta band, the offer, three
 // alternating pillar rows, a house line, reliability, pricing, FAQ, footer.
 //
@@ -115,6 +126,7 @@ const faqs = [
 
       <!-- One field. The whole page below is the answer to it. `novalidate`
            because the browser's own bubble cannot say this in his voice. -->
+      {readEnabled && (
       <form class="handle" data-handle-form novalidate>
         <div class="handle__row">
           <div class="handle__field">
@@ -144,6 +156,14 @@ const faqs = [
           </button>
         </p>
       </form>
+      )}
+
+      {!readEnabled && (
+        <div class="hero__actions">
+          <a class="btn" href="#pilot">See what he would do for your page</a>
+          <a class="btn btn--quiet" href="#pricing">See pricing</a>
+        </div>
+      )}
 
       <figure class="hero__art">
         <Art name="hero-camera" loading="eager" />
@@ -152,7 +172,7 @@ const faqs = [
   </section>
 
   <!-- ================================================================== SHOW -->
-  <Stage />
+  {readEnabled && <Stage />}
 
   <!-- ============================================================ META BAND -->
   <TrustBar />
@@ -383,6 +403,15 @@ const faqs = [
     margin-top: var(--s-5);
     margin-inline: auto;
     max-width: 56ch;
+  }
+
+  /* The fallback pair, shown only while the read is switched off. */
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
   }
 
   /* ---- The one field ------------------------------------------------------

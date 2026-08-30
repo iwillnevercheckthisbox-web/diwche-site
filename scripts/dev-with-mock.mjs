@@ -16,7 +16,14 @@ if (useMock) {
   console.log(`[dev] /api/public → ${process.env.PUBLIC_API_ORIGIN} (fixture server off)`);
 }
 
-children.push(spawn('npx', ['astro', 'dev'], { stdio: 'inherit' }));
+// The read is off by default in a build (there is no backend behind it yet);
+// in dev there is always something behind it, so it is on.
+children.push(
+  spawn('npx', ['astro', 'dev'], {
+    stdio: 'inherit',
+    env: { ...process.env, PUBLIC_READ: process.env.PUBLIC_READ ?? 'on' },
+  })
+);
 
 const stop = () => {
   for (const c of children) c.kill('SIGTERM');
