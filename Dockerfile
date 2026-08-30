@@ -18,6 +18,13 @@ COPY astro.config.mjs ./
 COPY src ./src
 COPY public ./public
 
+# Whether the funnel at /read is wired to the backend. Unset means the page
+# still builds and still walks — it just carries a preview banner and the
+# homepage does not link to it. Flip it by passing
+# `--build-arg PUBLIC_READ=on` from the workflow, once /api/public/* is served.
+ARG PUBLIC_READ
+ENV PUBLIC_READ=$PUBLIC_READ
+
 RUN npm run build
 
 FROM nginx:alpine

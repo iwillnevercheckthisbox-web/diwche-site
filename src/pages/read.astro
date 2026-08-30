@@ -5,60 +5,21 @@ import Funnel from '../components/funnel/Funnel.astro';
 /**
  * The funnel lives on its own page, with no nav and no footer.
  *
- * It is also the only page whose existence depends on the backend: with
- * PUBLIC_READ unset there is nothing behind `/api/public/*`, so rather than
- * open a funnel that cannot finish, this says so and sends the reader back.
+ * It always renders, even before the backend serves `/api/public/*`. Nothing
+ * links here while PUBLIC_READ is unset and the page is `noindex`, so the only
+ * people who arrive are the ones who typed the URL — which is exactly who needs
+ * to walk it while it is being built. What the flag actually controls is the
+ * hero CTA on the homepage, so no visitor is ever sent into a walk that cannot
+ * finish, and the banner below, so nobody who does arrive is misled about it.
  */
-const enabled = import.meta.env.PUBLIC_READ === 'on';
+const connected = import.meta.env.PUBLIC_READ === 'on';
 ---
 
 <Bare
   title="Diwche — let him read your page"
   description="Answer a few questions and Diwche reads your Instagram page, then tells you what he found."
 >
-  {enabled && <Funnel />}
+  <Funnel connected={connected} />
 
-  {
-    !enabled && (
-      <div class="closed">
-        <p class="closed__eyebrow">Not yet</p>
-        <h1 class="closed__title">He is not taking new pages this minute.</h1>
-        <p class="closed__lead">Try again shortly — or look around while you wait.</p>
-        <a class="btn" href="/">Back to the front</a>
-      </div>
-    )
-  }
-
-  {enabled && <script>import '../scripts/funnel';</script>}
+  <script>import '../scripts/funnel';</script>
 </Bare>
-
-<style>
-  .closed {
-    flex: 1;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    gap: var(--s-4);
-    padding: var(--s-6);
-    text-align: center;
-  }
-
-  .closed__eyebrow {
-    font-size: var(--t-eyebrow);
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--horn);
-    line-height: 1;
-  }
-
-  .closed__title {
-    font-size: var(--t-subhead);
-    max-width: 20ch;
-  }
-
-  .closed__lead {
-    font-size: var(--t-meta);
-    color: var(--ink-2);
-  }
-</style>

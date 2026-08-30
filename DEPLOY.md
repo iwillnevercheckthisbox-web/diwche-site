@@ -107,16 +107,22 @@ The funnel at `/read` — and the hero CTA that points at it — is built only w
 `PUBLIC_READ=on` is set at build time. It defaults to **off**, because the show
 talks to `/api/public/*` on the backend and that does not exist yet — shipping
 the field before it does would put a call to action on the live site whose only
-outcome is an apology. With the flag off the hero CTA points at the offer
-section instead, and `/read` renders a short "not yet" page rather than a walk
-that cannot finish.
+outcome is an apology.
+
+With the flag off, `/read` still builds and still walks end to end — it carries
+a preview banner saying the read at the end will not run, and the homepage does
+not link to it. Nothing is indexed and nothing links in, so the only people who
+arrive are the ones who typed the URL, which is exactly who needs to review it
+while it is being built.
 
 To turn it on, in this order:
 
 1. Deploy the backend with `/api/public/**` served (`com.sma.publicaudit`).
 2. Confirm the NAS address and port in the `location /api/public/` block in
    `nginx.conf` still match that container.
-3. Set `PUBLIC_READ=on` for the build step in `.gitea/workflows/deploy.yml`.
+3. Add `--build-arg PUBLIC_READ=on` to the `docker build` line in
+   `.gitea/workflows/deploy.yml`. The `ARG` it feeds is already in the
+   Dockerfile, so that one line is the whole switch.
 4. Set the Turnstile site key on the document root
    (`data-turnstile-key`) — until it is present the page loads no third-party
    script at all, and the backend decides whether a missing token is acceptable.

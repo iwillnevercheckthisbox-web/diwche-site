@@ -16,6 +16,13 @@
 import Screenshot from '../Screenshot.astro';
 import { ICONS } from './icons';
 
+interface Props {
+  /** False until the backend serves `/api/public/*`. Only changes what is said. */
+  connected?: boolean;
+}
+
+const { connected = false } = Astro.props;
+
 interface Option {
   value: string;
   label: string;
@@ -167,7 +174,21 @@ const tips = [
 ];
 ---
 
-<div class="funnel" data-funnel data-total={counted.length}>
+<div
+  class="funnel"
+  data-funnel
+  data-total={counted.length}
+  data-connected={connected ? 'yes' : 'no'}
+>
+  {
+    !connected && (
+      <p class="preview">
+        Preview — he is not connected to Instagram yet, so the read at the end will not run.
+        Everything before it is real.
+      </p>
+    )
+  }
+
   <!-- ================================================================== BAR -->
   <header class="bar">
     <button class="bar__back" type="button" data-back aria-label="Back a step">
@@ -448,6 +469,19 @@ const tips = [
     flex-direction: column;
     flex: 1;
     min-height: 0;
+  }
+
+  /* Said plainly and kept on screen. Someone walking this before the backend
+     exists should never reach the end and think the failure was theirs. */
+  .preview {
+    flex: none;
+    padding: var(--s-2) var(--s-5);
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--horn-soft);
+    background: var(--paper-3);
+    border-bottom: 1px solid var(--horn-deep);
   }
 
   /* ---- The bar ------------------------------------------------------------ */

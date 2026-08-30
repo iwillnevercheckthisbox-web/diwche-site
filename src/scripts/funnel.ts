@@ -144,8 +144,12 @@ function run(root: HTMLElement) {
     // A private or missing page is the visitor's to fix. The day's cap, and
     // anything that broke on our side, is ours — and losing the address over
     // our own problem would be the mistake twice.
+    // Two reasons to hide the address form: the visitor's own page is private
+    // or missing (theirs to fix, not ours to chase), or there is no backend to
+    // take the address at all — a form that cannot submit is worse than none.
+    const connected = root.dataset.connected === 'yes';
     const waiting = errorScreen.querySelector<HTMLElement>('[data-waiting-form]');
-    if (waiting) waiting.hidden = kind === 'private' || kind === 'not_found';
+    if (waiting) waiting.hidden = !connected || kind === 'private' || kind === 'not_found';
 
     for (const s of screens) {
       const on = s === errorScreen;
