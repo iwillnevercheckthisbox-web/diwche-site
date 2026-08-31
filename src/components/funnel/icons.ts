@@ -28,4 +28,9 @@ export const ICONS: Record<string, string> = {
   weekly: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M8 15h8"/>',
   shrug: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.8-2.5 2-2.5 3.5"/><path d="M12 17h.01"/>',
   spark: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/>',
+  // Two bubbles rather than one: the point of this option is the exchange, not
+  // the message.
+  chat: '<path d="M8 14H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/><path d="M18 9a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-3.5-3H10a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z"/>',
+  palette:
+    '<path d="M12 3a9 9 0 0 0 0 18c1.1 0 2-.9 2-2 0-1.4-1-1.6-1-2.5 0-.8.7-1.5 1.5-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8Z"/><path d="M7.5 12h.01M10 8.5h.01M14.5 8h.01"/>',
 };

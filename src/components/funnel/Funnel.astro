@@ -2,212 +2,99 @@
 /**
  * The read, as a funnel.
  *
- * One screen at a time, full viewport, tap an answer and it advances. The
- * shape is deliberate and borrowed: questions in short runs, an insight screen
- * between each run where the product gets to say one thing, the handle asked
- * early so the read runs underneath the rest of the questions, then an
- * analysing screen that is a real short wait rather than a staged one, the
- * findings, and the offer.
+ * One screen at a time, full viewport, tap an answer and it advances. Two
+ * questions decide the rest of the walk: the first splits the audience, the
+ * second asks what is in the way — and only the things someone actually admits
+ * to become screens. So the walk is seven to ten screens long depending on the
+ * answers, and every screen is rendered here at build time while
+ * `src/scripts/funnel.ts` decides which of them are in the active set.
  *
- * Everything renders at build time and starts hidden; `src/scripts/funnel.ts`
- * owns which screen is live. The insight screens are the whole marketing
- * argument, so they are written here rather than fetched.
+ * No English lives in this file. Every string comes from a `FunnelCopy`, which
+ * is what lets the same component serve `/read` and `/fa/read` — and what makes
+ * a missing Persian string a compile error rather than an English word on a
+ * Persian screen.
  */
 import Screenshot from '../Screenshot.astro';
 import { ICONS } from './icons';
+import { EN } from './copy.en';
+import type { FunnelCopy } from './types';
 
 interface Props {
   /** False until the backend serves `/api/public/*`. Only changes what is said. */
   connected?: boolean;
+  copy?: FunnelCopy;
 }
 
-const { connected = false } = Astro.props;
+const { connected = false, copy = EN } = Astro.props;
+const screens = copy.screens;
 
-interface Option {
-  value: string;
-  label: string;
-  sub?: string;
-  icon: keyof typeof ICONS;
-}
-
-type Screen =
-  | {
-      id: string;
-      kind: 'question';
-      eyebrow: string;
-      title: string;
-      /** Several answers allowed, so it needs a button rather than advancing on tap. */
-      multi?: boolean;
-      options: Option[];
-    }
-  | {
-      id: string;
-      kind: 'insight';
-      eyebrow: string;
-      title: string;
-      lead: string;
-      shot: string;
-      label: string;
-      alt: string;
-    }
-  | { id: string; kind: 'start' | 'analyzing' | 'result' | 'plan' | 'error' };
-
-const screens: Screen[] = [
-  {
-    id: 'goal',
-    kind: 'question',
-    eyebrow: 'First',
-    title: 'Whose page are we talking about?',
-    options: [
-      { value: 'mine', label: 'Mine', sub: 'I post as myself, or as my own brand', icon: 'mine' },
-      { value: 'client', label: 'A client’s', sub: 'I run pages for other people', icon: 'client' },
-      { value: 'new', label: 'There isn’t one yet', sub: 'I have a subject and no page', icon: 'seed' },
-    ],
-  },
-  {
-    id: 'makes',
-    kind: 'question',
-    eyebrow: 'What you make',
-    title: 'What goes out at the moment?',
-    multi: true,
-    options: [
-      { value: 'reels', label: 'Reels', icon: 'reel' },
-      { value: 'carousels', label: 'Carousels', icon: 'carousel' },
-      { value: 'photos', label: 'Single photos', icon: 'photo' },
-      { value: 'stories', label: 'Stories', icon: 'story' },
-      { value: 'none', label: 'Nothing regular', icon: 'none' },
-    ],
-  },
-  { id: 'start', kind: 'start' },
-  {
-    id: 'insight-ideas',
-    kind: 'insight',
-    eyebrow: 'Ideas',
-    title: 'Every morning, topics that are yours.',
-    lead: 'He knows your page and the people who answer it, so what he brings you is not what he brings anyone else. Make one, keep one, or tell him why not — tomorrow’s change because of what you said today.',
-    shot: '_placeholder-ideas',
-    label: 'Ideas',
-    alt: 'The Ideas page, a column of suggested topics.',
-  },
-  {
-    id: 'hardest',
-    kind: 'question',
-    eyebrow: 'Where it goes wrong',
-    title: 'Which part eats your week?',
-    multi: true,
-    options: [
-      { value: 'ideas', label: 'Thinking of something to post', icon: 'idea' },
-      { value: 'filming', label: 'Filming it', icon: 'camera' },
-      { value: 'editing', label: 'Editing it', icon: 'cut' },
-      { value: 'captions', label: 'Writing the words', icon: 'words' },
-      { value: 'timing', label: 'Actually posting on time', icon: 'clock' },
-    ],
-  },
-  {
-    id: 'insight-d1',
-    kind: 'insight',
-    eyebrow: 'D1 Studio',
-    title: 'Say it once. He cuts the rest.',
-    lead: 'Read your script to the camera and he takes out the pauses, the stumbles and the retakes — then shows you every cut he made and why, because an edit nobody can inspect is one nobody can trust.',
-    shot: '_placeholder-d1',
-    label: 'D1 Studio',
-    alt: 'The D1 Studio review screen, listing each cut it made.',
-  },
-  {
-    id: 'cadence',
-    kind: 'question',
-    eyebrow: 'The pace',
-    title: 'How often would you like to go out?',
-    options: [
-      { value: 'daily', label: 'Every day', icon: 'daily' },
-      { value: 'few', label: 'A few times a week', icon: 'weekly' },
-      { value: 'weekly', label: 'Once a week', icon: 'clock' },
-      { value: 'unsure', label: 'Whenever there is something worth saying', icon: 'shrug' },
-    ],
-  },
-  {
-    id: 'insight-studios',
-    kind: 'insight',
-    eyebrow: 'The studios',
-    title: 'Your colours, your words, your voice.',
-    lead: 'Captions word by word, in your language, right to left where that is how it reads. Palettes, fonts and characters set once and kept everywhere. He can speak in your own voice when you would rather not record — and you can change any frame of it.',
-    shot: '_placeholder-studios',
-    label: 'Visual Studio',
-    alt: 'The editor, with an artboard and an inspector.',
-  },
-  {
-    id: 'captions',
-    kind: 'question',
-    eyebrow: 'The words',
-    title: 'Who writes them today?',
-    options: [
-      { value: 'me', label: 'I do', icon: 'mine' },
-      { value: 'someone', label: 'Someone on my team', icon: 'client' },
-      { value: 'ai', label: 'Something automatic', icon: 'spark' },
-      { value: 'nobody', label: 'Barely anyone — they go out thin', icon: 'shrug' },
-    ],
-  },
-  {
-    id: 'insight-performance',
-    kind: 'insight',
-    eyebrow: 'Performance',
-    title: 'After a post, a sentence. Not a graph.',
-    lead: 'He tells you what worked, why, and what to do again. He is not trying to replace the numbers Instagram already shows you — he is telling you what they mean.',
-    shot: '_placeholder-performance',
-    label: 'Performance',
-    alt: 'A sentence about a post, above the bars it came from.',
-  },
-  { id: 'analyzing', kind: 'analyzing' },
-  { id: 'result', kind: 'result' },
-  { id: 'plan', kind: 'plan' },
-  { id: 'error', kind: 'error' },
-];
-
-// The error screen is a destination, never a step, so it is outside the count.
-const counted = screens.filter((s) => s.kind !== 'error');
-
-const tips = [
-  'He does not replace Instagram’s graphs. He tells you what they mean.',
-  'Nothing he makes is final. Every word, colour and frame stays yours.',
-  'The more you tell him, the less he repeats himself.',
-  'He never posts the same story twice, on any page.',
-];
+/**
+ * The step total is decided at runtime, not here.
+ *
+ * It used to be `screens.length` baked into the markup, which was true only
+ * while every visitor walked every screen. Now the denominator depends on how
+ * many blockers someone picks, so the bar is filled in by the script and this
+ * is only a starting value that is replaced before anyone sees it.
+ */
+const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).length;
 ---
 
 <div
   class="funnel"
   data-funnel
-  data-total={counted.length}
+  data-locale={copy.locale}
   data-connected={connected ? 'yes' : 'no'}
 >
-  {
-    !connected && (
-      <p class="preview">
-        Preview — he is not connected to Instagram yet, so the read at the end will not run.
-        Everything before it is real.
-      </p>
-    )
-  }
+  {/* Everything the script says at runtime, shipped as data rather than
+      imported — so one script serves both languages and each page carries only
+      its own strings. */}
+  <script
+    type="application/json"
+    data-copy
+    set:html={JSON.stringify({ ui: copy.ui, runtime: copy.runtime, result: copy.result })}
+  />
+  {!connected && <p class="preview">{copy.preview}</p>}
 
   <!-- ================================================================== BAR -->
   <header class="bar">
-    <button class="bar__back" type="button" data-back aria-label="Back a step">
+    <button class="bar__back" type="button" data-back aria-label={copy.bar.back}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19l-7-7 7-7" /></svg>
     </button>
     <div class="bar__track" role="presentation"><i data-progress></i></div>
-    <p class="bar__count"><b data-step-now>1</b> / {counted.length}</p>
+    <p class="bar__count"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
   </header>
 
   <!-- ============================================================== SCREENS -->
   <main class="stage">
     {
       screens.map((screen) => (
-        <section class="screen" data-screen={screen.id} data-kind={screen.kind} hidden>
+        <section
+          class="screen"
+          data-screen={screen.id}
+          data-kind={screen.kind}
+          data-when={screen.showIf ? `${screen.showIf.screen}:${screen.showIf.is}` : undefined}
+          hidden
+        >
           {screen.kind === 'question' && (
-            <div class="screen__inner">
+            <div class:list={['screen__inner', screen.shot && 'screen__inner--wide']}>
               <p class="screen__eyebrow">{screen.eyebrow}</p>
-              <h1 class="screen__title">{screen.title}</h1>
-              {screen.multi && <p class="screen__hint">Pick as many as are true.</p>}
+              {/* A second wording of the same question, chosen at runtime from
+                  the answer to the first one. */}
+              <h1
+                class="screen__title"
+                data-title
+                data-title-when={screen.titleWhen ? JSON.stringify(screen.titleWhen) : undefined}
+              >
+                {screen.title}
+              </h1>
+              {screen.hint && <p class="screen__hint">{screen.hint}</p>}
+
+              {screen.shot && (
+                <div class="screen__mascot">
+                  <img src={screen.shot.src} alt={screen.shot.alt} width="360" height="360" loading="eager" />
+                </div>
+              )}
+
               <div class:list={['options', screen.options.length > 4 && 'options--tight']}>
                 {screen.options.map((o) => (
                   <button
@@ -231,7 +118,7 @@ const tips = [
               </div>
               {screen.multi && (
                 <button class="btn btn--wide" type="button" data-continue disabled>
-                  Continue
+                  {copy.ui.continue}
                 </button>
               )}
             </div>
@@ -240,69 +127,82 @@ const tips = [
           {screen.kind === 'insight' && (
             <div class="screen__inner screen__inner--wide">
               <p class="screen__eyebrow">{screen.eyebrow}</p>
+              {/* Their own words first. The joke only lands because the sentence
+                  above it is the one they just picked. */}
+              {screen.quote && <p class="screen__quote">“{screen.quote}”</p>}
+              <p class="screen__hook">{screen.hook}</p>
               <h1 class="screen__title">{screen.title}</h1>
               <p class="screen__lead">{screen.lead}</p>
               <div class="screen__shot">
                 <Screenshot
-                  src={`/shots/${screen.shot}.svg`}
-                  alt={screen.alt}
+                  src={screen.shot.src}
+                  alt={screen.shot.alt}
                   width={1280}
                   height={800}
-                  label={screen.label}
+                  label={screen.shot.label}
                 />
               </div>
-              <button class="btn btn--wide" type="button" data-next>Got it</button>
+              <button class="btn btn--wide" type="button" data-next>
+                {copy.ui.next}
+              </button>
             </div>
           )}
 
           {screen.kind === 'start' && (
-            <div class="screen__inner">
-              <p class="screen__eyebrow">Your page</p>
-              <h1 class="screen__title" data-start-title>Which page should he read?</h1>
-              <p class="screen__lead" data-start-lead>
-                He reads only what your profile already shows. No password, and nothing is
-                connected until you say so.
-              </p>
+            <div class="screen__inner screen__inner--wide">
+              <p class="screen__eyebrow">{screen.eyebrow}</p>
+              <p class="screen__hook">{screen.hook}</p>
+              <h1 class="screen__title">{screen.title}</h1>
+              <p class="screen__lead">{screen.lead}</p>
+              <div class="screen__shot">
+                <Screenshot
+                  src={screen.shot.src}
+                  alt={screen.shot.alt}
+                  width={1280}
+                  height={800}
+                  label={screen.shot.label}
+                />
+              </div>
 
-              <form class="start" data-start-form novalidate>
-                <div class="start__field" data-handle-wrap>
-                  <span class="start__at" aria-hidden="true">@</span>
-                  <label class="sr" for="handle">Your Instagram handle</label>
-                  <input
-                    class="start__input"
-                    id="handle"
-                    name="handle"
-                    type="text"
-                    autocomplete="off"
-                    autocapitalize="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                    maxlength="30"
-                    placeholder="yourhandle"
-                  />
-                </div>
-
-                <!-- The same screen, for someone with no page: he cannot read what
-                     does not exist, so he is given the subject instead. -->
-                <div data-idea-wrap hidden>
-                  <label class="sr" for="idea">What is it about?</label>
-                  <textarea
-                    class="start__area"
-                    id="idea"
-                    name="idea"
-                    rows="3"
-                    maxlength="400"
-                    placeholder="A sentence is enough."></textarea>
-                </div>
-
-                <p class="field__error" data-start-error hidden></p>
-                <button class="btn btn--wide" type="submit">Let him look</button>
+              <form class="start" data-start-form data-field={screen.field} novalidate>
+                {screen.field === 'handle' ? (
+                  <div class="start__field">
+                    <span class="start__at" aria-hidden="true">@</span>
+                    <label class="sr" for={`in-${screen.id}`}>{screen.title}</label>
+                    <input
+                      class="start__input"
+                      id={`in-${screen.id}`}
+                      data-handle
+                      type="text"
+                      autocomplete="off"
+                      autocapitalize="off"
+                      autocorrect="off"
+                      spellcheck="false"
+                      maxlength="30"
+                      placeholder={screen.placeholder}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label class="sr" for={`in-${screen.id}`}>{screen.title}</label>
+                    <textarea
+                      class="start__area"
+                      id={`in-${screen.id}`}
+                      data-idea
+                      rows="3"
+                      maxlength="400"
+                      placeholder={screen.placeholder}
+                    />
+                  </div>
+                )}
+                <p class="field__error" data-start-error hidden />
+                <button class="btn btn--wide" type="submit">{screen.cta}</button>
               </form>
             </div>
           )}
 
           {screen.kind === 'analyzing' && (
-            <div class="screen__inner">
+            <div class="screen__inner screen__inner--wide">
               <div class="ring" role="presentation">
                 <svg viewBox="0 0 120 120">
                   <circle class="ring__track" cx="60" cy="60" r="52" />
@@ -311,25 +211,38 @@ const tips = [
                 <p class="ring__pct"><b data-pct>0</b>%</p>
               </div>
               <h1 class="screen__title screen__title--mid" data-analyzing-line>
-                Finding the page…
+                {copy.analyzing.line}
               </h1>
-              <p class="screen__tip" data-tip>{tips[0]}</p>
-              <script type="application/json" data-tips set:html={JSON.stringify(tips)} />
+              <p class="screen__tip">{copy.analyzing.lead}</p>
+
+              {/* Whatever they did not pick, plus the two nobody is asked about.
+                  The wait is the only place left to say these, and it is long
+                  enough now that the handle is asked at the end. */}
+              <div class="rest" data-rest />
+
+              <div class="screen__shot screen__shot--quiet">
+                <Screenshot
+                  src={copy.analyzing.shot.src}
+                  alt={copy.analyzing.shot.alt}
+                  width={1280}
+                  height={800}
+                  label={copy.analyzing.shot.label}
+                />
+              </div>
+              <script type="application/json" data-features set:html={JSON.stringify(copy.features)} />
             </div>
           )}
 
           {screen.kind === 'result' && (
             <div class="screen__inner screen__inner--wide">
-              <p class="screen__eyebrow">Here is what he noticed</p>
+              <p class="screen__eyebrow">{copy.result.eyebrow}</p>
               <h1 class="screen__title" data-result-headline />
               <div class="facts" data-facts />
               <div class="topics" data-topics hidden />
 
               <form class="lead" data-lead-form novalidate>
-                <p class="lead__title" data-lead-title>
-                  Two more, and what he would do about them.
-                </p>
-                <label class="sr" for="email">Your email address</label>
+                <p class="lead__title">{copy.result.teaser}</p>
+                <label class="sr" for="email">{copy.result.emailLabel}</label>
                 <input
                   class="start__input start__input--boxed"
                   id="email"
@@ -337,19 +250,16 @@ const tips = [
                   type="email"
                   autocomplete="email"
                   inputmode="email"
-                  placeholder="you@example.com"
+                  placeholder={copy.result.placeholder}
                   required
                 />
                 <label class="lead__consent">
                   <input type="checkbox" data-consent />
-                  <span>
-                    Diwche may email me this read and what it offers. No one else gets this
-                    address.
-                  </span>
+                  <span>{copy.result.consent}</span>
                 </label>
-                <p class="field__error" data-lead-error hidden></p>
+                <p class="field__error" data-lead-error hidden />
                 <button class="btn btn--wide" type="submit" data-lead-submit>
-                  Show me the rest
+                  {copy.result.cta}
                 </button>
               </form>
             </div>
@@ -357,120 +267,96 @@ const tips = [
 
           {screen.kind === 'plan' && (
             <div class="screen__inner screen__inner--wide">
-              <p class="screen__eyebrow">What he would do</p>
-              <h1 class="screen__title" data-plan-headline>Here is the offer.</h1>
+              <p class="screen__eyebrow">{copy.plan.eyebrow}</p>
+              <h1
+                class="screen__title"
+                data-plan-headline
+                data-plan-headline-starter={copy.plan.starterHeadline}
+              >
+                {copy.plan.headline}
+              </h1>
 
-              <!-- A page can be too new, too quiet, or already running well enough
-                   that there is no honest gap to draw. Saying so is better than
-                   an empty card, and the offer below stands either way. -->
-              <p class="screen__lead" data-projection-none hidden>
-                He would rather show you than promise you. There is not a gap on this page big
-                enough to draw — so what he found, and what he would do with it, go to your
-                address instead.
-              </p>
+              <p class="screen__lead" data-projection-none hidden>{copy.runtime.noProjection}</p>
 
               <div class="proj" data-projection hidden>
-                <!-- Two bars, not a spreadsheet. A reader who makes things for a
-                     living does not want a row carried to one decimal place. -->
+                {/* The projection's own claim, inside the card that argues it —
+                    the screen's headline belongs to the promise being kept. */}
+                <p class="proj__headline" data-projection-headline />
+                {/* Two bars, not a spreadsheet. A reader who makes things for a
+                    living does not want a row carried to one decimal place. */}
                 <div class="gain">
                   <div class="gain__col" data-bar="now">
-                    <p class="gain__label" data-bar-label></p>
-                    <div class="gain__track"><div class="gain__fill" data-bar-fill></div></div>
-                    <p class="gain__amount" data-bar-amount></p>
-                    <p class="gain__pace" data-bar-pace></p>
+                    <p class="gain__label" data-bar-label />
+                    <div class="gain__track"><div class="gain__fill" data-bar-fill /></div>
+                    <p class="gain__amount" data-bar-amount />
+                    <p class="gain__pace" data-bar-pace />
                   </div>
                   <div class="gain__col gain__col--then" data-bar="then">
-                    <p class="gain__label" data-bar-label></p>
-                    <div class="gain__track"><div class="gain__fill" data-bar-fill></div></div>
-                    <p class="gain__amount" data-bar-amount></p>
-                    <p class="gain__pace" data-bar-pace></p>
+                    <p class="gain__label" data-bar-label />
+                    <div class="gain__track"><div class="gain__fill" data-bar-fill /></div>
+                    <p class="gain__amount" data-bar-amount />
+                    <p class="gain__pace" data-bar-pace />
                   </div>
                 </div>
 
-                <!-- The interesting half. The number is the claim; these are the
-                     reason it is not just a number. -->
-                <ul class="moves" data-projection-moves></ul>
+                <ul class="moves" data-projection-moves />
 
-                <!-- Never fine print, but never the loudest thing on the screen
-                     either: a projection ships with its assumption, folded away
-                     for whoever wants to check the working. -->
+                {/* Never fine print, but never the loudest thing on the screen
+                    either: a projection ships with its assumption, folded away
+                    for whoever wants to check the working. */}
                 <details class="proj__working">
-                  <summary>How he worked that out</summary>
+                  <summary>{copy.plan.working}</summary>
                   <p data-projection-assumption />
                 </details>
               </div>
 
               <div class="offer">
-                <!-- Only shown once there is a code to show. Proving the page is
-                     yours needs Instagram's messaging permission, and until that
-                     is granted there is nothing here but theatre — so the close
-                     falls back to the address, which is real either way. -->
-                <div data-proof-block hidden>
-                  <p class="offer__text">
-                    Send this to <b data-proof-account>@diwche.app</b> on Instagram, from the account
-                    he just read. That is the whole check — then the trial is yours, free.
-                  </p>
-                  <p class="offer__code"><span data-proof-code>····</span></p>
-                  <div class="offer__actions">
-                    <button class="btn btn--quiet" type="button" data-copy-code>Copy the code</button>
-                    <a class="btn" data-proof-link href="https://ig.me/m/diwche.app" target="_blank" rel="noopener">
-                      Open the message
-                    </a>
-                  </div>
-                </div>
-
-                <p class="offer__text" data-proof-fallback hidden>
-                  He has what he needs. The read, and what he would do with the page, are on their
-                  way to the address you left — and the trial comes with them.
-                </p>
-
-                <p class="offer__small">
-                  Nothing is connected to your account, and nothing is posted, until you say so.
-                </p>
+                <p class="offer__text" data-plan-body>{copy.plan.body}</p>
+                <p class="offer__text" data-plan-body-starter hidden>{copy.plan.starterBody}</p>
               </div>
 
               <!-- The walk ends here, so it has to say where the door is. -->
               <p class="ways">
-                <button class="ways__link" type="button" data-restart>Read another page</button>
+                <button class="ways__link" type="button" data-restart>{copy.plan.ways.again}</button>
                 <span class="ways__sep" aria-hidden="true">·</span>
-                <a class="ways__link" href="/">Back to diwche.com</a>
+                <a class="ways__link" href="/">{copy.plan.ways.home}</a>
               </p>
             </div>
           )}
 
           {screen.kind === 'error' && (
             <div class="screen__inner">
-              <p class="screen__eyebrow screen__eyebrow--alarm">He stopped</p>
+              <p class="screen__eyebrow screen__eyebrow--alarm">{copy.runtime.errorEyebrow}</p>
               <h1 class="screen__title" data-error-message />
 
               <form class="lead" data-waiting-form novalidate hidden>
-                <p class="lead__title">Leave an address and he will send the read when he can.</p>
-                <label class="sr" for="waiting-email">Your email address</label>
+                <p class="lead__title">{copy.runtime.waitingTitle}</p>
+                <label class="sr" for="waiting-email">{copy.result.emailLabel}</label>
                 <input
                   class="start__input start__input--boxed"
                   id="waiting-email"
                   name="email"
                   type="email"
                   autocomplete="email"
-                  placeholder="you@example.com"
+                  placeholder={copy.result.placeholder}
                   required
                 />
                 <label class="lead__consent">
                   <input type="checkbox" data-waiting-consent />
-                  <span>Diwche may email me this read. No one else gets this address.</span>
+                  <span>{copy.result.consent}</span>
                 </label>
-                <p class="field__error" data-waiting-error hidden></p>
+                <p class="field__error" data-waiting-error hidden />
                 <button class="btn btn--wide" type="submit" data-waiting-submit>
-                  Send it when he can
+                  {copy.runtime.waitingCta}
                 </button>
               </form>
 
               <button class="btn btn--quiet btn--wide" type="button" data-retry>
-                Try another page
+                {copy.ui.retry}
               </button>
 
               <p class="ways">
-                <a class="ways__link" href="/">Back to diwche.com</a>
+                <a class="ways__link" href="/">{copy.plan.ways.home}</a>
               </p>
             </div>
           )}
@@ -503,6 +389,14 @@ const tips = [
 
   <template data-tpl="move">
     <li class="moves__item"><span data-f="text"></span></li>
+  </template>
+
+  <template data-tpl="rest">
+    <article class="rest__card">
+      <p class="rest__label" data-f="label"></p>
+      <p class="rest__title" data-f="title"></p>
+      <p class="rest__text" data-f="text"></p>
+    </article>
   </template>
 </div>
 
@@ -724,6 +618,88 @@ const tips = [
     font-size: 12px;
     color: var(--ink-3);
     margin-top: calc(var(--s-2) * -1);
+  }
+
+  /* Their own words, before the joke that answers them. Quiet and set back, so
+     it reads as something being repeated rather than something being said. */
+  .screen__quote {
+    margin-block: var(--s-3) var(--s-2);
+    padding-inline-start: var(--s-4);
+    border-inline-start: 2px solid var(--rule);
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    color: var(--ink-3);
+    max-width: 54ch;
+  }
+
+  /* The joke. It goes above the headline because it is the reason anyone reads
+     the headline. */
+  .screen__hook {
+    margin-block: var(--s-3);
+    font-size: var(--t-meta);
+    line-height: 1.6;
+    color: var(--horn);
+    max-width: 54ch;
+  }
+
+  .screen__mascot {
+    margin-block: var(--s-4);
+    display: flex;
+    justify-content: center;
+  }
+
+  .screen__mascot img {
+    width: min(220px, 42vw);
+    height: auto;
+  }
+
+  /* The cards shown while the read runs — everything he also does. */
+  .rest {
+    margin-top: var(--s-5);
+    display: grid;
+    /* Two across on anything wide enough. The card count varies from two to six
+       depending on what was picked, and two columns is the only width that
+       never leaves a single card stranded on a row of its own. */
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--s-4);
+    text-align: start;
+  }
+
+  .rest__card {
+    padding: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .rest__label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+  }
+
+  .rest__title {
+    margin-top: var(--s-2);
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .rest__text {
+    margin-top: var(--s-2);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-3);
+  }
+
+  /* The capture under the wait is scenery, not the subject. */
+  .screen__shot--quiet {
+    opacity: 0.55;
   }
 
   .screen__shot {
@@ -1321,6 +1297,15 @@ const tips = [
   .ways__link:hover {
     color: var(--ink-2);
     text-decoration-color: var(--horn);
+  }
+
+  .proj__headline {
+    margin-bottom: var(--s-4);
+    font-family: var(--font-display);
+    font-size: clamp(20px, 3vw, 26px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
   }
 
   .proj__working {

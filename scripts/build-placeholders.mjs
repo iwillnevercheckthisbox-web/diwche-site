@@ -171,33 +171,6 @@ const scenes = {
        <rect class="line" x="984" y="376" width="244" height="4" rx="2"/>
        <rect class="acc2" x="984" y="376" width="96" height="4" rx="2"/>`),
 
-  /* The studios — a real inspector with named controls. */
-  studios: () =>
-    chrome('Templates', 'Visual Studio', [{ text: 'Preview' }, { text: 'Publish', primary: true }]) +
-    card(284, 116, 620, 570, `<rect class="well" x="285" y="117" width="618" height="568" rx="10"/>
-      <rect class="line" x="330" y="160" width="528" height="330" rx="8"/>
-      <text class="t-meta" x="594" y="330" text-anchor="middle">1080 × 1350</text>
-      ${sk(400, 530, [388], 22, 'sk')}
-      ${sk(430, 566, [328])}
-      <rect class="horn" x="400" y="530" width="110" height="8" rx="4"/>`) +
-    card(932, 116, 324, 570,
-      [
-        ['Palette', 'Sapphire'],
-        ['Font', 'Vazirmatn'],
-        ['Character', 'The essayist'],
-        ['Language', 'Persian'],
-        ['Captions', 'Word by word'],
-        ['Safe zone', 'On'],
-      ]
-        .map(([label, value], i) =>
-          `<text class="t-body" x="960" y="${162 + i * 62}">${label}</text>
-           <rect class="line" x="1084" y="${146 + i * 62}" width="144" height="28" rx="7"/>
-           <text class="t-meta" x="1156" y="${164 + i * 62}" text-anchor="middle">${value}</text>`)
-        .join('') +
-        `<rect class="line" x="960" y="510" width="268" height="1"/>
-         <text class="t-label" x="960" y="540">LAYERS</text>
-         ${sk(960, 558, [180, 148, 200], 24)}`),
-
   /* Performance — real column headers, the account's own figures masked. */
   performance: () =>
     chrome('Performance', 'Performance', [{ text: 'Last 30 days' }, { text: 'Export' }]) +
@@ -227,6 +200,87 @@ const scenes = {
        ${['00', '04', '08', '12', '16', '20']
          .map((t, i) => `<text class="t-meta" x="${340 + i * 176}" y="666">${t}:00</text>`)
          .join('')}`),
+
+  /* The teleprompter — the controls are named, the script itself is masked. */
+  script: () =>
+    chrome('D1 Studio', 'D1 Studio', [{ text: 'Back' }, { text: 'Start recording', primary: true }]) +
+    card(284, 116, 640, 570,
+      `<rect class="line" x="284" y="116" width="640" height="570" rx="10"/>
+       <text class="t-label" x="312" y="152">TELEPROMPTER</text>
+       ${sk(312, 176, [560, 500, 584, 420], 30, 'sk')}
+       <rect class="line" x="312" y="316" width="584" height="1"/>
+       ${sk(312, 344, [520, 576, 470, 540, 380], 30)}
+       <rect class="acc" x="312" y="612" width="584" height="3" rx="1.5" opacity=".4"/>
+       <rect class="horn" x="312" y="612" width="210" height="3" rx="1.5"/>
+       <text class="t-meta" x="312" y="644">about 34s to say</text>` ) +
+    card(956, 116, 300, 270,
+      `<text class="t-label" x="984" y="150">SPEED</text>
+       <rect class="line" x="984" y="168" width="244" height="4" rx="2"/>
+       <rect class="horn" x="984" y="168" width="150" height="4" rx="2"/>
+       <text class="t-label" x="984" y="216">TEXT SIZE</text>
+       <rect class="line" x="984" y="234" width="244" height="4" rx="2"/>
+       <rect class="horn" x="984" y="234" width="96" height="4" rx="2"/>
+       <text class="t-meta" x="984" y="290">Mirror my view</text>
+       ${ghost(984, 312, 'Camera')}`) +
+    card(956, 406, 300, 280,
+      `<text class="t-label" x="984" y="440">THE FIRST LINE</text>
+       ${sk(984, 458, [230, 196, 244], 20, 'sk')}
+       <text class="t-label" x="984" y="546">THEN</text>
+       ${sk(984, 564, [214, 240, 180], 20)}`),
+
+  /* Replies — the columns are named, the conversation is masked. */
+  replies: () =>
+    chrome('Activity', 'Replies', [{ text: 'All accounts' }, { text: 'Settings' }]) +
+    `<text class="t-label" x="284" y="122">WAITING FOR HIM</text>` +
+    [0, 1, 2, 3]
+      .map((i) => {
+        const y = 138 + i * 138;
+        return card(284, y, 972, 118,
+          `<circle class="sk2" cx="320" cy="${y + 40}" r="18"/>
+           ${sk(352, y + 26, [150], 15, 'sk')}
+           ${sk(352, y + 52, [520 - i * 30])}
+           <rect class="horn" x="352" y="${y + 76}" width="2.5" height="26" rx="1.25"/>
+           <text class="t-meta" x="366" y="${y + 94}">His reply</text>
+           ${sk(428, y + 87, [430 - i * 24])}
+           ${pill(1080, y + 74, 'Send')}
+           ${ghost(1148, y + 74, 'Edit')}`);
+      })
+      .join(''),
+
+  /* The starter — ten topics built from one idea, all of them masked. */
+  starter: () =>
+    chrome('Ideas', 'Ideas', [{ text: 'From your idea' }, { text: '10 more', primary: true }]) +
+    `<text class="t-label" x="284" y="122">WHERE HE WOULD START</text>` +
+    Array.from({ length: 10 }, (_, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = 284 + col * 496;
+      const y = 138 + row * 112;
+      return card(x, y, 476, 96,
+        `<rect class="horn" x="${x}" y="${y}" width="3" height="96" rx="1.5"/>
+         <text class="t-meta" x="${x + 28}" y="${y + 28}">${['Reel', 'Carousel', 'Photo'][i % 3]}</text>
+         ${sk(x + 28, y + 42, [340 - col * 40], 15, 'sk')}
+         ${sk(x + 28, y + 66, [400 - col * 30])}`);
+    }).join(''),
+
+  /* Activity — the status vocabulary is real, every row's content is masked. */
+  activity: () =>
+    chrome('Activity', 'Activity Log', [{ text: 'All accounts' }, { text: 'Posted' }]) +
+    card(284, 116, 972, 570,
+      `${['PREVIEW', 'TITLE', 'SOURCE', 'STATUS', 'POSTED AT']
+        .map((h, i) => `<text class="t-label" x="${312 + [0, 150, 470, 640, 800][i]}" y="150">${h}</text>`)
+        .join('')}
+       <rect class="line" x="312" y="164" width="916" height="1"/>
+       ${Array.from({ length: 8 }, (_, i) => {
+         const y = 196 + i * 60;
+         const status = ['Posted', 'Posted', 'Scheduled', 'Posted', 'In progress', 'Posted', 'Posted', 'Skipped'][i];
+         return `<rect class="sk2" x="312" y="${y - 14}" width="40" height="40" rx="6"/>
+                 ${sk(462, y - 4, [250 - (i % 3) * 40], 15, 'sk')}
+                 ${sk(782, y - 4, [110])}
+                 ${pill(952, y - 12, status, i === 4 ? 'sk2' : 'acc')}
+                 ${sk(1112, y - 4, [96])}
+                 <rect class="line" x="312" y="${y + 30}" width="916" height="1"/>`;
+       }).join('')}`),
 };
 
 for (const [name, draw] of Object.entries(scenes)) {

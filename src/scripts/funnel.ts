@@ -1,27 +1,31 @@
 /**
  * The funnel's clock.
  *
- * Three things here are worth knowing before changing anything.
+ * Four things here are worth knowing before changing anything.
  *
- * 1. The read starts at the handle screen and runs underneath every question
- *    after it. By the time the analysing screen appears the work is usually
- *    already done, which is why that screen is a short honest wait rather than
- *    a staged one — and why the handle is asked early rather than at the end.
- * 2. A single-answer screen advances on tap. There is no Next button to press,
+ * 1. **The walk is not a fixed length.** Every screen is in the DOM, but only
+ *    some are in the walk: a screen carrying `data-when="blockers:ideas"` joins
+ *    it the moment that answer is given. So the step total is recomputed after
+ *    every answer, and is a runtime value — never a number baked into markup.
+ * 2. **The read starts at the end now.** The handle is asked on the last screen
+ *    before the analysing one, where it used to be asked third. There is no
+ *    longer a run of questions to hide the work behind, so the analysing screen
+ *    carries the rest of the product instead of a spinner, and it is allowed to
+ *    take longer.
+ * 3. A single-answer screen advances on tap. There is no Next button to press,
  *    so the only screens that carry one are the ones where several answers are
  *    allowed and the funnel cannot know when you are finished.
- * 3. Progress survives a reload. The answers, the step and the audit id are
- *    kept, and the read is re-attached by id rather than started again.
+ * 4. Progress survives a reload — by screen id, not by index. An index is a
+ *    promise that the walk never changes shape, and this walk changes shape in
+ *    the middle of itself.
  */
 import {
   ApiError,
   getAudit,
-  getTopics,
   requestProof,
   saveLead,
   saveWaitingLead,
   startAudit,
-  startIdea,
   watchAudit,
   type Answers,
   type AuditErrorKind,
@@ -32,33 +36,96 @@ import {
 
 const HANDLE = /^@?[A-Za-z0-9._]{1,30}$/;
 const STORE = 'diwche-funnel';
-/** Long enough that the ring reads as work, short enough not to be a stall. */
-const MIN_ANALYZING = 2600;
-const TIP_EVERY = 4200;
+/**
+ * Bumped whenever the saved shape or the screen ids change.
+ *
+ * Saved state used to be a bare step index, which silently means "the walk will
+ * always look like this". It will not: a stored index from the old thirteen-step
+ * walk resolves to a different screen, and an over-large one is clamped straight
+ * onto the last one. State that does not match this version is dropped.
+ */
+const SAVE_VERSION = 2;
+/**
+ * The wait, which is now doing real work rather than covering for it.
+ *
+ * The handle is asked on the screen immediately before this one, so unlike the
+ * old walk there is no head start — this is the whole budget for the read. The
+ * cards shown underneath are written for exactly this length.
+ */
+const MIN_ANALYZING = 3400;
 /** The circumference the ring's stroke-dasharray is cut to. */
 const RING = 327;
+/** Screen order for the four blockers, and so the order of the cards. */
+const BLOCKERS = ['ideas', 'editing', 'script', 'dm'] as const;
+/** Past these there are no steps left to take, so the counter stops describing them. */
+const CLOSING = new Set(['analyzing', 'result', 'plan']);
+
+/**
+ * The one string said outside `run()`, so it cannot read the payload from the
+ * element. Set once the funnel is found; the default is only ever seen if the
+ * page shipped without its copy block, which would be a build error.
+ */
+let FALLBACK_GENERIC = 'Something went wrong on our side, not yours.';
 
 const root = document.querySelector<HTMLElement>('[data-funnel]');
 if (root) run(root);
 
+/**
+ * The runtime strings, read from the page rather than imported.
+ *
+ * Importing them would mean bundling every language into every page. Reading
+ * them from a JSON block means one script serves `/read` and `/fa/read`, and
+ * each page carries only its own words.
+ */
+function readCopy(root: HTMLElement): RuntimeCopy {
+  const payload = root.querySelector<HTMLElement>('[data-copy]');
+  const parsed = JSON.parse(payload?.textContent ?? '{}') as RuntimeCopy;
+  if (parsed.runtime?.generic) FALLBACK_GENERIC = parsed.runtime.generic;
+  return parsed;
+}
+
 interface Saved {
-  step: number;
+  v: number;
+  /** The screen id, not its position. Positions move; ids do not. */
+  screen: string;
   answers: Answers;
   auditId: string | null;
   handle: string;
   branch: 'page' | 'idea';
 }
 
+/**
+ * The slice of `FunnelCopy` the script needs, mirrored here because the script
+ * reads it out of the page as JSON rather than importing the module.
+ */
+interface RuntimeCopy {
+  ui: {
+    continue: string;
+    next: string;
+    retry: string;
+    of: string;
+    working: string;
+    sent: string;
+    copy: string;
+    copied: string;
+    copyByHand: string;
+  };
+  runtime: Record<string, string>;
+  result: Record<string, string>;
+}
+
 function run(root: HTMLElement) {
   const screens = Array.from(root.querySelectorAll<HTMLElement>('[data-screen]'));
-  const steps = screens.filter((s) => s.dataset.kind !== 'error');
   const errorScreen = screens.find((s) => s.dataset.kind === 'error') ?? null;
 
   const backBtn = root.querySelector<HTMLElement>('[data-back]');
   const progress = root.querySelector<HTMLElement>('[data-progress]');
   const countNow = root.querySelector<HTMLElement>('[data-step-now]');
+  const countTotal = root.querySelector<HTMLElement>('[data-step-total]');
   const countWrap = root.querySelector<HTMLElement>('.bar__count');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const say = readCopy(root);
 
   let index = 0;
   let answers: Answers = {};
@@ -66,17 +133,74 @@ function run(root: HTMLElement) {
   let handle = '';
   let branch: 'page' | 'idea' = 'page';
 
+  /**
+   * The screens actually in the walk, recomputed whenever an answer changes.
+   *
+   * Everything is in the DOM; this is the subset that is currently part of it.
+   */
+  let steps: HTMLElement[] = [];
+
   /** The read, running underneath the questions. Settled or not, it lives here. */
   let read: Promise<AuditResult | Topic[]> | null = null;
   let readFailed: unknown = null;
   let readProgress = 0;
-  let readLine = 'Finding the page…';
+  let readLine = say.runtime.reading;
+
+  // ---- Which screens are in the walk ----------------------------------------
+
+  /**
+   * A screen with no condition is always in. One with `data-when="q:value"` is
+   * in only while that answer holds — which is how picking two blockers gives
+   * you two insight screens and picking four gives you four.
+   */
+  function isActive(screen: HTMLElement): boolean {
+    if (screen.dataset.kind === 'error') return false;
+    const when = screen.dataset.when;
+    if (!when) return true;
+    const at = when.indexOf(':');
+    const key = when.slice(0, at);
+    const value = when.slice(at + 1);
+    const answer = answers[key];
+    return Array.isArray(answer) ? answer.includes(value) : answer === value;
+  }
+
+  /**
+   * Rebuild the walk, keeping the visitor on the screen they are looking at.
+   *
+   * Answering Q2 inserts screens *after* the current one, so the index of the
+   * live screen can change underneath us. Re-finding it by identity means the
+   * screen never jumps when the walk grows.
+   */
+  function recomputeSteps() {
+    const live: HTMLElement | undefined = steps[index];
+    steps = screens.filter(isActive);
+    const at = live ? steps.indexOf(live) : -1;
+    if (at >= 0) index = at;
+  }
+
+  /**
+   * How many steps the counter is counting.
+   *
+   * Not `steps.length`: the analysing, result and plan screens are not steps
+   * anyone takes, and including them meant the bar could never visibly finish.
+   */
+  function walkLength(): number {
+    const end = steps.findIndex((s) => CLOSING.has(s.dataset.kind ?? ''));
+    return end < 0 ? steps.length : end;
+  }
 
   // ---- Persistence ---------------------------------------------------------
 
   function save() {
     try {
-      const state: Saved = { step: index, answers, auditId, handle, branch };
+      const state: Saved = {
+        v: SAVE_VERSION,
+        screen: steps[index]?.dataset.screen ?? '',
+        answers,
+        auditId,
+        handle,
+        branch,
+      };
       sessionStorage.setItem(STORE, JSON.stringify(state));
     } catch {
       /* Private mode. Losing the ability to resume is not worth an error. */
@@ -86,7 +210,15 @@ function run(root: HTMLElement) {
   function restore(): Saved | null {
     try {
       const raw = sessionStorage.getItem(STORE);
-      return raw ? (JSON.parse(raw) as Saved) : null;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as Partial<Saved>;
+      // State from a walk that no longer exists is worse than no state: it
+      // resolves to a different screen, or gets clamped onto the last one.
+      if (parsed.v !== SAVE_VERSION || typeof parsed.screen !== 'string') {
+        forget();
+        return null;
+      }
+      return parsed as Saved;
     } catch {
       return null;
     }
@@ -111,9 +243,11 @@ function run(root: HTMLElement) {
       s.toggleAttribute('data-reverse', on && reverse);
     }
 
-    const pct = ((index + 1) / steps.length) * 100;
+    const total = Math.max(1, walkLength());
+    const pct = Math.min(100, ((index + 1) / total) * 100);
     if (progress) progress.style.width = `${pct}%`;
-    if (countNow) countNow.textContent = String(index + 1);
+    if (countNow) countNow.textContent = String(Math.min(index + 1, total));
+    if (countTotal) countTotal.textContent = String(total);
 
     // Past the analysing screen there are no more steps to take, so a counter
     // and a back arrow would both be describing something that is over.
@@ -163,12 +297,49 @@ function run(root: HTMLElement) {
   /** Work that has to happen the moment a particular screen becomes live. */
   function onEnter(screen: HTMLElement | undefined) {
     if (!screen) return;
-    if (screen.dataset.kind === 'analyzing') void runAnalyzing();
+    if (screen.dataset.kind === 'analyzing') {
+      renderRest(screen);
+      void runAnalyzing();
+    }
+  }
+
+  /**
+   * The rest of the product, shown while the read runs.
+   *
+   * Deliberately the blockers they did *not* pick: the ones they did have each
+   * had a screen of their own already, and repeating them here would waste the
+   * only place left to mention everything else. Account identity and scheduling
+   * are never asked about, so they always appear.
+   */
+  function renderRest(screen: HTMLElement) {
+    const host = screen.querySelector<HTMLElement>('[data-rest]');
+    const payload = screen.querySelector<HTMLElement>('[data-features]');
+    if (!host || !payload || host.childElementCount) return;
+
+    let features: Record<string, { label: string; title: string; text: string }> = {};
+    try {
+      features = JSON.parse(payload.textContent ?? '{}');
+    } catch {
+      return;
+    }
+
+    const picked = Array.isArray(answers.blockers) ? answers.blockers : [];
+    const keys = [...BLOCKERS.filter((b) => !picked.includes(b)), 'identity', 'scheduling'];
+
+    for (const key of keys) {
+      const card = features[key];
+      if (!card) continue;
+      const el = tpl('rest');
+      field(el, 'label')!.textContent = card.label;
+      field(el, 'title')!.textContent = card.title;
+      field(el, 'text')!.textContent = card.text;
+      host.append(el);
+    }
   }
 
   // ---- Questions -------------------------------------------------------------
 
-  for (const screen of steps) {
+  for (const screen of screens) {
     if (screen.dataset.kind !== 'question') continue;
     const id = screen.dataset.screen!;
     const multi = Boolean(screen.querySelector('[data-continue]'));
@@ -188,6 +359,9 @@ function run(root: HTMLElement) {
             .map((o) => o.dataset.option!);
           answers[id] = picked;
           if (cont) cont.disabled = picked.length === 0;
+          // Picking a blocker adds a screen to the walk; unpicking removes it.
+          recomputeSteps();
+          paint(false);
           save();
           return;
         }
@@ -195,7 +369,8 @@ function run(root: HTMLElement) {
         for (const other of options) other.removeAttribute('data-chosen');
         option.setAttribute('data-chosen', '');
         answers[id] = value;
-        if (id === 'goal') applyGoal(value);
+        if (id === 'stage') applyStage(value);
+        recomputeSteps();
         save();
         // A beat, so the choice is visibly registered before the screen leaves.
         setTimeout(next, reduced ? 0 : 220);
@@ -206,32 +381,31 @@ function run(root: HTMLElement) {
   }
 
   /**
-   * Someone with no page yet cannot have one read, so the same screen asks for
-   * the subject instead and the whole flow switches to the idea branch.
+   * Q1 decides two things: which branch of the walk runs, and how Q2 is worded.
+   *
+   * Someone with no page yet cannot have one read, so their branch asks for a
+   * subject instead of a handle. And "why haven't you started posting" is an
+   * odd thing to ask a person who posts daily, so the same question is worded
+   * twice and the answer to this one picks which wording is shown.
    */
-  function applyGoal(value: string) {
+  function applyStage(value: string) {
     branch = value === 'new' ? 'idea' : 'page';
-    const start = steps.find((s) => s.dataset.kind === 'start');
-    if (!start) return;
-    const title = start.querySelector<HTMLElement>('[data-start-title]');
-    const lead = start.querySelector<HTMLElement>('[data-start-lead]');
-    const handleWrap = start.querySelector<HTMLElement>('[data-handle-wrap]');
-    const ideaWrap = start.querySelector<HTMLElement>('[data-idea-wrap]');
 
-    if (branch === 'idea') {
-      if (title) title.textContent = 'What would the page be about?';
-      if (lead)
-        lead.textContent =
-          'He cannot read a page that does not exist yet, so tell him the subject and he will work out the angles worth building it on.';
-      if (handleWrap) handleWrap.hidden = true;
-      if (ideaWrap) ideaWrap.hidden = false;
-    } else {
-      if (title) title.textContent = 'Which page should he read?';
-      if (lead)
-        lead.textContent =
-          'He reads only what your profile already shows. No password, and nothing is connected until you say so.';
-      if (handleWrap) handleWrap.hidden = false;
-      if (ideaWrap) ideaWrap.hidden = true;
+    for (const screen of screens) {
+      const title = screen.querySelector<HTMLElement>('[data-title][data-title-when]');
+      if (!title) continue;
+      // Remember the authored wording once, so going back and changing the
+      // answer restores it rather than leaving the variant behind.
+      if (title.dataset.titleDefault === undefined) {
+        title.dataset.titleDefault = title.textContent ?? '';
+      }
+      let variants: Record<string, string> = {};
+      try {
+        variants = JSON.parse(title.dataset.titleWhen ?? '{}') as Record<string, string>;
+      } catch {
+        variants = {};
+      }
+      title.textContent = variants[value] ?? title.dataset.titleDefault ?? '';
     }
   }
 
@@ -245,41 +419,44 @@ function run(root: HTMLElement) {
 
   // ---- The handle, and the read that starts here --------------------------------
 
-  const startForm = root.querySelector<HTMLFormElement>('[data-start-form]');
-  startForm?.addEventListener('submit', (ev) => {
-    ev.preventDefault();
-    const error = startForm.querySelector<HTMLElement>('[data-start-error]');
-
-    if (branch === 'idea') {
-      const idea = startForm.querySelector<HTMLTextAreaElement>('#idea')!.value.trim();
-      if (idea.length < 3) {
+  // There are two of these now — a handle to read, and an idea to build from —
+  // and which one is in the walk was decided back on Q1.
+  for (const form of root.querySelectorAll<HTMLFormElement>('[data-start-form]')) {
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const error = form.querySelector<HTMLElement>('[data-start-error]');
+      const complain = (message: string) => {
         if (error) {
-          error.textContent = 'A sentence is enough, but he needs one.';
+          error.textContent = message;
           error.hidden = false;
         }
+      };
+
+      if (form.dataset.field === 'idea') {
+        const idea = form.querySelector<HTMLTextAreaElement>('[data-idea]')!.value.trim();
+        if (idea.length < 3) {
+          complain(say.runtime.ideaTooShort);
+          return;
+        }
+        if (error) error.hidden = true;
+        answers.idea = idea;
+        beginIdea(idea);
+        next();
+        return;
+      }
+
+      const value = form.querySelector<HTMLInputElement>('[data-handle]')!.value.trim();
+      if (!HANDLE.test(value)) {
+        complain(say.runtime.handleInvalid);
         return;
       }
       if (error) error.hidden = true;
-      answers.idea = idea;
-      beginIdea(idea);
+      handle = value.replace(/^@/, '');
+      answers.handle = handle;
+      beginRead(handle);
       next();
-      return;
-    }
-
-    const value = startForm.querySelector<HTMLInputElement>('#handle')!.value.trim();
-    if (!HANDLE.test(value)) {
-      if (error) {
-        error.textContent = 'That is not an Instagram handle — letters, numbers, dots.';
-        error.hidden = false;
-      }
-      return;
-    }
-    if (error) error.hidden = true;
-    handle = value.replace(/^@/, '');
-    answers.handle = handle;
-    beginRead(handle);
-    next();
-  });
+    });
+  }
 
   function track(id: string) {
     auditId = id;
@@ -300,20 +477,25 @@ function run(root: HTMLElement) {
     });
   }
 
+  /**
+   * The starter branch, which has nothing to read.
+   *
+   * There is no page, no handle and no numbers — and the endpoints that would
+   * turn an idea into topics do not exist on the backend yet. So this asks for
+   * nothing and promises nothing: the walk still reaches the address, and the
+   * direction he would take the idea in is sent by email rather than claimed on
+   * screen. When those endpoints land, this becomes a real call and the
+   * starter branch gets its findings.
+   */
   function beginIdea(idea: string) {
+    void idea;
     read = (async () => {
-      const started = await startIdea(idea, await turnstileToken());
-      auditId = started.id;
-      save();
-      readProgress = 0.5;
-      readLine = 'Turning it over…';
-      const { topics } = await getTopics(started.id, 'idea', idea);
+      readProgress = 0.55;
+      readLine = say.runtime.thinking;
+      await new Promise((r) => setTimeout(r, 600));
       readProgress = 1;
-      return topics;
-    })().catch((err) => {
-      readFailed = err;
-      throw err;
-    });
+      return [] as Topic[];
+    })();
   }
 
   /** Re-attach to a read already in flight, after a reload. */
@@ -343,16 +525,6 @@ function run(root: HTMLElement) {
     const ring = screen?.querySelector<SVGCircleElement>('[data-ring]');
     const pct = screen?.querySelector<HTMLElement>('[data-pct]');
     const line = screen?.querySelector<HTMLElement>('[data-analyzing-line]');
-    const tip = screen?.querySelector<HTMLElement>('[data-tip]');
-    const tipsPayload = screen?.querySelector<HTMLElement>('[data-tips]');
-
-    let tips: string[] = [];
-    try {
-      tips = JSON.parse(tipsPayload?.textContent ?? '[]') as string[];
-    } catch {
-      tips = [];
-    }
-
     // The ring never shows the raw figure. A read that is already finished
     // would snap to full the moment this screen opened, which looks like a bug
     // rather than like speed, so it is eased towards wherever the work is.
@@ -367,21 +539,6 @@ function run(root: HTMLElement) {
     };
     const ticker = setInterval(paintRing, 60);
 
-    let tipIndex = 0;
-    const tipTimer = tips.length
-      ? setInterval(() => {
-          tipIndex = (tipIndex + 1) % tips.length;
-          tip?.setAttribute('data-fading', '');
-          setTimeout(
-            () => {
-              if (tip) tip.textContent = tips[tipIndex];
-              tip?.removeAttribute('data-fading');
-            },
-            reduced ? 0 : 220
-          );
-        }, TIP_EVERY)
-      : null;
-
     const settle = new Promise((r) => setTimeout(r, MIN_ANALYZING));
 
     try {
@@ -390,11 +547,9 @@ function run(root: HTMLElement) {
       // Let the ring visibly reach the end before the screen changes.
       await new Promise((r) => setTimeout(r, reduced ? 0 : 700));
       clearInterval(ticker);
-      if (tipTimer) clearInterval(tipTimer);
       showResult(value);
     } catch (err) {
       clearInterval(ticker);
-      if (tipTimer) clearInterval(tipTimer);
       const e = readFailed ?? err;
       fail(messageFor(e), kindFor(e));
     } finally {
@@ -420,15 +575,20 @@ function run(root: HTMLElement) {
     const headline = screen?.querySelector<HTMLElement>('[data-result-headline]');
     const factsHost = screen?.querySelector<HTMLElement>('[data-facts]');
     const topicsHost = screen?.querySelector<HTMLElement>('[data-topics]');
-    const leadTitle = screen?.querySelector<HTMLElement>('[data-lead-title]');
+    const eyebrow = screen?.querySelector<HTMLElement>('.screen__eyebrow');
+    const teaser = screen?.querySelector<HTMLElement>('.lead__title');
 
     if (Array.isArray(value)) {
-      // The idea branch: nothing was measured, so there is nothing to claim.
-      // Three angles is the honest equivalent of five findings.
-      if (headline) headline.textContent = 'Three angles he would build it on.';
+      // The starter branch. Nothing was measured, so nothing is claimed — and
+      // in particular no blurred report, because a report implies an analysis
+      // of a page we have never seen. The address is asked for on its own
+      // honest footing instead.
+      if (eyebrow) eyebrow.textContent = say.result.starterEyebrow;
+      if (headline) headline.textContent = '';
+      if (teaser) teaser.textContent = say.result.starterTeaser;
       if (factsHost) factsHost.hidden = true;
       if (topicsHost) {
-        topicsHost.hidden = false;
+        topicsHost.hidden = value.length === 0;
         topicsHost.textContent = '';
         for (const topic of value) {
           const el = tpl('topic');
@@ -438,7 +598,6 @@ function run(root: HTMLElement) {
           topicsHost.append(el);
         }
       }
-      if (leadTitle) leadTitle.textContent = 'Where should he send the rest?';
     } else {
       result = value;
       if (headline) headline.textContent = value.headline;
@@ -493,7 +652,7 @@ function run(root: HTMLElement) {
     const screen = steps.find((s) => s.dataset.kind === 'plan');
     const wrap = screen?.querySelector<HTMLElement>('[data-projection]');
     const assumption = screen?.querySelector<HTMLElement>('[data-projection-assumption]');
-    const headline = screen?.querySelector<HTMLElement>('[data-plan-headline]');
+    const headline = screen?.querySelector<HTMLElement>('[data-projection-headline]');
 
     // Too few posts to say anything honest is a legitimate answer, and a
     // skipped panel is better than a number we do not have.
@@ -556,7 +715,7 @@ function run(root: HTMLElement) {
     }
     if (error) error.hidden = true;
     submit.disabled = true;
-    submit.textContent = 'One moment…';
+    submit.textContent = say.ui.working;
 
     try {
       if (auditId) await saveLead(auditId, email, consent, answers, await turnstileToken());
@@ -571,7 +730,7 @@ function run(root: HTMLElement) {
         error.hidden = false;
       }
       submit.disabled = false;
-      submit.textContent = 'Show me the rest';
+      submit.textContent = say.result.cta;
     }
   });
 
@@ -595,7 +754,7 @@ function run(root: HTMLElement) {
     submit.disabled = true;
     try {
       await saveWaitingLead(handle, email, consent, answers, await turnstileToken());
-      submit.textContent = 'He has it';
+      submit.textContent = say.ui.sent;
     } catch (err) {
       if (error) {
         error.textContent = messageFor(err);
@@ -606,13 +765,29 @@ function run(root: HTMLElement) {
   });
 
   function check(email: string, consent: boolean): string | null {
-    if (!email.includes('@') || email.length < 5) return 'That address does not look right.';
-    if (!consent) return 'Tick the box and he will know he may write to you.';
+    if (!email.includes('@') || email.length < 5) return say.runtime.emailInvalid;
+    if (!consent) return say.runtime.consentMissing;
     return null;
   }
 
   async function toPlan() {
     go(steps.findIndex((s) => s.dataset.kind === 'plan'));
+
+    // The starter branch has no breakdown to promise, so it is told what it
+    // will actually get.
+    const starter = branch === 'idea';
+    const body = root.querySelector<HTMLElement>('[data-plan-body]');
+    const starterBody = root.querySelector<HTMLElement>('[data-plan-body-starter]');
+    if (body) body.hidden = starter;
+    if (starterBody) starterBody.hidden = !starter;
+
+    // "Here is your complete breakdown" is a promise kept only on the branch
+    // that had a page to read.
+    const planTitle = root.querySelector<HTMLElement>('[data-plan-headline]');
+    if (planTitle && starter && planTitle.dataset.planHeadlineStarter) {
+      planTitle.textContent = planTitle.dataset.planHeadlineStarter;
+    }
+
     const block = root.querySelector<HTMLElement>('[data-proof-block]');
     const fallback = root.querySelector<HTMLElement>('[data-proof-fallback]');
 
@@ -648,10 +823,10 @@ function run(root: HTMLElement) {
     const code = root.querySelector<HTMLElement>('[data-proof-code]')?.textContent ?? '';
     try {
       await navigator.clipboard.writeText(code);
-      button.textContent = 'Copied';
-      setTimeout(() => (button.textContent = 'Copy the code'), 1800);
+      button.textContent = say.ui.copied;
+      setTimeout(() => (button.textContent = say.ui.copy), 1800);
     } catch {
-      button.textContent = 'Copy it by hand';
+      button.textContent = say.ui.copyByHand;
     }
   });
 
@@ -668,27 +843,36 @@ function run(root: HTMLElement) {
   // ---- Start ------------------------------------------------------------------------
 
   const saved = restore();
-  if (saved && saved.step > 0) {
+  if (saved && saved.screen) {
     answers = saved.answers ?? {};
     auditId = saved.auditId;
     handle = saved.handle ?? '';
     branch = saved.branch ?? 'page';
-    if (typeof answers.goal === 'string') applyGoal(answers.goal);
+    if (typeof answers.stage === 'string') applyStage(answers.stage);
+    recomputeSteps();
     restoreChoices();
     // A read already in flight is picked back up by id rather than paid for
     // twice, which also means a reload never costs a second scrape.
     if (auditId) resumeRead(auditId);
+
+    // Resolve by id. If the screen is no longer in the walk — the answer that
+    // put it there has gone — fall back to the start rather than guessing.
+    let at = steps.findIndex((s) => s.dataset.screen === saved.screen);
+    const kind = at >= 0 ? steps[at]?.dataset.kind : '';
     // Landing straight back on the analysing screen with no read behind it
-    // would hang, so that one step goes back to the handle.
-    const kind = steps[saved.step]?.dataset.kind;
-    const safe = !auditId && (kind === 'analyzing' || kind === 'result' || kind === 'plan');
-    go(safe ? steps.findIndex((s) => s.dataset.kind === 'start') : saved.step);
+    // would hang, so that one goes back to the screen that asks.
+    if (at < 0 || (!auditId && CLOSING.has(kind ?? ''))) {
+      const asks = steps.findIndex((s) => s.dataset.kind === 'start');
+      at = asks >= 0 ? asks : 0;
+    }
+    go(at);
   } else {
+    recomputeSteps();
     go(0);
   }
 
   function restoreChoices() {
-    for (const screen of steps) {
+    for (const screen of screens) {
       const id = screen.dataset.screen;
       if (!id || !(id in answers)) continue;
       const value = answers[id];
@@ -804,7 +988,7 @@ async function waitForTurnstile(): Promise<TurnstileApi | null> {
 
 function messageFor(err: unknown): string {
   if (err instanceof ApiError) return err.message;
-  return 'Something went wrong on our side, not yours.';
+  return FALLBACK_GENERIC;
 }
 
 function kindFor(err: unknown): AuditErrorKind {
