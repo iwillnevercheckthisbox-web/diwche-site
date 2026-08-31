@@ -1,22 +1,29 @@
 ---
 import '@fontsource-variable/fraunces/full.css';
 import '@fontsource-variable/geist';
+// Neither Latin face has Persian coverage; without this the Farsi site falls
+// through to whatever the OS substitutes.
+import '@fontsource-variable/vazirmatn';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
 
 interface Props {
   title: string;
   description: string;
+  locale?: Locale;
 }
 
-const { title, description } = Astro.props;
+const { title, description, locale = DEFAULT_LOCALE } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Direction follows the content language, resolved in one place.
+const dir = dirFor(locale);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale} dir={dir}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

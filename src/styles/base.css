@@ -48,6 +48,48 @@ body {
   background-attachment: fixed, fixed, scroll;
 }
 
+/*
+ * Persian typography.
+ *
+ * Not a font swap — three of the Latin type rules are actively wrong for
+ * Arabic script and have to be switched off rather than adjusted:
+ *
+ * - Negative tracking pulls cursive letters into each other. The whole scale is
+ *   authored with it (-0.035em at hero, -0.01em at body); at zero the script
+ *   joins the way it is supposed to.
+ * - `text-transform: uppercase` does nothing to Persian and would only ever
+ *   apply to a stray Latin word inside a Persian line, which then shouts.
+ * - The Latin line-heights are tight (1.08 display, 1.65 body). Persian
+ *   ascenders, descenders and diacritics need more room than that.
+ *
+ * Keyed on the language, not on direction: an RTL language with a different
+ * script would want its own face, and a Persian line inside an English page is
+ * still Persian.
+ */
+:root:lang(fa) body,
+[lang='fa'] body {
+  font-family: var(--font-fa);
+  letter-spacing: 0;
+  line-height: 1.9;
+}
+
+[lang='fa'] h1,
+[lang='fa'] h2,
+[lang='fa'] h3,
+[lang='fa'] h4 {
+  font-family: var(--font-fa);
+  font-variation-settings: normal;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+[lang='fa'] [class*='eyebrow'],
+[lang='fa'] [class*='label'],
+[lang='fa'] [class*='__group'] {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 h1,
 h2,
 h3,

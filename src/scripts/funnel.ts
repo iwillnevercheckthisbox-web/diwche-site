@@ -633,7 +633,7 @@ function run(root: HTMLElement) {
         });
         const mark = field(el, 'meter-mark');
         if (mark && typeof fact.meter.benchmark === 'number') {
-          mark.style.left = `${Math.max(0, Math.min(100, (fact.meter.benchmark / fact.meter.max) * 100))}%`;
+          mark.style.insetInlineStart = `${Math.max(0, Math.min(100, (fact.meter.benchmark / fact.meter.max) * 100))}%`;
         } else if (mark) {
           mark.hidden = true;
         }

@@ -18,6 +18,7 @@ import Screenshot from '../Screenshot.astro';
 import { ICONS } from './icons';
 import { EN } from './copy.en';
 import type { FunnelCopy } from './types';
+import { ENDONYM, isLocale, pathIn, type Locale } from '../../lib/direction';
 
 interface Props {
   /** False until the backend serves `/api/public/*`. Only changes what is said. */
@@ -27,6 +28,17 @@ interface Props {
 
 const { connected = false, copy = EN } = Astro.props;
 const screens = copy.screens;
+
+/**
+ * The other language, and where this page lives in it.
+ *
+ * The answers survive the switch untouched: they are stored as values like
+ * `active` and `ideas`, which are the same word in both languages, so someone
+ * who switches half-way through keeps their place rather than starting again.
+ */
+const here: Locale = isLocale(copy.locale) ? (copy.locale as Locale) : 'en';
+const other: Locale = here === 'fa' ? 'en' : 'fa';
+const otherHref = pathIn(other, Astro.url.pathname);
 
 /**
  * The step total is decided at runtime, not here.
@@ -61,7 +73,10 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19l-7-7 7-7" /></svg>
     </button>
     <div class="bar__track" role="presentation"><i data-progress></i></div>
-    <p class="bar__count"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
+    <p class="bar__count" dir="ltr"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
+    <a class="bar__lang" href={otherHref} hreflang={other} lang={other} rel="alternate">
+      {ENDONYM[other]}
+    </a>
   </header>
 
   <!-- ============================================================== SCREENS -->
@@ -401,7 +416,12 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 </div>
 
 <style>
+  /* Forward comes from the end edge and back from the start edge, whichever
+     those are. Without this the whole walk animates backwards in Persian:
+     "going back should not look like going forward" cuts both ways. */
   .funnel {
+    --slide-in: 16px;
+    --slide-back: -16px;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -423,10 +443,40 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
   /* ---- The bar ------------------------------------------------------------ */
 
+  :global([dir='rtl']) .funnel {
+    --slide-in: -16px;
+    --slide-back: 16px;
+  }
+
+  :global([dir='rtl']) .bar__track i,
+  :global([dir='rtl']) .meter__fill {
+    background: linear-gradient(to left, var(--accent) 0%, var(--accent-soft) 100%);
+  }
+
+  /*
+   * Persian small-caps labels, switched off rather than adjusted.
+   *
+   * Arabic script has no case, so `uppercase` can only ever fire on a stray
+   * Latin word inside a Persian line — which then shouts. And positive tracking
+   * breaks cursive joining outright: the letters stop connecting.
+   *
+   * This lives here rather than in base.css because Astro scopes component
+   * styles with a generated attribute, which outranks any plain selector from a
+   * global stylesheet. The rule has to be written where the rule it overrides is.
+   */
+  :global([lang='fa']) .screen__eyebrow,
+  :global([lang='fa']) .rest__label,
+  :global([lang='fa']) .fact__label,
+  :global([lang='fa']) .topic__format,
+  :global([lang='fa']) .gain__label {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
   .bar {
     flex: none;
     display: grid;
-    grid-template-columns: 2.5rem 1fr 3.5rem;
+    grid-template-columns: 2.5rem 1fr auto auto;
     align-items: center;
     gap: var(--s-4);
     padding: var(--s-4) var(--s-5);
@@ -480,16 +530,31 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     display: block;
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-soft) 100%);
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent-soft) 100%);
     /* Width, not transform: a 3px rule has no layout to thrash, and a scaled
        bar smears its own gradient. */
     transition: width var(--dur-slow) var(--ease-in-out);
   }
 
+  /* Set in its own language, so it is legible to the person it is for. */
+  .bar__lang {
+    flex: none;
+    font-size: 12px;
+    color: var(--ink-3);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+  }
+
+  .bar__lang:hover {
+    color: var(--ink-2);
+    text-decoration-color: var(--horn);
+  }
+
   .bar__count {
     font-size: 12px;
     color: var(--ink-3);
-    text-align: right;
+    text-align: end;
     font-variant-numeric: tabular-nums;
   }
 
@@ -545,14 +610,14 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   @keyframes screen-in {
     from {
       opacity: 0;
-      transform: translateX(16px) scale(0.98);
+      transform: translateX(var(--slide-in, 16px)) scale(0.98);
     }
   }
 
   @keyframes screen-back {
     from {
       opacity: 0;
-      transform: translateX(-16px) scale(0.98);
+      transform: translateX(var(--slide-back, -16px)) scale(0.98);
     }
   }
 
@@ -724,7 +789,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     align-items: center;
     gap: var(--s-4);
     padding: var(--s-4) var(--s-4);
-    text-align: left;
+    text-align: start;
     background: var(--paper-2);
     background-image: var(--sheen);
     border: 1px solid var(--rule);
@@ -1025,7 +1090,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     background: var(--paper-2);
     background-image: var(--sheen);
     border: 1px solid var(--rule);
-    border-left: 2px solid var(--horn);
+    border-inline-start: 2px solid var(--horn);
     border-radius: var(--r-3);
   }
 
@@ -1090,7 +1155,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   .meter__mark {
     position: absolute;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     width: 1px;
     height: 8px;
     background: var(--horn);
@@ -1266,7 +1331,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     content: '';
     width: 6px;
     height: 6px;
-    margin-left: 6px;
+    margin-inline-start: 6px;
     border-radius: 50%;
     background: var(--horn-soft);
     transform: translateY(-2px);

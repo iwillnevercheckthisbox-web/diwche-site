@@ -1,6 +1,7 @@
 ---
 import Bare from '../layouts/Bare.astro';
 import Funnel from '../components/funnel/Funnel.astro';
+import { EN } from '../components/funnel/copy.en';
 
 /**
  * The funnel lives on its own page, with no nav and no footer.
@@ -15,11 +16,8 @@ import Funnel from '../components/funnel/Funnel.astro';
 const connected = import.meta.env.PUBLIC_READ === 'on';
 ---
 
-<Bare
-  title="Diwche — let him read your page"
-  description="Answer a few questions and Diwche reads your Instagram page, then tells you what he found."
->
-  <Funnel connected={connected} />
+<Bare locale="en" title={EN.meta.title} description={EN.meta.description}>
+  <Funnel connected={connected} copy={EN} />
 
   <script>import '../scripts/funnel';</script>
 </Bare>

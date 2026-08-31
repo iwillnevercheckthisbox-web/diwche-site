@@ -8,16 +8,27 @@
  */
 import '@fontsource-variable/fraunces/full.css';
 import '@fontsource-variable/geist';
+// Persian has no coverage in either Latin face, so without this the Farsi
+// funnel falls through to whatever the operating system substitutes — a
+// different typeface on every machine. Self-hosted like the other two:
+// astro.config.mjs forbids external asset hosts, so the app's Google Fonts
+// link is not an option here.
+import '@fontsource-variable/vazirmatn';
 import '../styles/tokens.css';
 import '../styles/base.css';
+import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
 
 interface Props {
   title: string;
   description: string;
+  locale?: Locale;
 }
 
-const { title, description } = Astro.props;
+const { title, description, locale = DEFAULT_LOCALE } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Direction follows the content language, resolved in one place — never
+// hardcoded here. See src/lib/direction.ts.
+const dir = dirFor(locale);
 
 /**
  * Proof-of-human, when there is a key for it.
@@ -30,7 +41,7 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_KEY ?? '';
 ---
 
 <!doctype html>
-<html lang="en" data-turnstile-key={turnstileKey || undefined}>
+<html lang={locale} dir={dir} data-turnstile-key={turnstileKey || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

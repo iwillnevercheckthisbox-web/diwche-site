@@ -1,0 +1,20 @@
+---
+import Bare from '../../layouts/Bare.astro';
+import Funnel from '../../components/funnel/Funnel.astro';
+import { FA } from '../../components/funnel/copy.fa';
+
+/**
+ * The Persian read.
+ *
+ * The same component and the same script as `/read` — only the copy differs,
+ * and the direction follows from the locale rather than from anything written
+ * here. See `src/lib/direction.ts`.
+ */
+const connected = import.meta.env.PUBLIC_READ === 'on';
+---
+
+<Bare locale="fa" title={FA.meta.title} description={FA.meta.description}>
+  <Funnel connected={connected} copy={FA} />
+
+  <script>import '../../scripts/funnel';</script>
+</Bare>
