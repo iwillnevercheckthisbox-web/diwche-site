@@ -1,0 +1,73 @@
+---
+/**
+ * The language switch.
+ *
+ * Every language is written in its own script, because the person who needs it
+ * is by definition not reading the current one. The current language stays in
+ * the list rather than disappearing from it — a switch that hides where you are
+ * makes you guess whether it worked.
+ */
+import { ENDONYM, LOCALES, pathIn, type Locale } from '../lib/direction';
+
+interface Props {
+  locale: Locale;
+  /** The page to stay on while changing language. */
+  path: string;
+  compact?: boolean;
+}
+
+const { locale, path, compact = false } = Astro.props;
+---
+
+<nav class:list={['lang', compact && 'lang--compact']} aria-label="Language">
+  {
+    LOCALES.map((l) => (
+      <a
+        class="lang__item"
+        href={pathIn(l, path)}
+        hreflang={l}
+        lang={l}
+        aria-current={l === locale ? 'true' : undefined}
+      >
+        {ENDONYM[l]}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .lang {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    font-size: 12px;
+  }
+
+  .lang__item {
+    color: var(--ink-3);
+    text-decoration: none;
+    /* Each name is set in its own language, so the line has mixed direction.
+       Isolating each one stops the punctuation and spacing of a Persian name
+       from reordering the Latin ones around it. */
+    unicode-bidi: isolate;
+    white-space: nowrap;
+  }
+
+  .lang__item:hover {
+    color: var(--ink-2);
+  }
+
+  .lang__item[aria-current] {
+    color: var(--horn);
+  }
+
+  .lang--compact .lang__item {
+    font-size: 11px;
+  }
+
+  @media (max-width: 720px) {
+    .lang {
+      gap: var(--s-2);
+    }
+  }
+</style>

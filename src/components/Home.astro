@@ -1,0 +1,416 @@
+---
+/**
+ * The homepage body, in whichever language it is handed.
+ *
+ * One implementation, three routes. The English page had all its copy inline,
+ * which is fine until there is a second language and then a third — every
+ * string now comes from a `HomeCopy` so a missing translation is a compile
+ * error rather than an English paragraph on a German page.
+ */
+import Art from './Art.astro';
+import TrustBar from './TrustBar.astro';
+import SectionHeader from './SectionHeader.astro';
+import Card from './Card.astro';
+import QuoteCard from './QuoteCard.astro';
+import Accordion from './Accordion.astro';
+import type { HomeCopy } from '../content/home';
+import type { Locale } from '../lib/direction';
+
+interface Props {
+  copy: HomeCopy;
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+
+/**
+ * The read is only offered when there is something behind it.
+ *
+ * Pointing the hero at a walk that cannot finish would put a call to action on
+ * the live site whose only outcome is an apology, so this defaults to off and
+ * the CTA falls back to the section below.
+ */
+const readEnabled = import.meta.env.PUBLIC_READ === 'on';
+const readHref = locale === 'en' ? '/read' : `/${locale}/read`;
+const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
+---
+
+<!-- ================================================================== HERO -->
+<section class="hero">
+  <div class="hero__wash" aria-hidden="true"></div>
+  <div class="wrap hero__inner">
+    <h1 class="hero__title">
+      {copy.hero.titleBefore}<span class="hero__title-accent">{copy.hero.titleAccent}</span>{copy.hero.titleAfter}
+    </h1>
+    <p class="lead hero__lead">{copy.hero.lead}</p>
+
+    <div class="hero__actions">
+      <a class="btn" href={readEnabled ? readHref : '#pilot'}>
+        {readEnabled ? copy.hero.cta : copy.hero.ctaOff}
+      </a>
+    </div>
+
+    <figure class="hero__art">
+      <Art name="hero-camera" loading="eager" />
+    </figure>
+  </div>
+</section>
+
+<!-- ============================================================ META BAND -->
+<TrustBar />
+
+<!-- ================================================================= PILOT -->
+<section class="section pilot" id="pilot">
+  <div class="wrap pilot__inner">
+    <div class="reveal">
+      <SectionHeader eyebrow={copy.pilot.eyebrow} title={copy.pilot.title} lead={copy.pilot.lead} />
+    </div>
+
+    <div class="pilot__art reveal" style="--reveal-delay: 60ms">
+      <Art name="pilot-crowd" />
+    </div>
+
+    <ul class="pilot__paths reveal" style="--reveal-delay: 100ms">
+      {
+        copy.pilot.paths.map((p, i) => (
+          <li style={`--reveal-delay: ${i * 50}ms`}>
+            <Card class="path">
+              <h3 class="path__title">{p.title}</h3>
+              <p class="path__text">{p.text}</p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- =============================================================== PILLARS -->
+{
+  copy.pillars.map((pillar, i) => (
+    <section class="section pillar" id={i === 0 ? 'product' : undefined}>
+      <div class:list={['wrap', 'pillar__row', i % 2 === 1 && 'pillar__row--flip']}>
+        <div class="pillar__copy reveal">
+          <SectionHeader align="left" eyebrow={pillar.eyebrow} title={pillar.title} lead={pillar.lead} />
+        </div>
+
+        <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
+          <Art name={artOf[i]} />
+        </div>
+      </div>
+
+      {
+        i === 0 && (
+          <ul class="wrap pillar__list">
+            {copy.capabilities.map((c, n) => (
+              <li class="cap reveal" style={`--reveal-delay: ${n * 50}ms`}>
+                <h3 class="cap__name">{c.name}</h3>
+                <p class="cap__text">{c.text}</p>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+  ))
+}
+
+<!-- =============================================================== APPROACH -->
+<section class="section" id="approach">
+  <div class="wrap reveal">
+    <SectionHeader
+      align="left"
+      eyebrow={copy.approach.eyebrow}
+      title={copy.approach.title}
+      lead={copy.approach.lead}
+    />
+  </div>
+</section>
+
+<!-- ================================================================= QUOTE -->
+<div class="wrap quote-slot reveal">
+  <QuoteCard text={copy.quote} />
+</div>
+
+<!-- =========================================================== RELIABILITY -->
+<section class="section" id="reliability">
+  <div class="wrap">
+    <div class="reveal">
+      <SectionHeader
+        align="left"
+        eyebrow={copy.reliability.eyebrow}
+        title={copy.reliability.title}
+        lead={copy.reliability.lead}
+      />
+    </div>
+
+    <ul class="grid-3">
+      {
+        copy.reliability.items.map((t, i) => (
+          <li class="reveal" style={`--reveal-delay: ${i * 50}ms`}>
+            <Card class="trust">
+              <h3 class="trust__title">{t.title}</h3>
+              <p class="trust__text">{t.text}</p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- =================================================================== FAQ -->
+<section class="section faq" id="faq">
+  <div class="wrap faq__inner reveal">
+    <SectionHeader
+      align="left"
+      eyebrow={copy.faq.eyebrow}
+      title={copy.faq.title}
+      lead={copy.faq.lead}
+    />
+    <Accordion items={copy.faq.items} class="faq__list" />
+  </div>
+</section>
+
+<style>
+  /* ---- Hero -------------------------------------------------------------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(3rem, 1rem + 8vw, 6.5rem) clamp(2rem, 1rem + 5vw, 5rem);
+    text-align: center;
+  }
+
+  /* The hero's own light source, over the page's ambient wash: sapphire from the
+     top left, champagne from the top right, both falling off well before the fold. */
+  .hero__wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      radial-gradient(56rem 34rem at 8% 0%, var(--glow-1), transparent 60%),
+      radial-gradient(56rem 34rem at 92% 0%, var(--glow-2), transparent 60%);
+  }
+
+  .hero__title {
+    margin-inline: auto;
+    font-size: var(--t-hero);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    max-width: 18ch;
+  }
+
+  /* The second line carries the one accent in the hero. Periwinkle rather than
+     flat sapphire: --accent on near-black is a colour you have to lean in to
+     read, and this line is half the headline. */
+  .hero__title-accent {
+    color: var(--accent-soft);
+  }
+
+  .hero__lead {
+    margin-top: var(--s-5);
+    margin-inline: auto;
+    max-width: 56ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+
+  .hero__art {
+    /* `width: 100%` is load-bearing: without it the figure shrink-to-fits its
+       content box instead of taking the column. */
+    width: 100%;
+    max-width: 460px;
+    margin: var(--s-8) auto 0;
+  }
+
+  /* ---- Pilot ------------------------------------------------------------- */
+
+  .pilot__inner {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* The drawing is a crowd, so it needs less width than a single figure would to
+     read at the same scale. */
+  .pilot__art {
+    width: 100%;
+    max-width: 340px;
+    margin-top: var(--s-7);
+  }
+
+  .pilot__paths {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--s-8);
+    width: 100%;
+    max-width: 46rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+    text-align: left;
+  }
+
+  .path__title {
+    font-size: 1.375rem;
+  }
+
+  .path__text {
+    margin-top: var(--s-3);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 640px) {
+    .pilot__paths {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- Pillars ----------------------------------------------------------- */
+  /* Two columns, alternating side. The row is the rhythm of the whole page.
+     Half the section rhythm each, so two stacked pillars add up to one gap
+     rather than two — otherwise the page reads as a list of lonely rows. */
+
+  .pillar {
+    padding-block: calc(var(--section-y) / 2);
+  }
+
+  .pillar__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 3.5rem);
+    align-items: center;
+  }
+
+  .pillar__row--flip .pillar__copy {
+    order: 2;
+  }
+
+  .pillar__visual {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  /* No frame: every drawing is cut out and floats on the page ground. */
+  .pillar__visual :global(.art) {
+    max-width: 360px;
+  }
+
+  .pillar__list {
+    list-style: none;
+    padding-inline: var(--s-5);
+    margin-top: var(--s-8);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  .cap {
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .cap__name {
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+  }
+
+  .cap__text {
+    margin-top: var(--s-2);
+    font-size: var(--t-meta);
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* ---- Quote ------------------------------------------------------------- */
+
+  .quote-slot {
+    max-width: 46rem;
+    margin-block: calc(var(--section-y) / 2);
+  }
+
+  /* ---- Three-up rows (reliability) --------------------------------------- */
+
+  .grid-3 {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--s-8);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  .grid-3 > li {
+    display: flex;
+  }
+
+  .grid-3 > li > :global(*) {
+    width: 100%;
+  }
+
+  .trust__title {
+    font-size: 1.375rem;
+  }
+
+  .trust__text {
+    margin-top: var(--s-3);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* ---- FAQ --------------------------------------------------------------- */
+
+  /* The footer brings its own top margin; a full section pad here would stack. */
+  .faq {
+    padding-bottom: 0;
+  }
+
+  .faq__inner {
+    max-width: 44rem;
+  }
+
+  .faq__list {
+    margin-top: var(--s-6);
+  }
+
+  /* ---- Responsive -------------------------------------------------------- */
+
+  @media (max-width: 900px) {
+    .pillar__row {
+      grid-template-columns: 1fr;
+      gap: var(--s-7);
+    }
+
+    /* On one column the picture always follows its copy, flipped row or not. */
+    .pillar__row--flip .pillar__copy {
+      order: 0;
+    }
+
+    .pillar__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .pillar__list {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+    }
+  }
+</style>

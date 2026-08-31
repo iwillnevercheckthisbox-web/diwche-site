@@ -18,7 +18,8 @@ import Screenshot from '../Screenshot.astro';
 import { ICONS } from './icons';
 import { EN } from './copy.en';
 import type { FunnelCopy } from './types';
-import { ENDONYM, isLocale, pathIn, type Locale } from '../../lib/direction';
+import LangSwitch from '../LangSwitch.astro';
+import { isLocale, type Locale } from '../../lib/direction';
 
 interface Props {
   /** False until the backend serves `/api/public/*`. Only changes what is said. */
@@ -30,15 +31,13 @@ const { connected = false, copy = EN } = Astro.props;
 const screens = copy.screens;
 
 /**
- * The other language, and where this page lives in it.
+ * The language of this walk.
  *
- * The answers survive the switch untouched: they are stored as values like
- * `active` and `ideas`, which are the same word in both languages, so someone
- * who switches half-way through keeps their place rather than starting again.
+ * The answers survive a switch untouched: they are stored as values like
+ * `active` and `ideas`, which are the same word in every language, so someone
+ * who switches half-way keeps their place rather than starting again.
  */
 const here: Locale = isLocale(copy.locale) ? (copy.locale as Locale) : 'en';
-const other: Locale = here === 'fa' ? 'en' : 'fa';
-const otherHref = pathIn(other, Astro.url.pathname);
 
 /**
  * The step total is decided at runtime, not here.
@@ -74,9 +73,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     </button>
     <div class="bar__track" role="presentation"><i data-progress></i></div>
     <p class="bar__count" dir="ltr"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
-    <a class="bar__lang" href={otherHref} hreflang={other} lang={other} rel="alternate">
-      {ENDONYM[other]}
-    </a>
+    <LangSwitch locale={here} path={Astro.url.pathname} compact />
   </header>
 
   <!-- ============================================================== SCREENS -->
@@ -536,20 +533,6 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     transition: width var(--dur-slow) var(--ease-in-out);
   }
 
-  /* Set in its own language, so it is legible to the person it is for. */
-  .bar__lang {
-    flex: none;
-    font-size: 12px;
-    color: var(--ink-3);
-    text-decoration: underline;
-    text-decoration-color: var(--rule);
-    text-underline-offset: 3px;
-  }
-
-  .bar__lang:hover {
-    color: var(--ink-2);
-    text-decoration-color: var(--horn);
-  }
 
   .bar__count {
     font-size: 12px;

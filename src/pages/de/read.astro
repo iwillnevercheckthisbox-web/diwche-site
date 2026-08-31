@@ -1,0 +1,13 @@
+---
+import Bare from '../../layouts/Bare.astro';
+import Funnel from '../../components/funnel/Funnel.astro';
+import { DE } from '../../components/funnel/copy.de';
+
+const connected = import.meta.env.PUBLIC_READ === 'on';
+---
+
+<Bare locale="de" title={DE.meta.title} description={DE.meta.description}>
+  <Funnel connected={connected} copy={DE} />
+
+  <script>import '../../scripts/funnel';</script>
+</Bare>

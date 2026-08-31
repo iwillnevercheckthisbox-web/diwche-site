@@ -9,14 +9,17 @@ import '../styles/base.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
+import { HOME_EN, type HomeCopy } from '../content/home';
 
 interface Props {
   title: string;
   description: string;
   locale?: Locale;
+  /** Nav and footer are chrome: they speak whatever the page speaks. */
+  copy?: HomeCopy;
 }
 
-const { title, description, locale = DEFAULT_LOCALE } = Astro.props;
+const { title, description, locale = DEFAULT_LOCALE, copy = HOME_EN } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Direction follows the content language, resolved in one place.
 const dir = dirFor(locale);
@@ -74,11 +77,11 @@ const dir = dirFor(locale);
 
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Nav />
+    <Nav copy={copy} locale={locale} />
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer copy={copy} />
 
     <script>
       // Scroll reveal. Fires once per element, then stops observing.
@@ -104,11 +107,24 @@ const dir = dirFor(locale);
 </html>
 
 <style>
+  /*
+   * Parked off-screen by clipping, not by a negative offset.
+   *
+   * `left: -9999px` is invisible in a left-to-right page because browsers do
+   * not scroll past the origin — but in a right-to-left one that same offset
+   * lands off the *visible* edge and gives the whole site a horizontal
+   * scrollbar. Clipping has no side and works in both.
+   */
   .skip {
     position: absolute;
-    left: -9999px;
     top: 0;
+    inset-inline-start: 0;
     z-index: 100;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
     padding: var(--s-3) var(--s-4);
     background: var(--ink);
     color: var(--paper-2);
@@ -116,7 +132,11 @@ const dir = dirFor(locale);
   }
 
   .skip:focus {
-    left: var(--s-4);
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    inset-inline-start: var(--s-4);
     top: var(--s-4);
   }
 </style>

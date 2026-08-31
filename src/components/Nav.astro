@@ -1,20 +1,28 @@
 ---
-// Only the homepage exists so far, so these point at sections on it rather than
-// at routes that would 404. They become real paths as those pages land.
-const links = [
-  { href: '/#product', label: 'Features' },
-  { href: '/#pilot', label: 'The free read' },
-  { href: '/#reliability', label: 'Reliability' },
-  { href: '/#pricing', label: 'Pricing' },
-  { href: '/#faq', label: 'FAQ' },
-];
+/**
+ * The top bar, in whichever language the page is in.
+ *
+ * Links point at sections of the homepage for that language, so a Persian
+ * reader following "امکانات" lands on the Persian page rather than being
+ * dropped back into English half-way through.
+ */
+import LangSwitch from './LangSwitch.astro';
+import { DEFAULT_LOCALE, type Locale } from '../lib/direction';
+import { HOME_EN, type HomeCopy } from '../content/home';
 
+interface Props {
+  copy?: HomeCopy;
+  locale?: Locale;
+}
+
+const { copy = HOME_EN, locale = DEFAULT_LOCALE } = Astro.props;
+const links = copy.nav.links;
 const path = Astro.url.pathname;
 ---
 
 <header class="nav">
   <div class="nav__inner">
-    <a class="nav__brand" href="/">
+    <a class="nav__brand" href={locale === 'en' ? '/' : `/${locale}/`}>
       <img class="nav__mark" src="/brand/horns.png" alt="" width="256" height="166" />
       Diwche
     </a>
@@ -29,7 +37,9 @@ const path = Astro.url.pathname;
       }
     </nav>
 
-    <button class="nav__theme" type="button" aria-label="Switch to the light theme">
+    <LangSwitch locale={locale} path={path} compact />
+
+    <button class="nav__theme" type="button" aria-label={copy.nav.theme}>
       <svg class="nav__icon nav__icon--sun" viewBox="0 0 20 20" aria-hidden="true">
         <circle cx="10" cy="10" r="3.6" />
         <g stroke-linecap="round">
@@ -42,7 +52,7 @@ const path = Astro.url.pathname;
       </svg>
     </button>
 
-    <a class="btn nav__cta" href="/read">Let him look</a>
+    <a class="btn nav__cta" href={locale === 'en' ? '/read' : `/${locale}/read`}>{copy.nav.cta}</a>
   </div>
 </header>
 

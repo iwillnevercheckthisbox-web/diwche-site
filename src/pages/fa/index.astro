@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../components/Home.astro';
+import { HOME_FA } from '../../content/home';
+---
+
+<Base
+  locale="fa"
+  copy={HOME_FA}
+  title={HOME_FA.meta.title}
+  description={HOME_FA.meta.description}
+>
+  <Home copy={HOME_FA} locale="fa" />
+</Base>

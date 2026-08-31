@@ -1,28 +1,17 @@
 ---
-// A link with no `href` renders as plain text. That is deliberate: these pages
-// do not exist yet, and a footer full of 404s is worse than an honest label.
-// Give one an href the moment its page ships.
-const groups = [
-  {
-    title: 'Product',
-    links: [
-      { href: '/#product', label: 'Everything it does' },
-      { label: 'Topics' },
-      { label: 'Reels Studio' },
-      { label: 'Voice Lab' },
-      { href: '/#pricing', label: 'Pricing' },
-    ],
-  },
-  {
-    title: 'Learn',
-    links: [{ href: '/#faq', label: 'FAQ' }, { label: 'Guides' }, { label: 'About Diwche' }],
-  },
-  {
-    title: 'Legal',
-    links: [{ label: 'Privacy' }, { label: 'Terms' }],
-  },
-];
+/**
+ * A link with no `href` renders as plain text. That is deliberate: these pages
+ * do not exist yet, and a footer full of 404s is worse than an honest label.
+ * Give one an href the moment its page ships.
+ */
+import { HOME_EN, type HomeCopy } from '../content/home';
 
+interface Props {
+  copy?: HomeCopy;
+}
+
+const { copy = HOME_EN } = Astro.props;
+const groups = copy.footer.groups;
 const year = new Date().getFullYear();
 ---
 
@@ -30,9 +19,7 @@ const year = new Date().getFullYear();
   <div class="wrap foot__inner">
     <div class="foot__brand">
       <span class="foot__word">Diwche</span>
-      <p class="foot__note">
-        A studio that runs your Instagram accounts. Named after a small, tired imp.
-      </p>
+      <p class="foot__note">{copy.footer.note}</p>
     </div>
 
     <div class="foot__cols">

@@ -16,7 +16,7 @@
  */
 
 /** The languages this site is published in. */
-export const LOCALES = ['en', 'fa'] as const;
+export const LOCALES = ['en', 'fa', 'de'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -49,18 +49,27 @@ export function isLocale(value: string): value is Locale {
  * so the switcher and the routes cannot disagree about the shape of a URL.
  */
 export function pathIn(locale: Locale, path: string): string {
-  const bare = path.replace(/^\/(fa)(?=\/|$)/, '') || '/';
+  const bare = path.replace(/^\/(fa|de)(?=\/|$)/, '') || '/';
   if (locale === DEFAULT_LOCALE) return bare;
   return `/${locale}${bare === '/' ? '' : bare}`;
 }
 
 /** The locale a path is in, from the path alone. */
 export function localeOf(path: string): Locale {
-  return /^\/fa(\/|$)/.test(path) ? 'fa' : DEFAULT_LOCALE;
+  const m = /^\/(fa|de)(\/|$)/.exec(path);
+  return m ? (m[1] as Locale) : DEFAULT_LOCALE;
 }
 
 /** What the other language calls itself, for the switch. */
 export const ENDONYM: Record<Locale, string> = {
   en: 'English',
   fa: 'فارسی',
+  de: 'Deutsch',
+};
+
+/** The two-letter mark used where a full name will not fit. */
+export const SHORT: Record<Locale, string> = {
+  en: 'EN',
+  fa: 'فا',
+  de: 'DE',
 };

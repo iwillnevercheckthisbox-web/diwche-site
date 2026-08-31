@@ -234,6 +234,28 @@ function run(root: HTMLElement) {
 
   // ---- Moving ---------------------------------------------------------------
 
+  /**
+   * The bar only. Ticking a box on a multi-select changes how long the walk is,
+   * but it does not change which screen you are on — so this must never scroll
+   * or move focus. Doing both in one function is why every tick threw the page
+   * back to the top.
+   */
+  function paintBar() {
+    const live = steps[index];
+    const total = Math.max(1, walkLength());
+    const pct = Math.min(100, ((index + 1) / total) * 100);
+    if (progress) progress.style.width = `${pct}%`;
+    if (countNow) countNow.textContent = String(Math.min(index + 1, total));
+    if (countTotal) countTotal.textContent = String(total);
+
+    // Past the analysing screen there are no more steps to take, so a counter
+    // and a back arrow would both be describing something that is over.
+    const closing = CLOSING.has(live?.dataset.kind ?? '');
+    backBtn?.toggleAttribute('data-off', index === 0 || closing);
+    countWrap?.toggleAttribute('data-off', closing);
+  }
+
+  /** A change of screen: swap what is visible, then reset the view for it. */
   function paint(reverse: boolean) {
     const live = steps[index];
     for (const s of screens) {
@@ -243,18 +265,7 @@ function run(root: HTMLElement) {
       s.toggleAttribute('data-reverse', on && reverse);
     }
 
-    const total = Math.max(1, walkLength());
-    const pct = Math.min(100, ((index + 1) / total) * 100);
-    if (progress) progress.style.width = `${pct}%`;
-    if (countNow) countNow.textContent = String(Math.min(index + 1, total));
-    if (countTotal) countTotal.textContent = String(total);
-
-    // Past the analysing screen there are no more steps to take, so a counter
-    // and a back arrow would both be describing something that is over.
-    const kind = live?.dataset.kind ?? '';
-    const closing = kind === 'analyzing' || kind === 'result' || kind === 'plan';
-    backBtn?.toggleAttribute('data-off', index === 0 || closing);
-    countWrap?.toggleAttribute('data-off', closing);
+    paintBar();
 
     root.querySelector('.stage')?.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
     live?.querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true });
@@ -360,8 +371,10 @@ function run(root: HTMLElement) {
           answers[id] = picked;
           if (cont) cont.disabled = picked.length === 0;
           // Picking a blocker adds a screen to the walk; unpicking removes it.
+          // The bar has to follow, but the screen has not changed, so nothing
+          // scrolls and nothing takes focus.
           recomputeSteps();
-          paint(false);
+          paintBar();
           save();
           return;
         }
