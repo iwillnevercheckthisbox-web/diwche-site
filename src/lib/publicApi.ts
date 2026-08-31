@@ -61,6 +61,20 @@ export interface Projection {
   moves: string[];
 }
 
+/**
+ * The page itself, as he found it.
+ *
+ * Everything else in a read is a claim about their page; this is the evidence
+ * that it is theirs. The picture arrives as a data URI rather than an Instagram
+ * CDN link — those expire, and the site allows no external image hosts.
+ */
+export interface Profile {
+  handle: string;
+  followers: number | null;
+  posts: number | null;
+  avatar: string | null;
+}
+
 export interface AuditResult {
   id: string;
   handle: string;
@@ -69,6 +83,7 @@ export interface AuditResult {
   headline: string;
   facts: Fact[];
   projection: Projection | null;
+  profile: Profile | null;
   /** True once the DM code has arrived from this handle. */
   verified: boolean;
 }

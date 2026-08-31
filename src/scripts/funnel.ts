@@ -591,6 +591,8 @@ function run(root: HTMLElement) {
     const eyebrow = screen?.querySelector<HTMLElement>('.screen__eyebrow');
     const teaser = screen?.querySelector<HTMLElement>('.lead__title');
 
+    renderWho(screen, Array.isArray(value) ? null : value.profile);
+
     if (Array.isArray(value)) {
       // The starter branch. Nothing was measured, so nothing is claimed — and
       // in particular no blurred report, because a report implies an analysis
@@ -619,6 +621,44 @@ function run(root: HTMLElement) {
     }
 
     go(steps.findIndex((s) => s.dataset.kind === 'result'));
+  }
+
+  /**
+   * The page he read, shown before anything is claimed about it.
+   *
+   * Hidden entirely when there is no profile — the starter branch has no page,
+   * and a card with a blank face and two dashes in it would be worse than none.
+   */
+  function renderWho(screen: HTMLElement | undefined, profile: AuditResult['profile']) {
+    const card = screen?.querySelector<HTMLElement>('[data-who]');
+    if (!card) return;
+    if (!profile) {
+      card.hidden = true;
+      return;
+    }
+
+    const face = card.querySelector<HTMLImageElement>('[data-who-avatar]');
+    if (face) {
+      // No picture is ordinary — a private-ish profile, or a fetch that failed.
+      // The card still earns its place on the handle and the counts.
+      if (profile.avatar) {
+        face.src = profile.avatar;
+        face.hidden = false;
+      } else {
+        face.hidden = true;
+      }
+      face.alt = `@${profile.handle}`;
+    }
+
+    card.querySelector<HTMLElement>('[data-who-handle]')!.textContent = `@${profile.handle}`;
+    card.querySelector<HTMLElement>('[data-who-followers]')!.textContent = count(profile.followers);
+    card.querySelector<HTMLElement>('[data-who-posts]')!.textContent = count(profile.posts);
+    card.hidden = false;
+  }
+
+  /** Grouped the way the reader's own locale groups them. */
+  function count(value: number | null): string {
+    return value == null ? '—' : value.toLocaleString(document.documentElement.lang || 'en');
   }
 
   function renderFacts(facts: Fact[]) {

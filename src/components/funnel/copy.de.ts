@@ -258,6 +258,8 @@ export const DE: FunnelCopy = {
     starterEyebrow: 'Wo er anfangen würde',
     starterTeaser:
       'Er hat deine Idee gelesen. Lass eine Adresse da, und er schickt dir die Richtung, die er einschlagen würde — samt erstem Beitrag.',
+    followers: 'Follower',
+    posts: 'Beiträge',
   },
 
   plan: {

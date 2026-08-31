@@ -88,6 +88,21 @@ const strong = (handle) => ({
     ],
   },
   verified: false,
+  // A tiny grey circle: enough to prove the card renders a data URI, without
+  // shipping a stranger's face into the repo.
+  profile: {
+    handle: handle || 'someone',
+    followers: 8420,
+    posts: 213,
+    avatar:
+      'data:image/svg+xml;base64,' +
+      Buffer.from(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72">' +
+          '<rect width="72" height="72" fill="#2a3450"/>' +
+          '<circle cx="36" cy="28" r="12" fill="#4a5670"/>' +
+          '<path d="M12 72a24 24 0 0 1 48 0z" fill="#4a5670"/></svg>'
+      ).toString('base64'),
+  },
 });
 
 const weak = (handle) => ({
@@ -141,6 +156,21 @@ const weak = (handle) => ({
     ],
   },
   verified: false,
+  // A tiny grey circle: enough to prove the card renders a data URI, without
+  // shipping a stranger's face into the repo.
+  profile: {
+    handle: handle || 'someone',
+    followers: 8420,
+    posts: 213,
+    avatar:
+      'data:image/svg+xml;base64,' +
+      Buffer.from(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72">' +
+          '<rect width="72" height="72" fill="#2a3450"/>' +
+          '<circle cx="36" cy="28" r="12" fill="#4a5670"/>' +
+          '<path d="M12 72a24 24 0 0 1 48 0z" fill="#4a5670"/></svg>'
+      ).toString('base64'),
+  },
 });
 
 const TOPICS = {

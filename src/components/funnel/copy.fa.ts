@@ -262,6 +262,8 @@ export const FA: FunnelCopy = {
     starterEyebrow: 'از کجا شروع می‌کنه',
     starterTeaser:
       'ایده‌ات رو خوند. ایمیلت رو بنویس تا مسیری که براش در نظر گرفته و اولین پستی که ازش می‌سازه برات بفرسته.',
+    followers: 'دنبال‌کننده',
+    posts: 'پست',
   },
 
   plan: {

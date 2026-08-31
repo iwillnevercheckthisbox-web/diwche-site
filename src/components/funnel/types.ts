@@ -141,6 +141,9 @@ export interface FunnelCopy {
      */
     starterTeaser: string;
     starterEyebrow: string;
+    /** Under the profile card. Plain nouns, because the numbers do the talking. */
+    followers: string;
+    posts: string;
   };
   plan: {
     eyebrow: string;

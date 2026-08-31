@@ -254,6 +254,8 @@ export const EN: FunnelCopy = {
     starterEyebrow: 'Where he would start',
     starterTeaser:
       'He has read your idea. Leave an address and he will send the direction he would take it in — and the first post he would make from it.',
+    followers: 'followers',
+    posts: 'posts',
   },
 
   plan: {
