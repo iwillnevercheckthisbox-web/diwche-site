@@ -35,6 +35,16 @@ export interface HomeCopy {
     ctaOff: string;
   };
 
+  /**
+   * The Meta band.
+   *
+   * It used to say "Trusted by", which claims an endorsement nobody has given:
+   * the app has not been through Meta's App Review. What is true, and is the
+   * thing worth saying anyway, is that connecting an account goes through
+   * Meta's own login and no password is ever typed here.
+   */
+  trustBar: { label: string; note: string };
+
   pilot: {
     eyebrow: string;
     title: string;
@@ -100,6 +110,11 @@ export const HOME_EN: HomeCopy = {
     lead: 'He reads what you have made and what your audience answered. He remembers. Each morning he brings topics that are yours, not everyone’s — then writes, shoots, captions and schedules, while you keep every word and frame.',
     cta: 'Let him read your page',
     ctaOff: 'See what he would do for your page',
+  },
+
+  trustBar: {
+    label: 'You sign in through',
+    note: 'Your account connects through Meta’s own login — no password is ever typed here, and nothing is posted until you connect it.',
   },
 
   pilot: {
@@ -249,6 +264,11 @@ export const HOME_FA: HomeCopy = {
     lead: 'می‌خونه چی ساختی و مخاطبت به چی جواب داده، و یادش می‌مونه. هر صبح سوژه‌هایی می‌آره که مالِ خودتن، نه مالِ همه — بعد می‌نویسه، می‌سازه، کپشن می‌ذاره و زمان‌بندی می‌کنه؛ در حالی که هر کلمه و هر فریم دست خودت می‌مونه.',
     cta: 'بذار پیجم رو بخونه',
     ctaOff: 'ببین با پیجت چه می‌کنه',
+  },
+
+  trustBar: {
+    label: 'ورودت از طریق',
+    note: 'اتصال اکانتت از راهِ خودِ لاگین متا انجام می‌شه — هیچ رمزی اینجا تایپ نمی‌شه، و تا وصلش نکنی چیزی منتشر نمی‌شه.',
   },
 
   pilot: {
@@ -402,6 +422,11 @@ export const HOME_DE: HomeCopy = {
     lead: 'Er liest, was du gemacht hast, und worauf dein Publikum reagiert hat. Er merkt es sich. Jeden Morgen bringt er Themen, die zu dir gehören und nicht zu allen — dann schreibt, dreht, betextet und plant er, während jedes Wort und jedes Bild deins bleibt.',
     cta: 'Lass ihn deine Seite lesen',
     ctaOff: 'Sieh, was er aus deiner Seite machen würde',
+  },
+
+  trustBar: {
+    label: 'Du meldest dich an über',
+    note: 'Dein Konto wird über Metas eigenen Login verbunden — hier wird nie ein Passwort eingegeben, und nichts wird veröffentlicht, bevor du verbindest.',
   },
 
   pilot: {

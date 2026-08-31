@@ -1,17 +1,28 @@
 ---
 /**
- * The one endorsement band on the page.
+ * The Meta band.
  *
- * Diwche posts through Meta's own Instagram Graph API, and the connection is a
- * real Facebook Login — so this is a statement about the integration, not a
- * customer logo wall. The mark is inlined rather than fetched so it inherits the
- * theme: the wordmark is currentColor, the infinity glyph keeps Meta blue.
+ * This is a statement about the integration, not an endorsement — and the
+ * difference matters. It used to read "Trusted by Meta", which claims a
+ * relationship nobody has granted: the app has not been through App Review.
+ * What is true is that connecting an account runs through Meta's own login and
+ * no password is ever typed on this site, which is the reassuring part anyway.
+ *
+ * The mark is inlined rather than fetched so it inherits the theme: the
+ * wordmark is currentColor, the infinity glyph keeps Meta blue.
  */
+import { HOME_EN, type HomeCopy } from '../content/home';
+
+interface Props {
+  copy?: HomeCopy;
+}
+
+const { copy = HOME_EN } = Astro.props;
 ---
 
-<section class="meta" aria-label="Built on Meta's platform">
+<section class="meta" aria-label={copy.trustBar.label}>
   <div class="wrap meta__inner">
-    <p class="meta__label">Trusted by</p>
+    <p class="meta__label">{copy.trustBar.label}</p>
   <svg class="meta__mark" width="122" height="28" viewBox="0 0 61 14" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Meta">
   <g clip-path="url(#clip0_75_9025)">
   <path d="M22.2234 0.801117H24.5114L28.4019 7.83866L32.2923 0.801123H34.5308V12.3651H32.664V3.50218L29.2526 9.63937H27.5015L24.0901 3.50218V12.3651H22.2234V0.801117Z" fill="currentColor"/>
@@ -94,6 +105,8 @@
   </defs>
   </svg>
   </div>
+
+  <p class="wrap meta__note">{copy.trustBar.note}</p>
 </section>
 
 <style>
@@ -122,5 +135,17 @@
     color: var(--ink);
     height: 22px;
     width: auto;
+  }
+
+  /* The claim under the mark. Quiet, because it is a fact rather than a boast —
+     and centred under the band it explains. */
+  .meta__note {
+    margin-top: var(--s-3);
+    max-width: 62ch;
+    margin-inline: auto;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-3);
   }
 </style>
