@@ -164,6 +164,8 @@ export interface FunnelCopy {
     copy: string;
     copied: string;
     copyByHand: string;
+    /** The word on the closed language control. */
+    language: string;
   };
 
   /** Everything the script writes at runtime. Was hardcoded English in funnel.ts. */

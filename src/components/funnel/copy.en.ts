@@ -277,6 +277,7 @@ export const EN: FunnelCopy = {
     copy: 'Copy the code',
     copied: 'Copied',
     copyByHand: 'Copy it by hand',
+    language: 'Language',
   },
 
   runtime: {

@@ -73,7 +73,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     </button>
     <div class="bar__track" role="presentation"><i data-progress></i></div>
     <p class="bar__count" dir="ltr"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
-    <LangSwitch locale={here} path={Astro.url.pathname} compact />
+    <LangSwitch locale={here} path={Astro.url.pathname} label={copy.ui.language} compact />
   </header>
 
   <!-- ============================================================== SCREENS -->

@@ -20,6 +20,8 @@ export interface HomeCopy {
     links: { href: string; label: string }[];
     cta: string;
     theme: string;
+    /** The word on the closed language control. */
+    language: string;
   };
 
   hero: {
@@ -63,6 +65,8 @@ export interface HomeCopy {
   footer: {
     note: string;
     groups: { title: string; links: { href?: string; label: string }[] }[];
+    /** How to reach a person. The address itself is the same in every language. */
+    contact: { title: string; lead: string };
   };
 }
 
@@ -86,6 +90,7 @@ export const HOME_EN: HomeCopy = {
     ],
     cta: 'Let him look',
     theme: 'Switch to the light theme',
+    language: 'Language',
   },
 
   hero: {
@@ -212,6 +217,7 @@ export const HOME_EN: HomeCopy = {
       },
       { title: 'Legal', links: [{ label: 'Privacy' }, { label: 'Terms' }] },
     ],
+    contact: { title: 'Talk to us', lead: 'A real person reads this one.' },
   },
 };
 
@@ -233,6 +239,7 @@ export const HOME_FA: HomeCopy = {
     ],
     cta: 'بذار یه نگاهی بندازه',
     theme: 'رفتن به تم روشن',
+    language: 'زبان',
   },
 
   hero: {
@@ -363,6 +370,7 @@ export const HOME_FA: HomeCopy = {
       },
       { title: 'حقوقی', links: [{ label: 'حریم خصوصی' }, { label: 'شرایط استفاده' }] },
     ],
+    contact: { title: 'با ما حرف بزن', lead: 'این یکی را یک آدم واقعی می‌خواند.' },
   },
 };
 
@@ -384,6 +392,7 @@ export const HOME_DE: HomeCopy = {
     ],
     cta: 'Lass ihn nachsehen',
     theme: 'Zum hellen Design wechseln',
+    language: 'Sprache',
   },
 
   hero: {
@@ -514,5 +523,6 @@ export const HOME_DE: HomeCopy = {
       },
       { title: 'Rechtliches', links: [{ label: 'Datenschutz' }, { label: 'AGB' }] },
     ],
+    contact: { title: 'Schreib uns', lead: 'Hier liest ein Mensch mit.' },
   },
 };

@@ -37,7 +37,7 @@ const path = Astro.url.pathname;
       }
     </nav>
 
-    <LangSwitch locale={locale} path={path} compact />
+    <LangSwitch locale={locale} path={path} label={copy.nav.language} compact />
 
     <button class="nav__theme" type="button" aria-label={copy.nav.theme}>
       <svg class="nav__icon nav__icon--sun" viewBox="0 0 20 20" aria-hidden="true">

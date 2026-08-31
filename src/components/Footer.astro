@@ -20,6 +20,14 @@ const year = new Date().getFullYear();
     <div class="foot__brand">
       <span class="foot__word">Diwche</span>
       <p class="foot__note">{copy.footer.note}</p>
+
+      <!-- A real address, not a form. A form is a promise that something is
+           listening; an address is one you can check. -->
+      <div class="foot__contact">
+        <h3 class="eyebrow">{copy.footer.contact.title}</h3>
+        <a class="foot__mail" href="mailto:support@diwche.com" dir="ltr">support@diwche.com</a>
+        <p class="foot__soon">{copy.footer.contact.lead}</p>
+      </div>
     </div>
 
     <div class="foot__cols">
@@ -45,6 +53,27 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
+  .foot__contact {
+    margin-top: var(--s-5);
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+  }
+
+  .foot__mail {
+    font-size: var(--t-meta);
+    color: var(--horn);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+    /* An address has no language and reads left to right in every page. */
+    unicode-bidi: isolate;
+  }
+
+  .foot__mail:hover {
+    text-decoration-color: var(--horn);
+  }
+
   .foot {
     border-top: 1px solid var(--rule);
     padding-block: var(--s-9) var(--s-6);

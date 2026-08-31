@@ -2,10 +2,13 @@
 /**
  * The language switch.
  *
- * Every language is written in its own script, because the person who needs it
- * is by definition not reading the current one. The current language stays in
- * the list rather than disappearing from it — a switch that hides where you are
- * makes you guess whether it worked.
+ * A `<details>` rather than a row of links: three names side by side is a lot
+ * of chrome for something most readers use once, and in a right-to-left page a
+ * Latin name sitting next to a Persian one reorders badly. Closed, it is one
+ * word; open, it is a short list.
+ *
+ * No JavaScript. `<details>` opens on its own, works before hydration, and is
+ * keyboard-operable without anything being wired up.
  */
 import { ENDONYM, LOCALES, pathIn, type Locale } from '../lib/direction';
 
@@ -13,61 +16,134 @@ interface Props {
   locale: Locale;
   /** The page to stay on while changing language. */
   path: string;
+  /** The word on the closed control, in the current language. */
+  label: string;
   compact?: boolean;
 }
 
-const { locale, path, compact = false } = Astro.props;
+const { locale, path, label, compact = false } = Astro.props;
 ---
 
-<nav class:list={['lang', compact && 'lang--compact']} aria-label="Language">
-  {
-    LOCALES.map((l) => (
-      <a
-        class="lang__item"
-        href={pathIn(l, path)}
-        hreflang={l}
-        lang={l}
-        aria-current={l === locale ? 'true' : undefined}
-      >
-        {ENDONYM[l]}
-      </a>
-    ))
-  }
-</nav>
+<details class:list={['lang', compact && 'lang--compact']}>
+  <summary class="lang__summary" aria-label={label}>
+    <span class="lang__label">{label}</span>
+    <span class="lang__now" lang={locale}>{ENDONYM[locale]}</span>
+    <svg class="lang__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+  </summary>
+
+  <ul class="lang__menu">
+    {
+      LOCALES.map((l) => (
+        <li>
+          <a
+            class="lang__item"
+            href={pathIn(l, path)}
+            hreflang={l}
+            lang={l}
+            aria-current={l === locale ? 'true' : undefined}
+          >
+            {ENDONYM[l]}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</details>
 
 <style>
   .lang {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
+    position: relative;
     font-size: 12px;
   }
 
-  .lang__item {
+  .lang__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 6px 10px;
     color: var(--ink-3);
-    text-decoration: none;
-    /* Each name is set in its own language, so the line has mixed direction.
-       Isolating each one stops the punctuation and spacing of a Persian name
-       from reordering the Latin ones around it. */
-    unicode-bidi: isolate;
+    cursor: pointer;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    list-style: none;
     white-space: nowrap;
   }
 
-  .lang__item:hover {
+  /* Safari draws its own triangle unless both of these are said. */
+  .lang__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .lang__summary:hover {
     color: var(--ink-2);
+    border-color: var(--horn);
+  }
+
+  .lang__label {
+    color: var(--ink-3);
+  }
+
+  .lang__now {
+    color: var(--ink-2);
+    /* Its own script, so it is isolated from the label beside it. */
+    unicode-bidi: isolate;
+  }
+
+  .lang__caret {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .lang[open] .lang__caret {
+    transform: rotate(180deg);
+  }
+
+  .lang__menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    /* Anchored to the reading edge, so it opens inwards in both directions. */
+    inset-inline-end: 0;
+    z-index: 60;
+    min-width: 9rem;
+    padding: 6px;
+    list-style: none;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.28);
+  }
+
+  .lang__item {
+    display: block;
+    padding: 7px 10px;
+    border-radius: var(--r-1);
+    color: var(--ink-2);
+    text-decoration: none;
+    unicode-bidi: isolate;
+  }
+
+  .lang__item:hover {
+    background: var(--paper-4);
+    color: var(--ink);
   }
 
   .lang__item[aria-current] {
     color: var(--horn);
   }
 
-  .lang--compact .lang__item {
+  .lang--compact .lang__summary {
+    padding: 4px 8px;
     font-size: 11px;
   }
 
   @media (max-width: 720px) {
-    .lang {
-      gap: var(--s-2);
+    .lang__label {
+      display: none;
     }
   }
 </style>

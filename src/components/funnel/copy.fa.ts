@@ -285,6 +285,7 @@ export const FA: FunnelCopy = {
     copy: 'کپی کد',
     copied: 'کپی شد',
     copyByHand: 'دستی کپی کن',
+    language: 'زبان',
   },
 
   runtime: {

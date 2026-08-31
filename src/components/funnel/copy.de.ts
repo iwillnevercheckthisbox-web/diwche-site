@@ -281,6 +281,7 @@ export const DE: FunnelCopy = {
     copy: 'Code kopieren',
     copied: 'Kopiert',
     copyByHand: 'Von Hand kopieren',
+    language: 'Sprache',
   },
 
   runtime: {
