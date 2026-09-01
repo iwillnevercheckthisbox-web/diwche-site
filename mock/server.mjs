@@ -76,7 +76,7 @@ const strong = (handle) => ({
     },
   ],
   projection: {
-    headline: 'about 3,774 more likes and comments in your first year',
+    headline: 'about 8,706 more likes and comments in your first year',
     assumption:
       'That is your own reel rate, applied to a steadier month at the pace pages your size keep. It assumes nothing improves — only that you keep doing the thing that already works for you, and keep doing it.',
     now: { label: 'Now', value: 610, amount: '610', pace: 'about 9 posts a month' },
@@ -87,9 +87,9 @@ const strong = (handle) => ({
       'He goes back to the post that did 4.1× your own median, and builds from its shape.',
     ],
     horizons: [
-      { label: 'In a month', months: 1, total: '746', extra: '136', value: 746 },
-      { label: 'In six months', months: 6, total: '5,394', extra: '1,734', value: 5394 },
-      { label: 'In a year', months: 12, total: '11,094', extra: '3,774', value: 11094 },
+      { label: 'In a month', months: 1, total: '950', extra: '340', value: 950 },
+      { label: 'In six months', months: 6, total: '6,627', extra: '2,967', value: 6627 },
+      { label: 'In a year', months: 12, total: '16,026', extra: '8,706', value: 16026 },
     ],
   },
   verified: false,
@@ -160,9 +160,9 @@ const weak = (handle) => ({
       'He schedules for the hours your best posts actually landed in.',
     ],
     horizons: [
-      { label: 'In a month', months: 1, total: '258', extra: '48', value: 258 },
-      { label: 'In six months', months: 6, total: '1,872', extra: '612', value: 1872 },
-      { label: 'In a year', months: 12, total: '3,852', extra: '1,332', value: 3852 },
+      { label: 'In a month', months: 1, total: '330', extra: '120', value: 330 },
+      { label: 'In six months', months: 6, total: '2,302', extra: '1,042', value: 2302 },
+      { label: 'In a year', months: 12, total: '5,567', extra: '3,047', value: 5567 },
     ],
   },
   verified: false,
