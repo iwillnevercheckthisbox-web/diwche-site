@@ -266,6 +266,10 @@ export const EN: FunnelCopy = {
     starterBody:
       'Keep an eye on your inbox. In a few minutes he’s sending the direction he would take your idea in, and the first post he would make from it.',
     working: 'How he worked that out',
+    horizonsTitle: 'What that adds up to',
+    horizonsNew: '{n} of them new',
+    horizonsWhen: { month: 'In a month', sixMonths: 'In six months', year: 'In a year' },
+    sides: { now: 'Now', then: 'With him' },
     ways: { again: 'Read another page', home: 'Back to diwche.com' },
   },
 

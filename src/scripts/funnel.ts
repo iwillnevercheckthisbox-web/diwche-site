@@ -33,6 +33,7 @@ import {
   type AuditErrorKind,
   type AuditResult,
   type Fact,
+  type Projection,
   type Topic,
 } from '../lib/publicApi';
 
@@ -763,7 +764,11 @@ function run(root: HTMLElement) {
     for (const [key, side] of [['now', projection.now], ['then', projection.then]] as const) {
       const bar = wrap.querySelector<HTMLElement>(`[data-bar="${key}"]`);
       if (!bar) continue;
-      bar.querySelector<HTMLElement>('[data-bar-label]')!.textContent = side.label;
+      // The locale names the bar; the backend only sizes it. `side.label` is composed in
+      // English in the arithmetic and is the fallback, not the source.
+      const gain = wrap.querySelector<HTMLElement>('.gain');
+      const named = key === 'now' ? gain?.dataset.nowLabel : gain?.dataset.thenLabel;
+      bar.querySelector<HTMLElement>('[data-bar-label]')!.textContent = named || side.label;
       bar.querySelector<HTMLElement>('[data-bar-amount]')!.textContent = side.amount;
       bar.querySelector<HTMLElement>('[data-bar-pace]')!.textContent = side.pace;
       const fill = bar.querySelector<HTMLElement>('[data-bar-fill]')!;
@@ -773,6 +778,8 @@ function run(root: HTMLElement) {
       );
     }
 
+    renderHorizons(wrap, projection);
+
     const moves = wrap.querySelector<HTMLElement>('[data-projection-moves]');
     if (!moves) return;
     moves.textContent = '';
@@ -780,6 +787,58 @@ function run(root: HTMLElement) {
       const el = tpl('move');
       field(el, 'text')!.textContent = move;
       moves.append(el);
+    }
+  }
+
+  /**
+   * One month, six months, a year.
+   *
+   * Skipped entirely when the read was cached before horizons existed — an absent strip is
+   * correct there, because the projection beside it is still true and a strip built from
+   * nothing would not be.
+   */
+  function renderHorizons(wrap: HTMLElement, projection: Projection) {
+    const section = wrap.querySelector<HTMLElement>('[data-horizons]');
+    const list = wrap.querySelector<HTMLElement>('[data-horizons-list]');
+    const horizons = projection.horizons;
+    if (!section || !list) return;
+    if (!horizons || !horizons.length) {
+      section.hidden = true;
+      return;
+    }
+
+    section.hidden = false;
+    list.textContent = '';
+    // Every bar is drawn against the longest window, so the three of them read as one
+    // shape growing rather than three unrelated cards each full to its own edge.
+    const furthest = Math.max(...horizons.map((h) => h.value), 1);
+
+    // The "n of them new" wording rides on the section rather than the runtime copy
+    // payload: it is the only string this function needs, and the payload is a
+    // contract shared with several other screens.
+    const newLabel = section.dataset.horizonsNew ?? '{n}';
+
+    for (const horizon of horizons) {
+      const el = tpl('horizon');
+      // Same split: the month count is a fact, what to call it is a language. Keyed by
+      // word rather than by number — `data-when-12` does not survive the dataset
+      // camel-casing rule, which only folds a hyphen followed by a letter.
+      const when =
+        horizon.months <= 1
+          ? section.dataset.whenMonth
+          : horizon.months <= 6
+            ? section.dataset.whenHalf
+            : section.dataset.whenYear;
+      field(el, 'label')!.textContent = when || horizon.label;
+      field(el, 'total')!.textContent = horizon.total;
+      field(el, 'extra')!.textContent = newLabel.replace('{n}', horizon.extra);
+      const fill = field(el, 'fill');
+      if (fill) {
+        requestAnimationFrame(() =>
+          fill.style.setProperty('--grown', String(Math.max(0.03, horizon.value / furthest))),
+        );
+      }
+      list.append(el);
     }
   }
 

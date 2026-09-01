@@ -270,6 +270,10 @@ export const DE: FunnelCopy = {
     starterBody:
       'Behalte dein Postfach im Auge. In ein paar Minuten kommt die Richtung, die er für deine Idee einschlagen würde, und der erste Beitrag, den er daraus macht.',
     working: 'Wie er darauf kommt',
+    horizonsTitle: 'Was dabei zusammenkommt',
+    horizonsNew: 'davon {n} neu',
+    horizonsWhen: { month: 'In einem Monat', sixMonths: 'In sechs Monaten', year: 'In einem Jahr' },
+    sides: { now: 'Jetzt', then: 'Mit ihm' },
     ways: { again: 'Eine andere Seite lesen', home: 'Zurück zu diwche.com' },
   },
 

@@ -274,6 +274,10 @@ export const FA: FunnelCopy = {
     starterBody:
       'حواست به اینباکست باشه. تا چند دقیقه‌ی دیگه مسیری که برای ایده‌ات در نظر گرفته و اولین پستی که ازش می‌سازه برات می‌رسه.',
     working: 'چطور به این عدد رسید',
+    horizonsTitle: 'روی هم چقدر می‌شود',
+    horizonsNew: '{n} تای آن تازه است',
+    horizonsWhen: { month: 'تا یک ماه دیگر', sixMonths: 'تا شش ماه دیگر', year: 'تا یک سال دیگر' },
+    sides: { now: 'الان', then: 'با دیو' },
     ways: { again: 'یک پیج دیگه بخون', home: 'برگرد به diwche.com' },
   },
 

@@ -311,7 +311,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
                 <p class="proj__headline" data-projection-headline />
                 {/* Two bars, not a spreadsheet. A reader who makes things for a
                     living does not want a row carried to one decimal place. */}
-                <div class="gain">
+                <div class="gain" data-now-label={copy.plan.sides.now} data-then-label={copy.plan.sides.then}>
                   <div class="gain__col" data-bar="now">
                     <p class="gain__label" data-bar-label />
                     <div class="gain__track"><div class="gain__fill" data-bar-fill /></div>
@@ -325,6 +325,22 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
                     <p class="gain__pace" data-bar-pace />
                   </div>
                 </div>
+
+                {/* The three windows. A month is the honest unit and a weak
+                    argument — it is small enough to shrug at, and it hides that
+                    the gap is paid again every month either way. */}
+                <section
+                  class="span"
+                  data-horizons
+                  data-horizons-new={copy.plan.horizonsNew}
+                  data-when-month={copy.plan.horizonsWhen.month}
+                  data-when-half={copy.plan.horizonsWhen.sixMonths}
+                  data-when-year={copy.plan.horizonsWhen.year}
+                  hidden
+                >
+                  <p class="span__title">{copy.plan.horizonsTitle}</p>
+                  <ol class="span__list" data-horizons-list />
+                </section>
 
                 <ul class="moves" data-projection-moves />
 
@@ -414,7 +430,16 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     </article>
   </template>
 
-  <template data-tpl="move">
+  <template data-tpl="horizon">
+      <li class="span__cell">
+        <p class="span__when" data-f="label"></p>
+        <p class="span__total" data-f="total"></p>
+        <p class="span__new" data-f="extra"></p>
+        <div class="span__track"><div class="span__fill" data-f="fill"></div></div>
+      </li>
+    </template>
+
+    <template data-tpl="move">
     <li class="moves__item"><span data-f="text"></span></li>
   </template>
 
@@ -1393,6 +1418,91 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--s-5);
+  }
+
+  .span {
+    margin-block: var(--s-6) var(--s-5);
+  }
+
+  .span__title {
+    margin: 0 0 var(--s-3);
+    font-size: var(--t-12);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .span__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .span__cell {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+  }
+
+  /* The year is the argument. The other two are the reason to believe it. */
+  .span__cell:last-child {
+    border-color: var(--horn);
+  }
+
+  .span__when {
+    margin: 0;
+    font-size: var(--t-12);
+    color: var(--ink-3);
+  }
+
+  .span__total {
+    margin: 0;
+    font-size: var(--t-22);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .span__new {
+    margin: 0;
+    font-size: var(--t-12);
+    color: var(--horn);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .span__track {
+    margin-top: var(--s-2);
+    height: 3px;
+    border-radius: 999px;
+    background: var(--rule);
+    overflow: hidden;
+  }
+
+  .span__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--horn);
+    transform: scaleX(var(--grown, 0));
+    transform-origin: left center;
+    transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :global([dir='rtl']) .span__fill {
+    transform-origin: right center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .span__fill { transition: none; }
+  }
+
+  @media (max-width: 560px) {
+    .span__list { grid-template-columns: 1fr; }
+    .span__cell { grid-template-columns: 1fr auto; align-items: baseline; }
+    .span__track { grid-column: 1 / -1; }
   }
 
   .gain__label {

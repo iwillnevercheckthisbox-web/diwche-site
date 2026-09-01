@@ -153,6 +153,19 @@ export interface FunnelCopy {
     starterHeadline: string;
     starterBody: string;
     working: string;
+    /** Heads the three windows. The per-month figure is honest but easy to shrug at. */
+    horizonsTitle: string;
+    /** Sits under each total: how much of it would not have arrived anyway. */
+    horizonsNew: string;
+    /**
+     * The names of the two bars and the three windows.
+     *
+     * These live here rather than arriving with the figures because they are words, and the
+     * read is published in three languages while the arithmetic is published in none. The
+     * backend sends the numbers and the month counts; the locale supplies what to call them.
+     */
+    horizonsWhen: { month: string; sixMonths: string; year: string };
+    sides: { now: string; then: string };
     ways: { again: string; home: string };
   };
 

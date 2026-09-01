@@ -59,6 +59,22 @@ export interface Projection {
   then: Side;
   /** What he would actually do to get there. A number nobody can act on is just a number. */
   moves: string[];
+  /**
+   * The same arithmetic run forward: one month, six months, a year.
+   *
+   * Optional, because reads cached before this existed come back without it and a stored
+   * projection is not wrong for lacking them — the strip is skipped rather than the panel.
+   */
+  horizons?: Horizon[];
+}
+
+/** One window: everything that lands by then, and the part that is new. */
+export interface Horizon {
+  label: string;
+  months: number;
+  total: string;
+  extra: string;
+  value: number;
 }
 
 /**
