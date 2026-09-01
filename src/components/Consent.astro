@@ -1,0 +1,200 @@
+---
+/**
+ * The consent page.
+ *
+ * Reached from the offer email, and its whole job is to be understood before it
+ * is agreed to. So: the clauses are listed one per line rather than run
+ * together into a paragraph, the handle is echoed back so nobody agrees on
+ * behalf of the wrong account, and the privacy policy is linked next to the
+ * button rather than buried in a footer.
+ *
+ * **The wording is fetched from the backend, not written here.** A consent has
+ * to point at text we can reproduce months later, and this site is rebuilt
+ * constantly — so `ConsentTerms` owns the words, serves them, and stores the
+ * hash of exactly what was served. This page is a renderer.
+ */
+import type { Locale } from '../lib/direction';
+
+interface Props {
+  locale: Locale;
+  copy: {
+    eyebrow: string;
+    lead: string;
+    handleLabel: string;
+    emailLabel: string;
+    agree: string;
+    submit: string;
+    working: string;
+    doneTitle: string;
+    doneBody: string;
+    privacy: string;
+    privacyHref: string;
+    missing: string;
+  };
+}
+
+const { locale, copy } = Astro.props;
+---
+
+<section class="consent" data-consent data-locale={locale}>
+  <div class="consent__inner">
+    <p class="consent__eyebrow">{copy.eyebrow}</p>
+    <h1 class="consent__title" data-terms-title></h1>
+    <p class="consent__lead">{copy.lead}</p>
+
+    <form class="consent__form" data-consent-form novalidate>
+      <div class="consent__fields">
+        <label class="consent__field">
+          <span>{copy.handleLabel}</span>
+          <input type="text" name="handle" data-handle dir="ltr" autocomplete="off"
+                 spellcheck="false" maxlength="30" required />
+        </label>
+        <label class="consent__field">
+          <span>{copy.emailLabel}</span>
+          <input type="email" name="email" data-email dir="ltr" autocomplete="email" required />
+        </label>
+      </div>
+
+      {/* One per line. Run together into a paragraph, nobody reads past the
+          second, and then the agreement is a formality rather than a decision. */}
+      <ol class="consent__clauses" data-clauses></ol>
+
+      <label class="consent__agree">
+        <input type="checkbox" data-agreed />
+        <span>{copy.agree}</span>
+      </label>
+
+      <p class="consent__error" data-error hidden></p>
+
+      <button class="btn btn--wide" type="submit" data-submit>{copy.submit}</button>
+
+      <p class="consent__fine">
+        <a href={copy.privacyHref}>{copy.privacy}</a>
+        <span class="consent__version" data-version></span>
+      </p>
+    </form>
+
+    <div class="consent__done" data-done hidden>
+      <h2 class="consent__title">{copy.doneTitle}</h2>
+      <p class="consent__lead">{copy.doneBody}</p>
+    </div>
+  </div>
+
+  <script type="application/json" data-consent-copy set:html={JSON.stringify(copy)} />
+</section>
+
+<style>
+  .consent {
+    padding-block: clamp(2.5rem, 1rem + 6vw, 5rem);
+    padding-inline: var(--s-5);
+  }
+
+  .consent__inner {
+    max-width: 62ch;
+    margin-inline: auto;
+  }
+
+  .consent__eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+  }
+
+  .consent__title {
+    margin-top: var(--s-3);
+    font-size: clamp(1.6rem, 1rem + 3vw, 2.4rem);
+  }
+
+  .consent__lead {
+    margin-top: var(--s-4);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .consent__form {
+    margin-top: var(--s-6);
+  }
+
+  .consent__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--s-4);
+  }
+
+  .consent__field {
+    display: grid;
+    gap: 6px;
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+
+  .consent__field input {
+    padding: 12px 14px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .consent__field input:focus-visible {
+    outline: 2px solid var(--horn);
+    outline-offset: 1px;
+  }
+
+  .consent__clauses {
+    margin-top: var(--s-5);
+    padding: var(--s-5);
+    padding-inline-start: calc(var(--s-5) + 1.4em);
+    display: grid;
+    gap: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .consent__agree {
+    margin-top: var(--s-5);
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+    line-height: 1.6;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  .consent__agree input {
+    margin-top: 4px;
+    accent-color: var(--horn);
+  }
+
+  .consent__error {
+    margin-top: var(--s-4);
+    color: var(--alarm, #d66);
+    font-size: var(--t-meta);
+  }
+
+  .consent__form .btn {
+    margin-top: var(--s-5);
+  }
+
+  .consent__fine {
+    margin-top: var(--s-4);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .consent__version {
+    font-variant-numeric: tabular-nums;
+  }
+</style>

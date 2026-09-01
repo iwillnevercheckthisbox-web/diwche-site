@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import Consent from '../../components/Consent.astro';
+import { CONSENT_COPY } from '../../content/consent';
+import { HOME_FA } from '../../content/home';
+
+/**
+ * Reached from the offer email, with the handle and address already in the
+ * link — so the page is a confirmation rather than a form to fill in.
+ */
+const copy = CONSENT_COPY['fa'];
+---
+
+<Base
+  locale="fa"
+  copy={HOME_FA}
+  title={`${copy.eyebrow} — Diwche`}
+  description={copy.lead}
+>
+  <Consent locale="fa" copy={copy} />
+
+  <script>import '../../scripts/consent';</script>
+</Base>

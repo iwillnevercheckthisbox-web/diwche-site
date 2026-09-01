@@ -265,6 +265,55 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const path = url.pathname.replace(/^\/api\/public/, '');
 
+  // The consent wording. Shortened stand-ins — the real clauses live in
+  // ConsentTerms on the backend, and the hash of what it served is what gets
+  // stored, so a fixture must never pretend to be authoritative.
+  if (req.method === 'GET' && path === '/consent/terms') {
+    const locale = url.searchParams.get('locale') || 'en';
+    const clauses = {
+      en: [
+        'I agree to my Instagram handle being added as a tester on Diwche\u2019s Meta app.',
+        'I understand that I have to accept the invitation myself in my own Instagram settings.',
+        'I agree to Diwche creating an account for me and keeping my email address.',
+        'I understand that nothing is posted to my Instagram until I connect the account myself.',
+        'I can withdraw this consent at any time by writing to support@diwche.com.',
+      ],
+      fa: [
+        'می‌پذیرم که آیدی اینستاگرام من به‌عنوان «تستر» به اپلیکیشن متای دیوچه اضافه شود.',
+        'می‌دانم که باید دعوت‌نامه را خودم در تنظیمات اینستاگرامم بپذیرم.',
+        'می‌پذیرم که دیوچه برای من حساب بسازد و ایمیلم را نگه دارد.',
+        'می‌دانم که تا وقتی خودم وصل نکنم، چیزی منتشر نمی‌شود.',
+        'هر زمان می‌توانم با نوشتن به support@diwche.com پسش بگیرم.',
+      ],
+      de: [
+        'Ich bin damit einverstanden, dass mein Profilname als Tester zur Meta-App hinzugefügt wird.',
+        'Mir ist klar, dass ich die Einladung selbst in meinen Instagram-Einstellungen annehmen muss.',
+        'Ich bin einverstanden, dass Diwche ein Konto anlegt und meine E-Mail speichert.',
+        'Mir ist klar, dass nichts veröffentlicht wird, solange ich nicht selbst verbinde.',
+        'Ich kann jederzeit an support@diwche.com widerrufen.',
+      ],
+    };
+    const title = {
+      en: 'Permission to add you as a tester',
+      fa: 'اجازه‌ی افزودن به‌عنوان تستر',
+      de: 'Einwilligung: als Tester hinzufügen',
+    };
+    const l = clauses[locale] ? locale : 'en';
+    return send(res, 200, {
+      version: 'mock',
+      locale: l,
+      title: title[l],
+      clauses: clauses[l],
+      hash: 'mock-hash',
+    });
+  }
+
+  if (req.method === 'POST' && path === '/consent') {
+    const body = await readBody(req);
+    console.log('[mock] consent from', body.email, 'for @' + body.handle);
+    return send(res, 200, { ok: true, handle: body.handle });
+  }
+
   if (req.method === 'POST' && path === '/audit') {
     const { handle = '' } = await readBody(req);
     const clean = String(handle).replace(/^@/, '').trim().toLowerCase();

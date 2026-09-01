@@ -1,0 +1,90 @@
+---
+/**
+ * A legal document, laid out to be read.
+ *
+ * Narrow measure, generous leading, real headings. The temptation with a policy
+ * is to set it small and dense so it looks official; that only guarantees
+ * nobody finishes it, and an unread policy protects nobody.
+ */
+import type { LegalDoc } from '../content/legal';
+
+interface Props {
+  doc: LegalDoc;
+}
+
+const { doc } = Astro.props;
+---
+
+<article class="doc">
+  <header class="doc__head">
+    <h1 class="doc__title">{doc.title}</h1>
+    <p class="doc__updated">{doc.updated}</p>
+    <p class="doc__lead">{doc.lead}</p>
+  </header>
+
+  {
+    doc.sections.map((section) => (
+      <section class="doc__section">
+        <h2 class="doc__h2">{section.title}</h2>
+        {section.body.map((p) => <p class="doc__p">{p}</p>)}
+        {section.points && (
+          <ul class="doc__points">
+            {section.points.map((point) => <li>{point}</li>)}
+          </ul>
+        )}
+      </section>
+    ))
+  }
+</article>
+
+<style>
+  .doc {
+    max-width: 68ch;
+    margin-inline: auto;
+    padding-block: clamp(2.5rem, 1rem + 6vw, 5rem);
+    padding-inline: var(--s-5);
+  }
+
+  .doc__title {
+    font-size: clamp(2rem, 1rem + 4vw, 3rem);
+  }
+
+  .doc__updated {
+    margin-top: var(--s-2);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .doc__lead {
+    margin-top: var(--s-4);
+    font-size: var(--t-lead, 18px);
+    line-height: 1.65;
+    color: var(--ink-2);
+  }
+
+  .doc__section {
+    margin-top: var(--s-7, 3rem);
+  }
+
+  .doc__h2 {
+    font-size: clamp(1.15rem, 0.9rem + 1vw, 1.5rem);
+  }
+
+  .doc__p {
+    margin-top: var(--s-3);
+    line-height: 1.75;
+    color: var(--ink-2);
+  }
+
+  .doc__points {
+    margin-top: var(--s-3);
+    padding-inline-start: var(--s-5);
+    display: grid;
+    gap: var(--s-2);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+</style>

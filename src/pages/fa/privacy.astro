@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import LegalDoc from '../../components/LegalDoc.astro';
+import { PRIVACY } from '../../content/legal';
+import { HOME_FA } from '../../content/home';
+
+/**
+ * The privacy policy.
+ *
+ * Also the URL Meta's dashboard points at, which is why it exists at a stable
+ * path in every language rather than as one English page.
+ */
+const doc = PRIVACY['fa'];
+---
+
+<Base
+  locale="fa"
+  copy={HOME_FA}
+  title={`${doc.title} — Diwche`}
+  description={doc.lead}
+>
+  <LegalDoc doc={doc} />
+</Base>
