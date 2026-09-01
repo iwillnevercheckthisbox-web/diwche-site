@@ -22,6 +22,8 @@
 import {
   ApiError,
   getAudit,
+  getTopics,
+  startIdea,
   requestProof,
   saveLead,
   saveWaitingLead,
@@ -521,24 +523,27 @@ function run(root: HTMLElement) {
   }
 
   /**
-   * The starter branch, which has nothing to read.
+   * The starter branch: a subject and no page.
    *
-   * There is no page, no handle and no numbers — and the endpoints that would
-   * turn an idea into topics do not exist on the backend yet. So this asks for
-   * nothing and promises nothing: the walk still reaches the address, and the
-   * direction he would take the idea in is sent by email rather than claimed on
-   * screen. When those endpoints land, this becomes a real call and the
-   * starter branch gets its findings.
+   * Nothing is measured here, so nothing is claimed. What comes back is three
+   * angles worth building on — and an empty list is an ordinary answer, not a
+   * failure: the branch closes on an address either way.
    */
   function beginIdea(idea: string) {
-    void idea;
     read = (async () => {
+      const locale = document.documentElement.lang || 'en';
+      const started = await startIdea(idea, await turnstileToken());
+      auditId = started.id;
+      save();
       readProgress = 0.55;
       readLine = say.runtime.thinking;
-      await new Promise((r) => setTimeout(r, 600));
+      const { topics } = await getTopics(started.id, 'idea', idea, locale);
       readProgress = 1;
-      return [] as Topic[];
-    })();
+      return topics;
+    })().catch((err) => {
+      readFailed = err;
+      throw err;
+    });
   }
 
   /** Re-attach to a read already in flight, after a reload. */

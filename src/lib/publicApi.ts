@@ -180,12 +180,19 @@ export function startIdea(idea: string, turnstile: string | null) {
   return post<{ id: string }>('/idea', { idea, turnstile });
 }
 
+// Nothing is measured on this branch, so `topics` is the only thing it returns —
+// and an empty list is a legitimate answer rather than a failure.
+
 export function getAudit(id: string) {
   return get<AuditResult>(`/audit/${id}`);
 }
 
-export function getTopics(id: string, branch: 'page' | 'idea', idea?: string) {
-  return post<{ topics: Topic[] }>(`/audit/${id}/topics`, { branch, idea: idea ?? null });
+export function getTopics(id: string, branch: 'page' | 'idea', idea?: string, locale = 'en') {
+  return post<{ topics: Topic[] }>(`/audit/${id}/topics`, {
+    branch,
+    idea: idea ?? null,
+    locale,
+  });
 }
 
 export function makePost(id: string, topicId: string) {
