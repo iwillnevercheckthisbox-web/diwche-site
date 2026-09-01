@@ -7,8 +7,18 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # Dependencies first, so a content-only change reuses this layer.
+#
+# --omit=dev matters more than it looks. The only devDependency is puppeteer,
+# whose postinstall downloads a ~150MB Chromium — on a runner whose DNS is
+# already unreliable, that is twelve minutes of build time and a coin flip. It
+# is authoring tooling: `npm run shoot` captures the app's own screens on a
+# laptop, and the results are committed. The site build never opens a browser.
+#
+# Everything astro build actually reads — the three font families included —
+# is a real dependency, and is declared as one.
 COPY package.json package-lock.json ./
-RUN npm ci
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN npm ci --omit=dev
 
 # Only what `astro build` actually reads. mascot/, design/, scripts/ and
 # .claude/ are authoring material — they never reach the site. The shippable
