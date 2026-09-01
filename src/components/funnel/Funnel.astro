@@ -769,6 +769,107 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     margin-block: var(--s-2);
   }
 
+  /*
+   * Fitting a screen into a laptop.
+   *
+   * On a 13" MacBook and an iPad in landscape the walk overflowed by 150–280px
+   * on every screen after the first — enough that the button was always below
+   * the fold and the whole thing read as a web page rather than as a card being
+   * dealt. Measured, not guessed: `need` against the stage's `clientHeight` at
+   * 1440×800 and 1180×820.
+   *
+   * The height query rather than a width one is the point. A short window is
+   * the problem; a narrow one is not, and a phone should keep the roomy
+   * spacing it already has. Only screens that carry a capture are squeezed,
+   * because the capture is most of the overflow.
+   */
+  @media (min-width: 860px) and (max-height: 950px) {
+    .stage {
+      padding-block: var(--s-4);
+    }
+
+    .screen__inner {
+      gap: var(--s-2);
+    }
+
+    .screen__title {
+      font-size: clamp(1.4rem, 1rem + 1.6vw, 2rem);
+    }
+
+    .screen__lead,
+    .screen__quote,
+    .screen__hook {
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    /* The capture takes whatever room is left rather than a fixed aspect. It is
+       evidence that the product exists, not something anyone reads. */
+    .screen__shot {
+      margin-block: 0;
+      max-height: 32vh;
+      overflow: hidden;
+      border-radius: var(--r-3);
+    }
+
+    .screen__shot :global(img) {
+      max-height: 28vh;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .screen__mascot {
+      margin-block: 0;
+    }
+
+    .screen__mascot img {
+      width: min(104px, 14vh);
+    }
+
+    .screen__hint {
+      font-size: 12px;
+    }
+
+    .option {
+      padding-block: var(--s-2);
+    }
+
+    .options {
+      gap: var(--s-2);
+    }
+
+    /* The quote is context for the joke. On a short screen the joke can carry
+       itself, and the two together cost a whole option's worth of height. */
+    .screen__quote {
+      display: none;
+    }
+
+    .option__sub {
+      font-size: 12px;
+    }
+  }
+
+  /*
+   * Where it cannot fit, say so.
+   *
+   * The wait carries up to six cards and the report carries five findings; no
+   * amount of squeezing makes either a single screen, and squeezing them until
+   * they fit would make them unreadable. A fade at the bottom edge turns "this
+   * is cut off" into "there is more below", which is the honest version.
+   */
+  .stage::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    display: block;
+    height: 56px;
+    margin-top: -56px;
+    pointer-events: none;
+    background: linear-gradient(to top, var(--paper), transparent);
+    opacity: var(--more, 0);
+    transition: opacity var(--dur) var(--ease-out);
+  }
+
   /* ---- Options ------------------------------------------------------------ */
 
   .options {

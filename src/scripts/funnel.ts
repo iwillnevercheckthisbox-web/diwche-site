@@ -267,8 +267,23 @@ function run(root: HTMLElement) {
 
     paintBar();
 
-    root.querySelector('.stage')?.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    const stage = root.querySelector<HTMLElement>('.stage');
+    stage?.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
     live?.querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true });
+    showMore(stage);
+  }
+
+  /**
+   * The fade at the bottom edge, on only when there is more below.
+   *
+   * A fade that is always there is decoration and stops meaning anything; a
+   * screen that is cut off with no fade looks broken. So it follows the actual
+   * overflow, and disappears once you have reached the end.
+   */
+  function showMore(stage: HTMLElement | null | undefined) {
+    if (!stage) return;
+    const left = stage.scrollHeight - stage.clientHeight - stage.scrollTop;
+    stage.style.setProperty('--more', left > 24 ? '1' : '0');
   }
 
   function go(to: number, reverse = false) {
@@ -430,6 +445,17 @@ function run(root: HTMLElement) {
 
   backBtn?.addEventListener('click', () => go(index - 1, true));
 
+  // Cheap: one read of two properties, and only while a screen is being
+  // scrolled. Passive so it never delays the scroll itself.
+  root.querySelector<HTMLElement>('.stage')?.addEventListener(
+    'scroll',
+    () => showMore(root.querySelector<HTMLElement>('.stage')),
+    { passive: true }
+  );
+  addEventListener('resize', () => showMore(root.querySelector<HTMLElement>('.stage')), {
+    passive: true,
+  });
+
   // ---- The handle, and the read that starts here --------------------------------
 
   // There are two of these now — a handle to read, and an idea to build from —
@@ -482,7 +508,11 @@ function run(root: HTMLElement) {
 
   function beginRead(clean: string) {
     read = (async () => {
-      const started = await startAudit(clean, await turnstileToken());
+      const started = await startAudit(
+        clean,
+        await turnstileToken(),
+        document.documentElement.lang || 'en'
+      );
       return track(started.id).done;
     })().catch((err) => {
       readFailed = err;

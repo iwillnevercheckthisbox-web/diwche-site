@@ -161,8 +161,11 @@ async function unwrap<T>(res: Response): Promise<T> {
 export { ApiError };
 
 /** Starts a read. Returns as soon as the audit has an id — the work runs on. */
-export function startAudit(handle: string, turnstile: string | null) {
-  return post<{ id: string }>('/audit', { handle, turnstile });
+export function startAudit(handle: string, turnstile: string | null, locale = 'en') {
+  // The locale rides with the request so the findings come back written in the
+  // language the walk is in. Without it a Persian funnel ends on English facts,
+  // which looks finished right up until the last screen.
+  return post<{ id: string }>('/audit', { handle, turnstile, locale });
 }
 
 /**
