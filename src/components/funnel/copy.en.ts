@@ -107,7 +107,7 @@ export const EN: FunnelCopy = {
       title: 'Every morning, topics that are yours.',
       lead: 'Instead of throwing generic trends at you, he analyses your niche, studies the accounts you measure yourself against, and reads how your own posts actually did. The more you use him, the better he knows your voice and what your audience answers. Turn on overnight discovery and he searches your sources while you sleep, so there is a stack of ready-to-use ideas waiting when you wake up.',
       shot: {
-        src: '/shots/_placeholder-ideas.svg',
+        src: '/shots/ideas.png',
         label: 'Ideas',
         alt: 'The Ideas page, a column of suggested topics.',
       },
@@ -171,7 +171,7 @@ export const EN: FunnelCopy = {
       cta: 'Read my page',
       placeholder: 'yourhandle',
       shot: {
-        src: '/shots/_placeholder-performance.svg',
+        src: '/shots/performance.png',
         label: 'Performance',
         alt: 'A sentence about a post, above the bars it came from.',
       },
@@ -238,7 +238,7 @@ export const EN: FunnelCopy = {
     line: 'Reading your page…',
     lead: 'While we do the heavy lifting, here is the rest of what runs under the hood.',
     shot: {
-      src: '/shots/_placeholder-activity.svg',
+      src: '/shots/activity.png',
       label: 'Activity',
       alt: 'The activity log, a list of what he has published.',
     },

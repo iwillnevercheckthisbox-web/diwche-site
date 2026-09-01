@@ -113,7 +113,7 @@ export const DE: FunnelCopy = {
       title: 'Jeden Morgen Themen, die zu dir gehören.',
       lead: 'Statt dir allgemeine Trends hinzuwerfen, sieht er sich dein Themenfeld an, liest die Profile, an denen du dich misst, und wertet aus, wie deine eigenen Beiträge tatsächlich gelaufen sind. Je länger du mit ihm arbeitest, desto besser kennt er deinen Ton und das, worauf dein Publikum reagiert. Schalte die nächtliche Suche ein, und er durchsucht deine Quellen, während du schläfst — morgens liegt ein Stapel fertiger Themen bereit.',
       shot: {
-        src: '/shots/_placeholder-ideas.svg',
+        src: '/shots/ideas.png',
         label: 'Ideen',
         alt: 'Die Ideen-Seite mit einer Spalte vorgeschlagener Themen.',
       },
@@ -176,7 +176,7 @@ export const DE: FunnelCopy = {
       cta: 'Lies meine Seite',
       placeholder: 'deinprofil',
       shot: {
-        src: '/shots/_placeholder-performance.svg',
+        src: '/shots/performance.png',
         label: 'Auswertung',
         alt: 'Ein Satz über einen Beitrag, über den Balken, aus denen er stammt.',
       },
@@ -242,7 +242,7 @@ export const DE: FunnelCopy = {
     line: 'Er liest deine Seite …',
     lead: 'Während wir die schwere Arbeit machen, hier der Rest von dem, was im Hintergrund läuft.',
     shot: {
-      src: '/shots/_placeholder-activity.svg',
+      src: '/shots/activity.png',
       label: 'Aktivität',
       alt: 'Das Aktivitätsprotokoll mit dem, was veröffentlicht wurde.',
     },
