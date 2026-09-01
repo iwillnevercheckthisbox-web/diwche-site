@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CONFIRM_COPY } from '../../content/confirm';
+import { HOME_DE } from '../../content/home';
+
+const copy = CONFIRM_COPY['de'];
+---
+
+<Base
+  locale="de"
+  copy={HOME_DE}
+  title={`${copy.eyebrow} — Diwche`}
+  description={copy.okBody}
+>
+  <section class="confirm" data-confirm>
+    <p class="confirm__eyebrow">{copy.eyebrow}</p>
+    <h1 class="confirm__title" data-title>{copy.working}</h1>
+    <p class="confirm__body" data-body></p>
+    <p class="confirm__again" hidden data-again>
+      <a href="/de/read">{copy.again}</a>
+    </p>
+    <script type="application/json" data-confirm-copy set:html={JSON.stringify(copy)} />
+  </section>
+
+  <script>import '../../scripts/confirm';</script>
+</Base>
+
+<style>
+  .confirm {
+    max-width: 54ch;
+    margin-inline: auto;
+    padding-block: clamp(3rem, 1rem + 8vw, 7rem);
+    padding-inline: var(--s-5);
+    text-align: center;
+  }
+
+  .confirm__eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--horn);
+  }
+
+  .confirm__title {
+    margin-top: var(--s-3);
+    font-size: clamp(1.6rem, 1rem + 3vw, 2.4rem);
+  }
+
+  .confirm__body {
+    margin-top: var(--s-4);
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .confirm__again {
+    margin-top: var(--s-5);
+  }
+</style>

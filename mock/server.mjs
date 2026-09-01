@@ -314,6 +314,16 @@ const server = createServer(async (req, res) => {
     return send(res, 200, { ok: true, handle: body.handle });
   }
 
+  if (req.method === 'GET' && path === '/lead/confirm') {
+    const t = url.searchParams.get('t') || '';
+    // "bad" is the fixture for the link that did not survive a mail client.
+    if (!t || t === 'bad') {
+      return send(res, 400, { kind: 'error', message: 'That link is not one of ours.' });
+    }
+    console.log('[mock] confirmed lead token', t);
+    return send(res, 200, { ok: true, handle: 'someone', offer: 'RUNNING' });
+  }
+
   if (req.method === 'POST' && path === '/audit') {
     const { handle = '' } = await readBody(req);
     const clean = String(handle).replace(/^@/, '').trim().toLowerCase();
