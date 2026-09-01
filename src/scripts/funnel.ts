@@ -33,9 +33,12 @@ import {
   type AuditErrorKind,
   type AuditResult,
   type Fact,
+  type IdeaResult,
   type Projection,
+  type Size,
   type Topic,
 } from '../lib/publicApi';
+import { turnstileToken } from './turnstile';
 
 const HANDLE = /^@?[A-Za-z0-9._]{1,30}$/;
 const STORE = 'diwche-funnel';
@@ -115,6 +118,7 @@ interface RuntimeCopy {
   };
   runtime: Record<string, string>;
   result: Record<string, string>;
+  plan: { sizeTitle: Record<string, string> };
 }
 
 function run(root: HTMLElement) {
@@ -144,7 +148,7 @@ function run(root: HTMLElement) {
   let steps: HTMLElement[] = [];
 
   /** The read, running underneath the questions. Settled or not, it lives here. */
-  let read: Promise<AuditResult | Topic[]> | null = null;
+  let read: Promise<AuditResult | IdeaResult> | null = null;
   let readFailed: unknown = null;
   let readProgress = 0;
   let readLine = say.runtime.reading;
@@ -464,8 +468,10 @@ function run(root: HTMLElement) {
   // There are two of these now — a handle to read, and an idea to build from —
   // and which one is in the walk was decided back on Q1.
   for (const form of root.querySelectorAll<HTMLFormElement>('[data-start-form]')) {
-    form.addEventListener('submit', (ev) => {
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
+      if (submit?.disabled) return;
       const error = form.querySelector<HTMLElement>('[data-start-error]');
       const complain = (message: string) => {
         if (error) {
@@ -474,28 +480,34 @@ function run(root: HTMLElement) {
         }
       };
 
-      if (form.dataset.field === 'idea') {
-        const idea = form.querySelector<HTMLTextAreaElement>('[data-idea]')!.value.trim();
-        if (idea.length < 3) {
-          complain(say.runtime.ideaTooShort);
-          return;
-        }
-        if (error) error.hidden = true;
-        answers.idea = idea;
-        beginIdea(idea);
-        next();
-        return;
-      }
+      const isIdea = form.dataset.field === 'idea';
+      const idea = isIdea
+        ? form.querySelector<HTMLTextAreaElement>('[data-idea]')!.value.trim()
+        : '';
+      const value = isIdea
+        ? ''
+        : form.querySelector<HTMLInputElement>('[data-handle]')!.value.trim();
 
-      const value = form.querySelector<HTMLInputElement>('[data-handle]')!.value.trim();
-      if (!HANDLE.test(value)) {
-        complain(say.runtime.handleInvalid);
-        return;
-      }
+      if (isIdea && idea.length < 3) return complain(say.runtime.ideaTooShort);
+      if (!isIdea && !HANDLE.test(value)) return complain(say.runtime.handleInvalid);
       if (error) error.hidden = true;
-      handle = value.replace(/^@/, '');
-      answers.handle = handle;
-      beginRead(handle);
+
+      // The proof-of-human is minted here, while the button is still on
+      // screen to place the widget above, rather than inside the read after
+      // the screen has already moved on.
+      if (submit) submit.disabled = true;
+      const human = await turnstileToken(submit);
+      if (submit) submit.disabled = false;
+      if (human.failed) return complain(say.runtime.humanFailed);
+
+      if (isIdea) {
+        answers.idea = idea;
+        beginIdea(idea, human.token);
+      } else {
+        handle = value.replace(/^@/, '');
+        answers.handle = handle;
+        beginRead(handle, human.token);
+      }
       next();
     });
   }
@@ -509,13 +521,9 @@ function run(root: HTMLElement) {
     });
   }
 
-  function beginRead(clean: string) {
+  function beginRead(clean: string, human: string | null) {
     read = (async () => {
-      const started = await startAudit(
-        clean,
-        await turnstileToken(),
-        document.documentElement.lang || 'en'
-      );
+      const started = await startAudit(clean, human, document.documentElement.lang || 'en');
       return track(started.id).done;
     })().catch((err) => {
       readFailed = err;
@@ -530,17 +538,17 @@ function run(root: HTMLElement) {
    * angles worth building on — and an empty list is an ordinary answer, not a
    * failure: the branch closes on an address either way.
    */
-  function beginIdea(idea: string) {
+  function beginIdea(idea: string, human: string | null) {
     read = (async () => {
       const locale = document.documentElement.lang || 'en';
-      const started = await startIdea(idea, await turnstileToken());
+      const started = await startIdea(idea, human);
       auditId = started.id;
       save();
       readProgress = 0.55;
       readLine = say.runtime.thinking;
-      const { topics } = await getTopics(started.id, 'idea', idea, locale);
+      const answer = await getTopics(started.id, 'idea', idea, locale);
       readProgress = 1;
-      return topics;
+      return answer;
     })().catch((err) => {
       readFailed = err;
       throw err;
@@ -600,15 +608,46 @@ function run(root: HTMLElement) {
     } catch (err) {
       clearInterval(ticker);
       const e = readFailed ?? err;
-      fail(messageFor(e), kindFor(e));
+      if (kindFor(e) === 'human') {
+        // The read never started: the backend could not tell they were a
+        // person. That is retryable from the form, so the walk goes back a
+        // screen with the backend's own words under it, rather than ending.
+        backToStart(messageFor(e));
+      } else {
+        fail(messageFor(e), kindFor(e));
+      }
     } finally {
       analyzing = false;
+    }
+  }
+
+  function backToStart(message: string) {
+    read = null;
+    readFailed = null;
+    readProgress = 0;
+    auditId = null;
+    const at = steps.findIndex((s) => s.dataset.kind === 'start');
+    go(at >= 0 ? at : 0, true);
+    const form = steps[at]?.querySelector<HTMLElement>('[data-start-form]');
+    const error = form?.querySelector<HTMLElement>('[data-start-error]');
+    if (error) {
+      error.textContent = message;
+      error.hidden = false;
     }
   }
 
   // ---- The findings ------------------------------------------------------------
 
   let result: AuditResult | null = null;
+  let idea: IdeaResult | null = null;
+
+  /** `{name}` placeholders, filled from the backend's figures. */
+  function fill(template: string, values: object): string {
+    const bag = values as Record<string, unknown>;
+    return template.replace(/\{(\w+)\}/g, (m, k: string) =>
+      k in bag ? String(bag[k]) : m,
+    );
+  }
 
   function tpl(name: string) {
     const t = root.querySelector<HTMLTemplateElement>(`[data-tpl="${name}"]`);
@@ -619,44 +658,110 @@ function run(root: HTMLElement) {
   const field = (el: HTMLElement, name: string) =>
     el.querySelector<HTMLElement>(`[data-f="${name}"]`);
 
-  function showResult(value: AuditResult | Topic[]) {
+  const isIdea = (value: AuditResult | IdeaResult): value is IdeaResult => 'topics' in value;
+
+  function showResult(value: AuditResult | IdeaResult) {
     const screen = steps.find((s) => s.dataset.kind === 'result');
     const headline = screen?.querySelector<HTMLElement>('[data-result-headline]');
     const factsHost = screen?.querySelector<HTMLElement>('[data-facts]');
-    const topicsHost = screen?.querySelector<HTMLElement>('[data-topics]');
     const eyebrow = screen?.querySelector<HTMLElement>('.screen__eyebrow');
     const teaser = screen?.querySelector<HTMLElement>('.lead__title');
 
-    renderWho(screen, Array.isArray(value) ? null : value.profile);
+    renderWho(screen, isIdea(value) ? null : value.profile);
 
-    if (Array.isArray(value)) {
-      // The starter branch. Nothing was measured, so nothing is claimed — and
-      // in particular no blurred report, because a report implies an analysis
-      // of a page we have never seen. The address is asked for on its own
-      // honest footing instead.
+    if (isIdea(value)) {
+      // The starter branch. Nothing was measured about a page, so nothing is
+      // claimed about one — what is shown is the field the idea is walking
+      // into, and the address is asked for on that footing.
+      idea = value;
       if (eyebrow) eyebrow.textContent = say.result.starterEyebrow;
-      if (headline) headline.textContent = '';
+      if (headline) headline.textContent = say.result.starterHeadline;
       if (teaser) teaser.textContent = say.result.starterTeaser;
       if (factsHost) factsHost.hidden = true;
-      if (topicsHost) {
-        topicsHost.hidden = value.length === 0;
-        topicsHost.textContent = '';
-        for (const topic of value) {
-          const el = tpl('topic');
-          field(el, 'format')!.textContent = topic.format;
-          field(el, 'title')!.textContent = topic.title;
-          field(el, 'hook')!.textContent = topic.hook;
-          topicsHost.append(el);
-        }
-      }
+      renderIdea(value);
     } else {
       result = value;
       if (headline) headline.textContent = value.headline;
+      renderStarter(null);
       renderFacts(value.facts);
       renderProjection(value);
+      renderSize(value.size);
     }
 
     go(steps.findIndex((s) => s.dataset.kind === 'result'));
+  }
+
+  /**
+   * The starter branch's screen: the pages already doing this, the angles he
+   * would open with, and what waiting costs. Drawn again, unlocked, once an
+   * address has been left.
+   */
+  function renderIdea(value: IdeaResult) {
+    renderStarter(value);
+  }
+
+  function renderStarter(value: IdeaResult | null) {
+    const screen = steps.find((s) => s.dataset.kind === 'result');
+    const fieldHost = screen?.querySelector<HTMLElement>('[data-field]');
+    const fieldList = screen?.querySelector<HTMLElement>('[data-field-list]');
+    const topicsHost = screen?.querySelector<HTMLElement>('[data-topics]');
+    const waiting = screen?.querySelector<HTMLElement>('[data-waiting]');
+    const rewards = screen?.querySelector<HTMLElement>('[data-rewards]');
+
+    const pages = value?.field?.pages ?? [];
+    if (fieldHost) fieldHost.hidden = pages.length === 0;
+    if (fieldList) {
+      fieldList.textContent = '';
+      for (const page of pages) {
+        const el = tpl('page');
+        field(el, 'handle')!.textContent = `@${page.handle}`;
+        field(el, 'followers-label')!.textContent = say.result.fieldFollowers;
+        field(el, 'followers')!.textContent = page.followersText || count(page.followers);
+        field(el, 'pace-label')!.textContent = say.result.fieldPace;
+        field(el, 'pace')!.textContent = page.postsPerMonth;
+        field(el, 'rate-label')!.textContent = say.result.fieldRate;
+        field(el, 'rate')!.textContent = page.responseRate;
+        field(el, 'format-label')!.textContent = say.result.fieldFormat;
+        field(el, 'format')!.textContent = page.bestFormat;
+        fieldList.append(el);
+      }
+    }
+
+    const topics = value?.topics ?? [];
+    if (topicsHost) {
+      topicsHost.hidden = topics.length === 0;
+      topicsHost.textContent = '';
+      for (const topic of topics) renderTopic(topicsHost, topic);
+    }
+
+    if (waiting) {
+      const w = value?.waiting;
+      waiting.hidden = !w;
+      waiting.textContent = w ? fill(say.result.waiting, w) : '';
+    }
+
+    if (rewards) {
+      const r = value?.field?.rewards;
+      rewards.hidden = !r;
+      rewards.textContent = r ? fill(say.result.rewards, r) : '';
+    }
+  }
+
+  function renderTopic(host: HTMLElement, topic: Topic) {
+    const el = tpl('topic');
+    const locked = Boolean(topic.locked) || !topic.hook;
+    el.toggleAttribute('data-locked', locked);
+    field(el, 'format')!.textContent = topic.format;
+    field(el, 'title')!.textContent = topic.title;
+    field(el, 'hook')!.textContent = locked ? '' : topic.hook;
+    const held = field(el, 'held');
+    if (held) {
+      held.textContent = say.result.heldBack;
+      held.hidden = !locked;
+    }
+    const ghost = field(el, 'ghost');
+    if (ghost) ghost.hidden = !locked;
+    host.append(el);
   }
 
   /**
@@ -707,13 +812,23 @@ function run(root: HTMLElement) {
 
     for (const fact of facts) {
       const el = tpl('fact');
-      el.toggleAttribute('data-locked', Boolean(fact.locked));
+      // A locked fact arrives with its value and text empty. The card still
+      // earns its place on the label; a shape stands in for the figure.
+      const locked = Boolean(fact.locked);
+      el.toggleAttribute('data-locked', locked);
       field(el, 'label')!.textContent = fact.label;
-      field(el, 'value')!.textContent = fact.value;
-      field(el, 'text')!.textContent = fact.text;
+      field(el, 'value')!.textContent = locked ? '' : fact.value;
+      field(el, 'text')!.textContent = locked ? '' : fact.text;
+      const held = field(el, 'held');
+      if (held) {
+        held.textContent = say.result.heldBack;
+        held.hidden = !locked;
+      }
+      const ghost = field(el, 'ghost');
+      if (ghost) ghost.hidden = !locked;
 
       const meter = field(el, 'meter');
-      if (fact.meter && meter) {
+      if (fact.meter && meter && !locked) {
         meter.hidden = false;
         const width = Math.max(0, Math.min(100, (fact.meter.value / fact.meter.max) * 100));
         const fill = field(el, 'meter-fill');
@@ -791,6 +906,34 @@ function run(root: HTMLElement) {
   }
 
   /**
+   * What a page this size could be doing.
+   *
+   * Arrives with the unlock, next to the projection. Skipped entirely when the
+   * backend sent nothing — a titled block with no lines under it would be a
+   * promise with nothing in it.
+   */
+  function renderSize(size: Size | null | undefined) {
+    const screen = steps.find((s) => s.dataset.kind === 'plan');
+    const block = screen?.querySelector<HTMLElement>('[data-size]');
+    const title = screen?.querySelector<HTMLElement>('[data-size-title]');
+    const list = screen?.querySelector<HTMLElement>('[data-size-list]');
+    if (!block || !list) return;
+    if (!size || !size.lines?.length) {
+      block.hidden = true;
+      return;
+    }
+    if (title) title.textContent = say.plan?.sizeTitle?.[size.tier] ?? say.plan?.sizeTitle?.['1k'] ?? '';
+    list.textContent = '';
+    for (const line of size.lines) {
+      const el = tpl('size-line');
+      field(el, 'value')!.textContent = line.value;
+      field(el, 'text')!.textContent = line.text;
+      list.append(el);
+    }
+    block.hidden = false;
+  }
+
+  /**
    * One month, six months, a year.
    *
    * Skipped entirely when the read was cached before horizons existed — an absent strip is
@@ -864,20 +1007,38 @@ function run(root: HTMLElement) {
     submit.disabled = true;
     submit.textContent = say.ui.working;
 
-    try {
-      if (auditId) await saveLead(auditId, email, consent, answers, await turnstileToken());
-      if (result) {
-        result.facts = result.facts.map((f) => ({ ...f, locked: false }));
-        renderFacts(result.facts);
-      }
-      await toPlan();
-    } catch (err) {
+    const giveBack = (message: string) => {
       if (error) {
-        error.textContent = messageFor(err);
+        error.textContent = message;
         error.hidden = false;
       }
       submit.disabled = false;
       submit.textContent = say.result.cta;
+    };
+
+    const human = await turnstileToken(submit);
+    if (human.failed) return giveBack(say.runtime.humanFailed);
+
+    try {
+      if (auditId) {
+        // The answer is the same view, unlocked. Nothing is flipped here: what
+        // the backend chose to open is what gets drawn.
+        const opened = await saveLead(auditId, email, consent, answers, human.token);
+        if (isIdea(opened)) {
+          idea = opened;
+          renderStarter(opened);
+        } else if ('facts' in opened) {
+          result = opened;
+          renderFacts(opened.facts);
+          renderProjection(opened);
+          renderSize(opened.size);
+        }
+      }
+      await toPlan();
+    } catch (err) {
+      // A refused human check keeps the form open: the backend's message says
+      // what happened, and the next press mints a fresh token.
+      giveBack(messageFor(err));
     }
   });
 
@@ -899,8 +1060,17 @@ function run(root: HTMLElement) {
     }
     if (error) error.hidden = true;
     submit.disabled = true;
+    const human = await turnstileToken(submit);
+    if (human.failed) {
+      if (error) {
+        error.textContent = say.runtime.humanFailed;
+        error.hidden = false;
+      }
+      submit.disabled = false;
+      return;
+    }
     try {
-      await saveWaitingLead(handle, email, consent, answers, await turnstileToken());
+      await saveWaitingLead(handle, email, consent, answers, human.token);
       submit.textContent = say.ui.sent;
     } catch (err) {
       if (error) {
@@ -1036,101 +1206,6 @@ function run(root: HTMLElement) {
     const handleInput = root.querySelector<HTMLInputElement>('#handle');
     if (handleInput && handle) handleInput.value = handle;
   }
-}
-
-/**
- * Proof-of-human, when it is switched on.
- *
- * Nothing third-party is loaded until a site key exists on the document, and
- * the backend — never this — decides whether a missing token is acceptable.
- * That split matters: a page can always be made to say it has a token, so this
- * is a way to give one, never a gate.
- *
- * The widget is rendered once into a hidden container and reused. Its mode is
- * set in the Cloudflare dashboard, not here; in the invisible and
- * non-interactive modes the callback fires on its own and nothing is shown.
- */
-interface TurnstileApi {
-  render: (el: HTMLElement, params: Record<string, unknown>) => string;
-  reset: (id: string) => void;
-}
-
-let widget: { id: string; api: TurnstileApi } | null = null;
-let pending: ((token: string | null) => void) | null = null;
-
-/**
- * Hand whatever the widget produced to whoever is waiting.
- *
- * This is module-level rather than a closure inside the render call on purpose:
- * the widget is rendered once and reset for every later token, so its callbacks
- * belong to the first request forever. Routing through here means a reset
- * answers the call that asked for it.
- */
-function settle(token: string | null) {
-  const waiting = pending;
-  pending = null;
-  waiting?.(token);
-}
-
-async function turnstileToken(): Promise<string | null> {
-  const key = document.documentElement.dataset.turnstileKey;
-  if (!key) return null;
-
-  const api = await waitForTurnstile();
-  if (!api) return null;
-
-  return new Promise<string | null>((resolve) => {
-    // One outstanding request at a time. The funnel never asks twice at once,
-    // and handing an old caller a new token would be a lie about which call it
-    // belongs to.
-    settle(null);
-    pending = resolve;
-
-    // Nothing waits forever on a third party. A null means the backend decides,
-    // which is where that decision belongs anyway.
-    const bail = window.setTimeout(() => {
-      if (pending === resolve) settle(null);
-    }, 8000);
-    const stopWaiting = () => window.clearTimeout(bail);
-    const originalResolve = resolve;
-    resolve = ((token: string | null) => {
-      stopWaiting();
-      originalResolve(token);
-    }) as typeof resolve;
-    pending = resolve;
-
-    try {
-      if (widget) {
-        // A token is single-use, so a second read needs a fresh one.
-        widget.api.reset(widget.id);
-        return;
-      }
-      const host = document.createElement('div');
-      host.style.display = 'none';
-      document.body.append(host);
-      widget = {
-        api,
-        id: api.render(host, {
-          sitekey: key,
-          callback: (token: string) => settle(token),
-          'error-callback': () => settle(null),
-          'timeout-callback': () => settle(null),
-          'expired-callback': () => settle(null),
-        }),
-      };
-    } catch {
-      settle(null);
-    }
-  });
-}
-
-/** The script is async, so it may not have arrived by the time the handle is typed. */
-async function waitForTurnstile(): Promise<TurnstileApi | null> {
-  const has = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile ?? null;
-  for (let i = 0; i < 40 && !has(); i++) {
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  return has();
 }
 
 function messageFor(err: unknown): string {

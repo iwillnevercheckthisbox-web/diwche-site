@@ -260,6 +260,16 @@ export const DE: FunnelCopy = {
       'Er hat deine Idee gelesen. Lass eine Adresse da, und er schickt dir die Richtung, die er einschlagen würde — samt erstem Beitrag.',
     followers: 'Follower',
     posts: 'Beiträge',
+    heldBack: ' · zurückgehalten',
+    starterHeadline: 'Das Feld, in das du gerade gehst.',
+    fieldTitle: 'Seiten, die das schon machen',
+    fieldFollowers: 'Follower',
+    fieldPace: 'Beiträge im Monat',
+    fieldRate: 'reagieren',
+    fieldFormat: 'bestes Format',
+    waiting:
+      'Wer diese Woche mit {perWeek} Beiträgen pro Woche anfängt, hat in einem Jahr {byNextYear} Beiträge. Wer in drei Monaten anfängt, hat {ifThreeMonths}.',
+    rewards: 'Dieses Thema belohnt {format}, bei {pace}.',
   },
 
   plan: {
@@ -274,6 +284,12 @@ export const DE: FunnelCopy = {
     horizonsNew: 'davon {n} neu',
     horizonsWhen: { month: 'In einem Monat', sixMonths: 'In sechs Monaten', year: 'In einem Jahr' },
     sides: { now: 'Jetzt', then: 'Mit ihm' },
+    sizeTitle: {
+      under1k: 'Was eine Seite unter tausend schaffen kann',
+      '1k': 'Was eine Seite dieser Größe schaffen kann',
+      '10k': 'Was eine Seite mit Zehntausenden schaffen kann',
+      '100k': 'Was eine so große Seite schaffen kann',
+    },
     ways: { again: 'Eine andere Seite lesen', home: 'Zurück zu diwche.com' },
   },
 
@@ -303,5 +319,7 @@ export const DE: FunnelCopy = {
     errorEyebrow: 'Er hat aufgehört',
     waitingTitle: 'Lass eine Adresse da, und er schickt die Analyse, sobald er kann.',
     waitingCta: 'Schick sie, sobald es geht',
+    humanFailed:
+      'Er konnte nicht erkennen, dass du ein Mensch bist. Das ist sein Problem, nicht deins — versuch es noch einmal oder lade die Seite neu.',
   },
 };

@@ -15,7 +15,7 @@
 export type AuditStage = 'queued' | 'reading' | 'analyzing' | 'writing' | 'done' | 'error';
 
 /** Why an audit could not be produced. Each maps to its own on-screen copy. */
-export type AuditErrorKind = 'not_found' | 'private' | 'limit' | 'error';
+export type AuditErrorKind = 'not_found' | 'private' | 'limit' | 'error' | 'human';
 
 export interface AuditProgress {
   stage: AuditStage;
@@ -33,7 +33,13 @@ export interface Fact {
   value: string;
   /** The sentence that makes the figure mean something. */
   text: string;
-  /** Held back until the visitor leaves an email. */
+  /**
+   * Held back until the visitor leaves an email.
+   *
+   * While the read is still locked these arrive with `value` and `text`
+   * empty — the site draws a placeholder shape and blurs that, never real
+   * text, so there is nothing under the blur to lift.
+   */
   locked?: boolean;
   /** Optional bar: where this page sits against pages of its size. */
   meter?: { value: number; max: number; benchmark?: number; benchmarkLabel?: string };
@@ -91,14 +97,38 @@ export interface Profile {
   avatar: string | null;
 }
 
+/**
+ * What a page this size could be doing, in the reader's own numbers.
+ *
+ * Withheld with the projection until the read is unlocked. The tier picks the
+ * title (a page under a thousand is talked to differently from one over a
+ * hundred thousand); the lines are already worded by the backend.
+ */
+export type SizeTier = 'under1k' | '1k' | '10k' | '100k';
+
+export interface SizeLine {
+  key: string;
+  value: string;
+  text: string;
+}
+
+export interface Size {
+  tier: SizeTier;
+  lines: SizeLine[];
+}
+
 export interface AuditResult {
   id: string;
   handle: string;
   source: 'discovery' | 'apify';
   /** One sentence. The thing they came for. */
   headline: string;
+  /** False until an address has been left. The locked facts, projection and size follow it. */
+  unlocked: boolean;
   facts: Fact[];
+  /** Null until unlocked — and legitimately null after it, when there was too little to say. */
   projection: Projection | null;
+  size: Size | null;
   profile: Profile | null;
   /** True once the DM code has arrived from this handle. */
   verified: boolean;
@@ -115,7 +145,59 @@ export interface Topic {
   hook: string;
   format: string;
   why: string;
+  /** Title and format are open; `hook` and `why` arrive blank while this is true. */
+  locked?: boolean;
 }
+
+/** A page already working the subject the visitor described. All figures pre-formatted. */
+export interface FieldPage {
+  handle: string;
+  followers: number;
+  followersText: string;
+  postsPerMonth: string;
+  responseRate: string;
+  bestFormat: string;
+}
+
+/** What the subject rewards, once unlocked: a format and a pace, for one sentence of copy. */
+export interface Rewards {
+  format: string;
+  pace: string;
+}
+
+export interface Field {
+  pages: FieldPage[];
+  rewards: Rewards | null;
+}
+
+/** The cost of waiting, as post counts. Words come from the locale. */
+export interface Waiting {
+  perWeek: number;
+  byNextYear: number;
+  ifThreeMonths: number;
+}
+
+/**
+ * The starter branch's whole answer.
+ *
+ * Nothing was measured, so nothing is claimed about a page — but the field the
+ * idea is walking into is real, and so is the arithmetic of starting late.
+ */
+export interface IdeaResult {
+  unlocked: boolean;
+  topics: Topic[];
+  field: Field | null;
+  waiting: Waiting | null;
+}
+
+/**
+ * What leaving an address returns: the same view, unlocked.
+ *
+ * A page read comes back as the full result; an idea session as the full
+ * topics answer. The site replaces what it holds with this and re-renders —
+ * it never flips `locked` by itself.
+ */
+export type LeadResult = ({ ok: true } & AuditResult) | ({ ok: true } & IdeaResult);
 
 export interface PostPreview {
   topicId: string;
@@ -196,15 +278,16 @@ export function startIdea(idea: string, turnstile: string | null) {
   return post<{ id: string }>('/idea', { idea, turnstile });
 }
 
-// Nothing is measured on this branch, so `topics` is the only thing it returns —
-// and an empty list is a legitimate answer rather than a failure.
+// Nothing is measured on this branch. What it returns is the field around the
+// idea and the topics he would start with — an empty list of either is a
+// legitimate answer rather than a failure.
 
 export function getAudit(id: string) {
   return get<AuditResult>(`/audit/${id}`);
 }
 
 export function getTopics(id: string, branch: 'page' | 'idea', idea?: string, locale = 'en') {
-  return post<{ topics: Topic[] }>(`/audit/${id}/topics`, {
+  return post<IdeaResult>(`/audit/${id}/topics`, {
     branch,
     idea: idea ?? null,
     locale,
@@ -232,7 +315,7 @@ export function saveLead(
   answers: Answers = {},
   turnstile: string | null = null,
 ) {
-  return post<{ ok: true }>(`/audit/${id}/lead`, { email, consent, answers, turnstile });
+  return post<LeadResult>(`/audit/${id}/lead`, { email, consent, answers, turnstile });
 }
 
 /**

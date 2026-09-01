@@ -16,7 +16,12 @@
  *   @limit     the daily cap has been reached
  *   @slow      a read that outlasts the scenes
  *   @fast      a read that lands almost immediately
+ *   @human     the proof-of-human check refuses the read
  *   anything else → a healthy page
+ *
+ * The result follows the public read contract: while a read is locked the
+ * held-back facts arrive with empty value and text, and the projection and
+ * size block are null. Leaving an address returns the whole view, unlocked.
  */
 import { createServer } from 'node:http';
 
@@ -92,6 +97,16 @@ const strong = (handle) => ({
       { label: 'In a year', months: 12, total: '16,026', extra: '8,706', value: 16026 },
     ],
   },
+  size: {
+    tier: '1k',
+    lines: [
+      { key: 'reach1', value: '84', text: '1% of your followers is 84 responses a post. Your best post got 61.' },
+      { key: 'dormant', value: '7,900', text: '7,900 followers you already have that a typical post does not reach.' },
+      { key: 'brand', value: '0.6%', text: 'The share of your followers a brand would expect to see on a post before it pays for one.' },
+      { key: 'hours', value: '20', text: 'About twenty hours a month go into nine posts. He would make that twenty posts for the same hours.' },
+      { key: 'followers', value: '130', text: 'About 130 new followers a month at your own reel rate, if the reels were most of what you posted.' },
+    ],
+  },
   verified: false,
   // A tiny grey circle: enough to prove the card renders a data URI, without
   // shipping a stranger's face into the repo.
@@ -165,6 +180,16 @@ const weak = (handle) => ({
       { label: 'In a year', months: 12, total: '5,567', extra: '3,047', value: 5567 },
     ],
   },
+  size: {
+    tier: '1k',
+    lines: [
+      { key: 'reach1', value: '84', text: '1% of your followers is 84 responses a post. Your best post got 40.' },
+      { key: 'dormant', value: '8,200', text: '8,200 followers you already have that a typical post does not reach.' },
+      { key: 'brand', value: '0.6%', text: 'The share of your followers a brand would expect to see on a post before it pays for one.' },
+      { key: 'hours', value: '24', text: 'About twenty-four hours a month go into twelve posts that open the same way.' },
+      { key: 'followers', value: '60', text: 'About 60 new followers a month at your current rate. Shorter captions, in the evening, roughly double it.' },
+    ],
+  },
   verified: false,
   // A tiny grey circle: enough to prove the card renders a data URI, without
   // shipping a stranger's face into the repo.
@@ -231,6 +256,50 @@ const TOPICS = {
     },
   ],
 };
+
+/** The field an idea walks into, and what waiting costs. Shapes per the contract. */
+const FIELD = {
+  pages: [
+    { handle: 'slow.mornings', followers: 41200, followersText: '41,200', postsPerMonth: '12', responseRate: '1.4%', bestFormat: 'reels' },
+    { handle: 'the.quiet.kitchen', followers: 12800, followersText: '12,800', postsPerMonth: '8', responseRate: '2.1%', bestFormat: 'carousels' },
+    { handle: 'firstyearnotes', followers: 3900, followersText: '3,900', postsPerMonth: '16', responseRate: '3.0%', bestFormat: 'reels' },
+  ],
+  rewards: { format: 'reels', pace: 'about 12 posts a month' },
+};
+const WAITING = { perWeek: 3, byNextYear: 156, ifThreeMonths: 117 };
+
+/**
+ * The view a visitor gets before, and after, leaving an address.
+ *
+ * Locked facts go out with their figure and sentence blank — the site draws a
+ * placeholder, never a blurred copy of the real text — and the projection and
+ * size block are withheld with them.
+ */
+function pageView(body, unlocked) {
+  if (unlocked) {
+    return { ...body, unlocked: true, facts: body.facts.map((f) => ({ ...f, locked: false })) };
+  }
+  return {
+    ...body,
+    unlocked: false,
+    facts: body.facts.map((f) =>
+      f.locked ? { key: f.key, label: f.label, value: '', text: '', locked: true } : f
+    ),
+    projection: null,
+    size: null,
+  };
+}
+
+function ideaView(unlocked) {
+  return {
+    unlocked,
+    topics: TOPICS.idea.map((t) =>
+      unlocked ? { ...t, locked: false } : { id: t.id, title: t.title, format: t.format, hook: '', why: '', locked: true }
+    ),
+    field: { pages: FIELD.pages, rewards: unlocked ? FIELD.rewards : null },
+    waiting: WAITING,
+  };
+}
 
 const POST = {
   script: [
@@ -341,6 +410,9 @@ const server = createServer(async (req, res) => {
     if (clean === 'limit') {
       return send(res, 429, { kind: 'limit', message: 'The Diw has read all he can today.' });
     }
+    if (clean === 'human') {
+      return send(res, 403, { kind: 'human', message: 'He could not tell that you were a person.' });
+    }
 
     const id = 'mock-' + Math.random().toString(36).slice(2, 10);
     audits.set(id, {
@@ -358,8 +430,8 @@ const server = createServer(async (req, res) => {
   }
 
   if (req.method === 'POST' && path === '/idea') {
-    const id = 'mock-idea-' + Math.random().toString(36).slice(2, 10);
-    audits.set(id, { handle: null, startedAt: Date.now(), duration: 0, kind: 'idea', body: null });
+    const id = 'idea-mock-' + Math.random().toString(36).slice(2, 10);
+    audits.set(id, { handle: null, startedAt: Date.now(), duration: 0, kind: 'idea', body: null, unlocked: false });
     await new Promise((r) => setTimeout(r, 400));
     return send(res, 200, { id });
   }
@@ -394,7 +466,7 @@ const server = createServer(async (req, res) => {
         } else if (audit.kind === 'not_found') {
           emit('failed', { kind: 'not_found', message: 'He could not find that page.' });
         } else {
-          emit('result', { id: eventsMatch[1], ...audit.body });
+          emit('result', pageView({ id: eventsMatch[1], ...audit.body }, audit.unlocked));
         }
         res.end();
       }, audit.duration)
@@ -421,14 +493,18 @@ const server = createServer(async (req, res) => {
             : 'He could not find that page.',
       });
     }
-    return send(res, 200, { id: auditMatch[1], ...audit.body });
+    return send(res, 200, pageView({ id: auditMatch[1], ...audit.body }, audit.unlocked));
   }
 
   const topicsMatch = path.match(/^\/audit\/([^/]+)\/topics$/);
   if (req.method === 'POST' && topicsMatch) {
     const { branch = 'page' } = await readBody(req);
     await new Promise((r) => setTimeout(r, 2600));
-    return send(res, 200, { topics: TOPICS[branch] ?? TOPICS.page });
+    if (branch === 'idea') {
+      const audit = audits.get(topicsMatch[1]);
+      return send(res, 200, ideaView(Boolean(audit?.unlocked)));
+    }
+    return send(res, 200, { unlocked: true, topics: TOPICS.page, field: null, waiting: null });
   }
 
   const postMatch = path.match(/^\/audit\/([^/]+)\/post$/);
@@ -445,9 +521,11 @@ const server = createServer(async (req, res) => {
       return send(res, 400, { kind: 'error', message: 'That address does not look right.' });
     }
     const audit = audits.get(leadMatch[1]);
-    if (audit) audit.body.verified = true;
     await new Promise((r) => setTimeout(r, 700));
-    return send(res, 200, { ok: true });
+    if (!audit) return send(res, 404, { kind: 'error', message: 'Unknown audit.' });
+    audit.unlocked = true;
+    if (audit.kind === 'idea') return send(res, 200, { ok: true, ...ideaView(true) });
+    return send(res, 200, { ok: true, ...pageView({ id: leadMatch[1], ...audit.body }, true) });
   }
 
   if (req.method === 'POST' && path === '/lead') {
@@ -469,5 +547,5 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`[mock] /api/public on http://localhost:${PORT}`);
-  console.log('[mock] handles: @weak @private @nobody @limit @slow @fast — anything else is a healthy page');
+  console.log('[mock] handles: @weak @private @nobody @limit @slow @fast @human — anything else is a healthy page');
 });

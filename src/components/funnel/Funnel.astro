@@ -62,7 +62,12 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   <script
     type="application/json"
     data-copy
-    set:html={JSON.stringify({ ui: copy.ui, runtime: copy.runtime, result: copy.result })}
+    set:html={JSON.stringify({
+      ui: copy.ui,
+      runtime: copy.runtime,
+      result: copy.result,
+      plan: { sizeTitle: copy.plan.sizeTitle },
+    })}
   />
   {!connected && <p class="preview">{copy.preview}</p>}
 
@@ -265,7 +270,17 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
               <h1 class="screen__title" data-result-headline />
               <div class="facts" data-facts />
+
+              {/* The starter branch. No page was read, so what is shown is the
+                  field the idea is walking into: the pages already working it,
+                  the angles he would open with, and what waiting costs. */}
+              <section class="field" data-field hidden>
+                <p class="field__title">{copy.result.fieldTitle}</p>
+                <div class="field__list" data-field-list />
+              </section>
               <div class="topics" data-topics hidden />
+              <p class="waiting" data-waiting hidden />
+              <p class="rewards" data-rewards hidden />
 
               <form class="lead" data-lead-form novalidate>
                 <p class="lead__title">{copy.result.teaser}</p>
@@ -353,6 +368,13 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
                 </details>
               </div>
 
+              {/* What a page this size could be doing, in its own numbers.
+                  Arrives with the unlock, so it is drawn only when it exists. */}
+              <section class="size" data-size hidden>
+                <p class="size__title" data-size-title />
+                <div class="size__list" data-size-list />
+              </section>
+
               <div class="offer">
                 <p class="offer__text" data-plan-body>{copy.plan.body}</p>
                 <p class="offer__text" data-plan-body-starter hidden>{copy.plan.starterBody}</p>
@@ -411,9 +433,16 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   <!-- ===================================================== CLONED AT RUNTIME -->
   <template data-tpl="fact">
     <article class="fact">
-      <p class="fact__label" data-f="label"></p>
+      <p class="fact__label"><span data-f="label"></span><span class="fact__held" data-f="held" hidden></span></p>
       <p class="fact__value" data-f="value"></p>
       <p class="fact__text" data-f="text"></p>
+      {/* A shape to blur while the figure is held back. Never real text: a
+          blur can be lifted, and a placeholder has nothing under it to lift. */}
+      <div class="ghost" data-f="ghost" hidden aria-hidden="true">
+        <i class="ghost__value"></i>
+        <i class="ghost__line"></i>
+        <i class="ghost__line ghost__line--short"></i>
+      </div>
       <div class="meter" data-f="meter" hidden>
         <div class="meter__track"><i class="meter__fill" data-f="meter-fill"></i></div>
         <i class="meter__mark" data-f="meter-mark"></i>
@@ -425,8 +454,31 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   <template data-tpl="topic">
     <article class="topic">
       <span class="topic__format" data-f="format"></span>
-      <p class="topic__title" data-f="title"></p>
+      <p class="topic__title"><span data-f="title"></span><span class="fact__held" data-f="held" hidden></span></p>
       <p class="topic__hook" data-f="hook"></p>
+      <div class="ghost" data-f="ghost" hidden aria-hidden="true">
+        <i class="ghost__line"></i>
+        <i class="ghost__line ghost__line--short"></i>
+      </div>
+    </article>
+  </template>
+
+  <template data-tpl="page">
+    <article class="page">
+      <p class="page__handle" data-f="handle" dir="ltr"></p>
+      <dl class="page__stats">
+        <div><dt data-f="followers-label"></dt><dd data-f="followers"></dd></div>
+        <div><dt data-f="pace-label"></dt><dd data-f="pace"></dd></div>
+        <div><dt data-f="rate-label"></dt><dd data-f="rate"></dd></div>
+        <div><dt data-f="format-label"></dt><dd data-f="format"></dd></div>
+      </dl>
+    </article>
+  </template>
+
+  <template data-tpl="size-line">
+    <article class="size__line">
+      <p class="size__value" data-f="value"></p>
+      <p class="size__text" data-f="text"></p>
     </article>
   </template>
 
@@ -505,6 +557,9 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   :global([lang='fa']) .rest__label,
   :global([lang='fa']) .fact__label,
   :global([lang='fa']) .topic__format,
+  :global([lang='fa']) .field__title,
+  :global([lang='fa']) .size__title,
+  :global([lang='fa']) .page__stats dt,
   :global([lang='fa']) .gain__label {
     text-transform: none;
     letter-spacing: 0;
@@ -1286,17 +1341,192 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     color: var(--ink-2);
   }
 
-  /* Legible as a shape, not as a sentence: enough to want it, not to take it. */
+  /* A locked card keeps its label and shows a shape where the figure would
+     be. The shape is blurred, so it reads as something held back rather than
+     as something missing — and there is no text under it to lift. */
   .fact[data-locked] .fact__value,
-  .fact[data-locked] .fact__text {
-    filter: blur(6px);
-    user-select: none;
+  .fact[data-locked] .fact__text,
+  .topic[data-locked] .topic__hook {
+    display: none;
   }
 
-  .fact[data-locked] .fact__label::after {
-    content: ' · held back';
+  .fact__held {
     white-space: nowrap;
     color: var(--horn-deep);
+  }
+
+  .topic__title .fact__held {
+    font-family: var(--font-body, inherit);
+    font-variation-settings: normal;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-inline-start: 0.4em;
+  }
+
+  .ghost {
+    display: grid;
+    gap: var(--s-2);
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .ghost__value,
+  .ghost__line {
+    display: block;
+    background: var(--ink-3);
+    border-radius: 4px;
+    opacity: 0.55;
+  }
+
+  .ghost__value {
+    width: 4ch;
+    height: 1.75rem;
+    margin-bottom: var(--s-1);
+  }
+
+  .ghost__line {
+    width: 100%;
+    height: 0.8em;
+  }
+
+  .ghost__line--short {
+    width: 62%;
+  }
+
+  /* ---- The field, and the cost of waiting (starter branch) ------------------ */
+
+  .field {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .field__title,
+  .size__title {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+
+  .field__list {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  @media (min-width: 46rem) {
+    .field__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .page {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-3) var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .page__handle {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .page__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-2) var(--s-3);
+    margin: 0;
+  }
+
+  .page__stats div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .page__stats dt {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.2;
+  }
+
+  .page__stats dd {
+    margin: 0;
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .waiting,
+  .rewards {
+    font-size: var(--t-meta);
+    line-height: 1.5;
+    color: var(--ink-2);
+    padding: var(--s-3) var(--s-4);
+    border-inline-start: 2px solid var(--horn);
+    background: var(--paper-2);
+    border-radius: var(--r-2);
+  }
+
+  /* ---- What a page this size can do ------------------------------------------ */
+
+  .size {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+
+  .size__list {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  @media (min-width: 46rem) {
+    .size__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .size__line {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-inline-start: 2px solid var(--horn);
+    border-radius: var(--r-2);
+  }
+
+  .size__value {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .size__text {
+    font-size: var(--t-meta);
+    line-height: 1.45;
+    color: var(--ink-2);
   }
 
   .meter {

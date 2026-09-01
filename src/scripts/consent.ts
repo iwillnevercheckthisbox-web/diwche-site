@@ -10,6 +10,8 @@
  * rendered its own text, the hash would describe something nobody read.
  */
 
+import { turnstileToken } from './turnstile';
+
 interface Terms {
   version: string;
   locale: string;
@@ -90,6 +92,17 @@ function run(root: HTMLElement) {
     submit.disabled = true;
     submit.textContent = copy.working;
 
+    // The proof-of-human runs before the request, above the button being
+    // pressed. Once it has failed to produce anything twice, the page says so
+    // rather than posting another null and letting the backend refuse it.
+    const human = await turnstileToken(submit);
+    if (human.failed) {
+      show(copy.humanFailed ?? copy.failed);
+      submit.disabled = false;
+      submit.textContent = copy.submit;
+      return;
+    }
+
     try {
       const res = await fetch('/api/public/consent', {
         method: 'POST',
@@ -101,7 +114,7 @@ function run(root: HTMLElement) {
           agreed: true,
           auditId,
           termsVersion: terms.version,
-          turnstile: await turnstileToken(),
+          turnstile: human.token,
         }),
       });
       if (!res.ok) {
@@ -121,39 +134,4 @@ function run(root: HTMLElement) {
     error.textContent = message;
     error.hidden = false;
   }
-}
-
-/**
- * Proof-of-human, when there is a key for it.
- *
- * Same shape as the funnel's: nothing third-party loads without a site key, and
- * the backend — never this — decides whether a missing token is acceptable.
- */
-async function turnstileToken(): Promise<string | null> {
-  const key = document.documentElement.dataset.turnstileKey;
-  if (!key) return null;
-  const api = (window as unknown as { turnstile?: { render: (el: HTMLElement, o: unknown) => string } })
-    .turnstile;
-  if (!api) return null;
-
-  return new Promise<string | null>((resolve) => {
-    const bail = window.setTimeout(() => resolve(null), 8000);
-    const settle = (token: string | null) => {
-      window.clearTimeout(bail);
-      resolve(token);
-    };
-    try {
-      const host = document.createElement('div');
-      host.style.display = 'none';
-      document.body.append(host);
-      api.render(host, {
-        sitekey: key,
-        callback: (token: string) => settle(token),
-        'error-callback': () => settle(null),
-        'timeout-callback': () => settle(null),
-      });
-    } catch {
-      settle(null);
-    }
-  });
 }

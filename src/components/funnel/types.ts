@@ -144,6 +144,24 @@ export interface FunnelCopy {
     /** Under the profile card. Plain nouns, because the numbers do the talking. */
     followers: string;
     posts: string;
+    /** After a locked card's label. The card keeps its label; only the figure is withheld. */
+    heldBack: string;
+    /**
+     * The starter branch's result screen.
+     *
+     * No page was read, so the headline is about the field the idea is walking
+     * into: pages already doing this, and what waiting costs in posts.
+     */
+    starterHeadline: string;
+    fieldTitle: string;
+    fieldFollowers: string;
+    fieldPace: string;
+    fieldRate: string;
+    fieldFormat: string;
+    /** One line with `{perWeek}`, `{byNextYear}` and `{ifThreeMonths}` in it. */
+    waiting: string;
+    /** After unlock: what the subject rewards, with `{format}` and `{pace}`. */
+    rewards: string;
   };
   plan: {
     eyebrow: string;
@@ -166,6 +184,12 @@ export interface FunnelCopy {
      */
     horizonsWhen: { month: string; sixMonths: string; year: string };
     sides: { now: string; then: string };
+    /**
+     * Heads the size block, keyed by the tier the backend put the page in. A
+     * page under a thousand is talked to differently from one over a hundred
+     * thousand, and the tier is the only word the backend sends about it.
+     */
+    sizeTitle: { under1k: string; '1k': string; '10k': string; '100k': string };
     ways: { again: string; home: string };
   };
 
@@ -197,5 +221,7 @@ export interface FunnelCopy {
     errorEyebrow: string;
     waitingTitle: string;
     waitingCta: string;
+    /** Shown under a form when the proof-of-human check could not be completed. */
+    humanFailed: string;
   };
 }

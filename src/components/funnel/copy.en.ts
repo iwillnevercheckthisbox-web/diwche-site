@@ -256,6 +256,16 @@ export const EN: FunnelCopy = {
       'He has read your idea. Leave an address and he will send the direction he would take it in — and the first post he would make from it.',
     followers: 'followers',
     posts: 'posts',
+    heldBack: ' · held back',
+    starterHeadline: 'The field you are walking into.',
+    fieldTitle: 'Pages already doing this',
+    fieldFollowers: 'followers',
+    fieldPace: 'posts a month',
+    fieldRate: 'respond',
+    fieldFormat: 'best format',
+    waiting:
+      'Starting this week at {perWeek} posts a week is {byNextYear} posts by this time next year. Starting in three months is {ifThreeMonths}.',
+    rewards: 'This subject rewards {format}, at {pace}.',
   },
 
   plan: {
@@ -270,6 +280,12 @@ export const EN: FunnelCopy = {
     horizonsNew: '{n} of them new',
     horizonsWhen: { month: 'In a month', sixMonths: 'In six months', year: 'In a year' },
     sides: { now: 'Now', then: 'With him' },
+    sizeTitle: {
+      under1k: 'What a page under a thousand can do',
+      '1k': 'What a page this size can do',
+      '10k': 'What a page in the tens of thousands can do',
+      '100k': 'What a page this big can do',
+    },
     ways: { again: 'Read another page', home: 'Back to diwche.com' },
   },
 
@@ -299,5 +315,7 @@ export const EN: FunnelCopy = {
     errorEyebrow: 'He stopped',
     waitingTitle: 'Leave an address and he will send the read when he can.',
     waitingCta: 'Send it when he can',
+    humanFailed:
+      'He could not tell that you were a person. That is his problem, not yours — try once more, or reload the page.',
   },
 };
