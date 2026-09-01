@@ -70,8 +70,14 @@ jobs:
           # BuildKit is off for this one build so that a base image already on the host is
           # used as-is. BuildKit resolves metadata from the registry even when the image is
           # cached, which is exactly the call that fails when DNS is unwell.
+          # The Turnstile site key is deliberately *not* passed here. It used to
+          # arrive as `vars.TURNSTILE_SITE_KEY`, and when that variable was never
+          # set the build arg was passed as an empty string — which overrides the
+          # Dockerfile's default rather than falling back to it. The page then
+          # minted no token, and the backend, which does hold a secret, refused
+          # every read. The key is public, so it lives in the Dockerfile now.
           DOCKER_BUILDKIT=0 docker build --build-arg PUBLIC_READ=on \
-            --build-arg PUBLIC_TURNSTILE_KEY="${{ vars.TURNSTILE_SITE_KEY }}" -t "${{ steps.vars.outputs.image }}" .
+            -t "${{ steps.vars.outputs.image }}" .
           docker tag "${{ steps.vars.outputs.image }}" "${{ steps.vars.outputs.latest }}" || true
           docker push "${{ steps.vars.outputs.image }}"
           docker push "${{ steps.vars.outputs.latest }}" || true

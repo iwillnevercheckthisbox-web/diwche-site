@@ -24,12 +24,25 @@ COPY public ./public
 # `--build-arg PUBLIC_READ=on` from the workflow, once /api/public/* is served.
 ARG PUBLIC_READ
 # The Turnstile site key is public by nature — it is read out of the page. The
-# secret that verifies the token it mints lives only on the backend. With this
-# unset the page loads nothing from Cloudflare and mints no token, and the
-# backend decides whether that is acceptable.
-ARG PUBLIC_TURNSTILE_KEY
+# secret that verifies the token it mints lives only on the backend. It has a
+# default here, rather than living only in a CI variable, because an unset CI
+# variable substitutes to an empty string without a word of complaint: the site
+# then mints no token, the backend refuses every read for want of one, and the
+# only place that failure is visible is a visitor's screen. In the repo it is
+# reviewable, and it deploys with the code that depends on it.
+ARG PUBLIC_TURNSTILE_KEY=0x4AAAAAAEjTcYgQzoS-ddmf
 ENV PUBLIC_READ=$PUBLIC_READ
 ENV PUBLIC_TURNSTILE_KEY=$PUBLIC_TURNSTILE_KEY
+
+# The two halves of the proof-of-human check live in different repos, so nothing
+# but this stops them drifting apart. A read that is wired to the backend and
+# carries no site key is refused on every request, so it is better to lose the
+# build than to ship a funnel that cannot be walked.
+RUN if [ "$PUBLIC_READ" = "on" ] && [ -z "$PUBLIC_TURNSTILE_KEY" ]; then \
+      echo "PUBLIC_READ=on but PUBLIC_TURNSTILE_KEY is empty. The page would mint" >&2; \
+      echo "no Turnstile token and the backend would refuse every read." >&2; \
+      exit 1; \
+    fi
 
 RUN npm run build
 
