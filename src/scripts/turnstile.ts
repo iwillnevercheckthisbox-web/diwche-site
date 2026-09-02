@@ -155,14 +155,53 @@ async function mint(
   anchor?: HTMLElement | null
 ): Promise<HumanToken> {
   const token = await new Promise<string | null>((resolve) => {
-    const bail = window.setTimeout(() => {
-      if (pending === answer) settle(null);
-    }, 8000);
+    let bail = 0;
+    const stopWaiting = () => window.clearTimeout(bail);
     const answer = (value: string | null) => {
-      window.clearTimeout(bail);
+      stopWaiting();
       resolve(value);
     };
+
+    // Two clocks, because there are two situations and one number cannot serve both.
+    //
+    // Cloudflare decides silently most of the time, and a wait of a few seconds is
+    // the right amount to give a third party we cannot see. But when it decides a
+    // visitor has to click something, eight seconds is an insult: the widget has
+    // only just appeared and they have not finished reading it. So the moment it
+    // says it needs a person, the short clock is thrown away and a patient one
+    // takes over.
+    const waitQuietly = () => {
+      stopWaiting();
+      bail = window.setTimeout(() => giveUp(), 8000);
+    };
+    const waitForAPerson = () => {
+      stopWaiting();
+      bail = window.setTimeout(() => giveUp(), 60000);
+    };
+
+    /**
+     * Giving up has to leave the widget idle.
+     *
+     * This is what was broken live. A widget that was asked to run and never
+     * finished is still running, and asking it again is refused outright —
+     * "already executing" — so every later request on that page failed too,
+     * for as long as the tab was open. Whoever abandons the wait resets it.
+     */
+    const giveUp = () => {
+      if (pending !== answer) return;
+      if (widget) {
+        try {
+          widget.api.reset(widget.id);
+          widget.minted = false;
+        } catch {
+          dropWidget();
+        }
+      }
+      settle(null);
+    };
+
     pending = answer;
+    waitQuietly();
 
     try {
       place(anchor);
@@ -177,6 +216,8 @@ async function mint(
             if (widget) widget.minted = true;
             settle(value);
           },
+          'before-interactive-callback': () => waitForAPerson(),
+          'after-interactive-callback': () => waitQuietly(),
           'error-callback': () => {
             // A widget that has errored does not recover by being asked
             // again. Drop it so the next call starts from a clean render.
@@ -184,13 +225,15 @@ async function mint(
             settle(null);
             return true;
           },
-          'timeout-callback': () => settle(null),
-          'expired-callback': () => settle(null),
+          'timeout-callback': () => giveUp(),
+          'expired-callback': () => giveUp(),
         });
         widget = { id, api, minted: false };
-      } else if (widget.minted) {
-        // A token is single-use. In execute mode a solved widget is reset
-        // first, then asked again — reset alone would leave it idle.
+      } else {
+        // Always, not only after a token was minted. A widget can be left
+        // part-way through by a timeout as easily as it can be left solved,
+        // and from the outside those look identical — both refuse execute().
+        // Cloudflare's own warning for this says exactly that: reset first.
         widget.api.reset(widget.id);
         widget.minted = false;
       }
@@ -208,3 +251,4 @@ async function mint(
   silentNulls += 1;
   return { token: null, failed: silentNulls > 1 };
 }
+
