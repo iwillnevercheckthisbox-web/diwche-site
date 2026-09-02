@@ -48,6 +48,8 @@ let widget: { id: string; api: TurnstileApi; minted: boolean } | null = null;
 let host: HTMLElement | null = null;
 let pending: ((token: string | null) => void) | null = null;
 let silentNulls = 0;
+/** The tail of the queue described in `turnstileToken`. Nothing asks the widget out of turn. */
+let queue: Promise<unknown> = Promise.resolve();
 
 /**
  * Hand whatever the widget produced to whoever is waiting.
@@ -132,11 +134,27 @@ export async function turnstileToken(anchor?: HTMLElement | null): Promise<Human
   const api = await waitForTurnstile();
   if (!api) return { token: null, failed: false };
 
-  const token = await new Promise<string | null>((resolve) => {
-    // One outstanding request at a time. Handing an old caller a new token
-    // would be a lie about which call it belongs to.
-    settle(null);
+  // Asked one at a time, and queued rather than overlapped.
+  //
+  // The widget answers one challenge at a time. Asking it again while it is still
+  // working on the last one is refused outright — "already executing" — and both
+  // callers then wait out the timeout and get nothing, which is the same empty
+  // token, and the same "he could not tell that you were a person", that the
+  // hidden host used to produce. Two requests at once is not a strange case: the
+  // walk mints one as the start screen opens and another when the button is
+  // pressed, and anybody who clicks twice because nothing visibly happened makes
+  // a third. So each waits for the one before it and then asks on its own.
+  const mine = queue.catch(() => undefined).then(() => mint(api, key, anchor));
+  queue = mine.catch(() => undefined);
+  return mine;
+}
 
+async function mint(
+  api: TurnstileApi,
+  key: string,
+  anchor?: HTMLElement | null
+): Promise<HumanToken> {
+  const token = await new Promise<string | null>((resolve) => {
     const bail = window.setTimeout(() => {
       if (pending === answer) settle(null);
     }, 8000);
