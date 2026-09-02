@@ -99,7 +99,7 @@ export type Screen =
       placeholder: string;
       shot: Shot;
     })
-  | (Base & { kind: 'analyzing' | 'result' | 'plan' | 'error' });
+  | (Base & { kind: 'verify' | 'analyzing' | 'result' | 'plan' | 'error' });
 
 /** One of the things he also does, shown while the read runs. */
 export interface FeatureCard {
@@ -123,6 +123,31 @@ export interface FunnelCopy {
    * now that the handle is asked at the end rather than the beginning.
    */
   features: Record<Blocker | 'identity' | 'scheduling', FeatureCard>;
+  /**
+   * The proof step between the handle and the read.
+   *
+   * A page is read only for the person who can send its code from that very
+   * account — and who follows Diwche while doing it. The status lines are
+   * rendered as hidden elements and toggled by the script, so they live here
+   * with the rest of the screen rather than in `runtime`.
+   */
+  verify: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    steps: { follow: string; send: string; wait: string };
+    /** The button that opens the conversation in Instagram. */
+    open: string;
+    waiting: string;
+    verified: string;
+    /** `{handle}` is the page named, `{sentBy}` who actually sent it. */
+    wrongAccount: string;
+    notFollowing: string;
+    expired: string;
+    unavailable: string;
+    again: string;
+    change: string;
+  };
   analyzing: { line: string; lead: string; shot: Shot };
 
   result: {

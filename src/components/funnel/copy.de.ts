@@ -199,6 +199,7 @@ export const DE: FunnelCopy = {
       },
     },
 
+    { id: 'verify', kind: 'verify' },
     { id: 'analyzing', kind: 'analyzing' },
     { id: 'result', kind: 'result' },
     { id: 'plan', kind: 'plan' },
@@ -236,6 +237,26 @@ export const DE: FunnelCopy = {
       title: 'Uhrzeit wählen und weggehen.',
       text: 'Er veröffentlicht genau dann, wann du gesagt hast, und startet im selben Moment den Rest — Antworten im Blick, Auswertung läuft. Kein Wecker um zwei Uhr nachts, nur um auf „Veröffentlichen“ zu tippen.',
     },
+  },
+
+  verify: {
+    eyebrow: 'Eins vorweg',
+    title: 'Zeig ihm, dass die Seite deine ist.',
+    lead: 'Er liest eine Seite nur für die Person, der sie gehört. Zwei Tipps in Instagram, und er weiß es.',
+    steps: {
+      follow: 'Folge {account} auf Instagram.',
+      send: 'Schick diesen Code per Direktnachricht an {account} — von {handle} aus.',
+      wait: 'Komm hierher zurück. Er merkt es von selbst.',
+    },
+    open: 'Chat in Instagram öffnen',
+    waiting: 'Wartet auf deine Nachricht…',
+    verified: 'Das bist du. Er liest.',
+    wrongAccount: 'Der Code kam von {sentBy}, nicht von {handle}. Schick ihn von der Seite, die du genannt hast.',
+    notFollowing: 'Der Code ist da — aber du folgst {account} noch nicht. Folgen, dann noch einmal schicken.',
+    expired: 'Der Code ist abgelaufen. Hol dir einen neuen.',
+    unavailable: 'Er kann gerade keine Codes annehmen, also läuft diese Analyse ohne die Prüfung.',
+    again: 'Neuer Code',
+    change: 'Andere Seite',
   },
 
   analyzing: {

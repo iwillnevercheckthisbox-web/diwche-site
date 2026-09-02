@@ -206,10 +206,19 @@ export interface PostPreview {
   caption: string;
 }
 
+export type ProofStatus = 'waiting' | 'verified' | 'wrong_account' | 'not_following' | 'expired';
+
 export interface Proof {
+  id: string;
   code: string;
+  /** Diwche's own handle, the one to follow and message. */
   account: string;
+  /** The page named, as the backend normalised it. */
+  handle: string;
+  status: ProofStatus;
   expiresInSeconds: number;
+  /** Who actually sent the code, once someone has. */
+  sentBy?: string;
 }
 
 const BASE = '/api/public';
@@ -259,11 +268,32 @@ async function unwrap<T>(res: Response): Promise<T> {
 export { ApiError };
 
 /** Starts a read. Returns as soon as the audit has an id — the work runs on. */
-export function startAudit(handle: string, turnstile: string | null, locale = 'en') {
+export function startAudit(handle: string, turnstile: string | null, locale = 'en', proofId: string | null = null) {
   // The locale rides with the request so the findings come back written in the
   // language the walk is in. Without it a Persian funnel ends on English facts,
-  // which looks finished right up until the last screen.
-  return post<{ id: string }>('/audit', { handle, turnstile, locale });
+  // which looks finished right up until the last screen. The proof id is what a
+  // read costs once the proof step is on; the backend refuses without it then.
+  return post<{ id: string }>('/audit', { handle, turnstile, locale, proofId });
+}
+
+/**
+ * Mints the code the visitor sends from their own account. Spends the human
+ * check, which is why starting the read afterwards does not need another.
+ * 503 means the proof step is switched off on the server — the read then
+ * proceeds without it, with the token this call did not consume.
+ */
+export async function startProof(handle: string, turnstile: string | null): Promise<Proof | null> {
+  const res = await fetch(BASE + '/proof', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ handle, turnstile }),
+  });
+  if (res.status === 503) return null;
+  return unwrap<Proof>(res);
+}
+
+export function getProof(id: string) {
+  return get<Proof>(`/proof/${id}`);
 }
 
 /**
@@ -333,10 +363,6 @@ export function saveWaitingLead(
   turnstile: string | null = null
 ) {
   return post<{ ok: true }>('/lead', { handle, email, consent, answers, turnstile });
-}
-
-export function requestProof(id: string) {
-  return post<Proof>(`/audit/${id}/proof`, {});
 }
 
 /**

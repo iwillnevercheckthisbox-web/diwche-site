@@ -39,7 +39,9 @@ export interface LegalDoc {
 }
 
 /** Bumped whenever the text changes, and shown at the top of the page. */
-export const PRIVACY_UPDATED = '2026-09-01';
+export const PRIVACY_UPDATED = '2026-09-02';
+/** The terms have their own date; they change on a different rhythm. */
+export const TERMS_UPDATED = '2026-09-02';
 
 const CONTACT = 'support@diwche.com';
 
@@ -81,6 +83,13 @@ export const PRIVACY: Record<string, LegalDoc> = {
         body: [
           'Diwche has not yet completed Meta’s App Review, so until it has, only people we name in our Meta app can connect an Instagram account. If you agree to that, we record your email, your handle, the exact wording you agreed to, the time, your IP address and your browser’s user agent — because a consent that cannot be shown later is not worth having.',
           'You accept or refuse the invitation inside your own Instagram settings, and you can withdraw it there at any time without telling us.',
+        ],
+      },
+      {
+        title: 'What we never ask Instagram for',
+        body: [
+          'When you connect an account, the permission screen lists exactly three things: reading your profile and posts, publishing on your behalf, and replying to comments. We do not request access to your direct messages — not now, not later — so we cannot read them even if we wanted to.',
+          'Comments are not stored. When someone comments on your post and you have turned auto-reply on, Meta notifies us, we answer, and we keep only the comment’s ID so that the same comment is never answered twice. The text itself is not written anywhere.',
         ],
       },
       {
@@ -163,6 +172,13 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
+        title: 'چیزهایی که هرگز از اینستاگرام نمی‌خواهیم',
+        body: [
+          'وقتی اکانتت را وصل می‌کنی، صفحه‌ی مجوزها دقیقاً سه چیز را نشان می‌دهد: خواندن پروفایل و پست‌هایت، انتشار از طرف تو، و پاسخ به کامنت‌ها. دسترسی به دایرکت‌هایت را نمی‌خواهیم — نه حالا و نه بعداً — پس حتی اگر بخواهیم هم نمی‌توانیم بخوانیمشان.',
+          'کامنت‌ها ذخیره نمی‌شوند. وقتی کسی زیر پستت کامنت می‌گذارد و تو پاسخ خودکار را روشن کرده باشی، متا به ما خبر می‌دهد، ما جواب می‌دهیم، و فقط شناسه‌ی کامنت را نگه می‌داریم تا یک کامنت دو بار جواب نگیرد. خودِ متن هیچ‌جا نوشته نمی‌شود.',
+        ],
+      },
+      {
         title: 'داده‌های فنی',
         body: [
           'سرور ما آدرس IP درخواست‌های خوانش رایگان را ثبت می‌کند تا بتواند تعداد درخواست‌ها را محدود کند و جلوی این را بگیرد که یک نفر سهم کل روز را تمام کند. از Cloudflare Turnstile برای تشخیص آدم از ربات استفاده می‌شود؛ این ابزار کوکی تبلیغاتی نمی‌گذارد و تو را بین سایت‌ها دنبال نمی‌کند.',
@@ -242,6 +258,13 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
+        title: 'Worum wir Instagram nie bitten',
+        body: [
+          'Wenn du ein Konto verbindest, zeigt der Berechtigungsbildschirm genau drei Dinge: dein Profil und deine Beiträge lesen, in deinem Namen veröffentlichen, auf Kommentare antworten. Zugriff auf deine Direktnachrichten fordern wir nicht an — weder jetzt noch später —, wir könnten sie also nicht einmal lesen, wenn wir wollten.',
+          'Kommentare werden nicht gespeichert. Kommentiert jemand deinen Beitrag und du hast die automatische Antwort eingeschaltet, benachrichtigt uns Meta, wir antworten und behalten nur die ID des Kommentars, damit derselbe Kommentar nie zweimal beantwortet wird. Der Text selbst wird nirgends abgelegt.',
+        ],
+      },
+      {
         title: 'Technische Daten',
         body: [
           'Unser Server protokolliert die IP-Adresse von Anfragen an die kostenlose Analyse, um sie zu begrenzen und zu verhindern, dass eine einzelne Person das Tageskontingent für alle aufbraucht. Cloudflare Turnstile unterscheidet Menschen von Skripten; es setzt keine Werbe-Cookies und verfolgt dich nicht über Websites hinweg.',
@@ -276,6 +299,168 @@ export const PRIVACY: Record<string, LegalDoc> = {
         title: 'Änderungen',
         body: [
           'Ändert sich dieser Text, ändert sich das Datum oben. Betrifft eine Änderung wesentlich, was wir mit bereits vorhandenen Daten tun, schreiben wir den Betroffenen — statt die Seite still zu überarbeiten.',
+        ],
+      },
+    ],
+  },
+};
+
+/**
+ * Terms of service, in three languages. Same caveat as the privacy policy:
+ * a careful draft written to match what the software does, not legal advice.
+ */
+export const TERMS: Record<string, LegalDoc> = {
+  en: {
+    title: 'Terms',
+    updated: TERMS_UPDATED,
+    lead: 'What you agree to when you use Diwche, in plain words.',
+    sections: [
+      {
+        title: 'What Diwche is',
+        body: [
+          'Diwche is a publishing assistant for Instagram professional accounts, operated by Helabyte. It reads news sources you choose, prepares posts and short videos, publishes them to your account on the schedule you set, and can answer comments in a tone you pick.',
+        ],
+      },
+      {
+        title: 'Your account',
+        body: [
+          'You need an Instagram professional account (business or creator) that you are allowed to manage. Connecting it happens through Meta’s own login screen; you can revoke the connection in your Instagram settings at any time, and everything stops that instant.',
+          'You are responsible for what is published on your account. Diwche drafts; you set the schedule and the rules. Check the first few posts before you let it run.',
+        ],
+      },
+      {
+        title: 'What we will not do',
+        body: [
+          'We do not ask for or store your Instagram password. We do not request access to your direct messages, and we do not store comments. We do not post anything outside the schedule and rules you set, and we do not use your account for anyone else.',
+        ],
+      },
+      {
+        title: 'Content',
+        body: [
+          'Posts are built from public news sources and from material you upload. You keep the rights to what you upload; you give us permission to process it only for the job you asked for. Make sure you may use what you upload. If a source or rights holder objects to something we published for you, we will take it down when you or they tell us.',
+        ],
+      },
+      {
+        title: 'Availability and limits',
+        body: [
+          'Instagram and Meta change their platform without notice. When they do, a feature may pause until we adapt. We run the service carefully but promise no uptime, no reach, and no follower numbers; the outcome of a post is Instagram’s to decide.',
+          'To the extent the law allows, our liability is limited to what you paid us in the three months before the problem. Nothing here limits liability for intent, gross negligence, or harm to life and health.',
+        ],
+      },
+      {
+        title: 'Ending',
+        body: [
+          'You can stop at any time by disconnecting your account or writing to us; we delete what we hold as described in the privacy policy. We can end the service for an account that breaks Instagram’s rules or these terms, and will say why.',
+        ],
+      },
+      {
+        title: 'Changes and contact',
+        body: [
+          `When these terms change, the date at the top changes, and people with a connected account are told by email before it takes effect. Write to ${CONTACT} about anything on this page.`,
+        ],
+      },
+    ],
+  },
+
+  fa: {
+    title: 'شرایط استفاده',
+    updated: TERMS_UPDATED,
+    lead: 'وقتی از دیوچه استفاده می‌کنی با چه چیزی موافقت کرده‌ای — به زبان ساده.',
+    sections: [
+      {
+        title: 'دیوچه چیست',
+        body: [
+          'دیوچه دستیار انتشار برای پیج‌های حرفه‌ای اینستاگرام است و توسط Helabyte اداره می‌شود. منابع خبری‌ای را که خودت انتخاب می‌کنی می‌خواند، پست و ویدیوی کوتاه آماده می‌کند، طبق زمان‌بندی تو روی پیجت منتشر می‌کند، و می‌تواند با لحنی که انتخاب می‌کنی به کامنت‌ها جواب بدهد.',
+        ],
+      },
+      {
+        title: 'اکانت تو',
+        body: [
+          'به یک اکانت حرفه‌ای اینستاگرام (بیزینس یا کریِیتور) نیاز داری که اجازه‌ی مدیریتش را داری. وصل کردنش از طریق صفحه‌ی ورود خودِ متا انجام می‌شود؛ هر وقت بخواهی می‌توانی در تنظیمات اینستاگرامت دسترسی را قطع کنی و همان لحظه همه‌چیز متوقف می‌شود.',
+          'مسئولیت چیزی که روی پیجت منتشر می‌شود با توست. دیوچه پیش‌نویس می‌کند؛ زمان‌بندی و قواعد را تو تعیین می‌کنی. چند پست اول را قبل از این‌که رهایش کنی بررسی کن.',
+        ],
+      },
+      {
+        title: 'کارهایی که نمی‌کنیم',
+        body: [
+          'رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم. دسترسی به دایرکت‌هایت را نمی‌خواهیم و کامنت‌ها را ذخیره نمی‌کنیم. خارج از زمان‌بندی و قواعدی که تعیین کرده‌ای چیزی منتشر نمی‌کنیم و از اکانتت برای کس دیگری استفاده نمی‌کنیم.',
+        ],
+      },
+      {
+        title: 'محتوا',
+        body: [
+          'پست‌ها از منابع خبری عمومی و از چیزهایی که خودت آپلود می‌کنی ساخته می‌شوند. حقوق آنچه آپلود می‌کنی برای خودت می‌ماند؛ به ما فقط برای همان کاری که خواسته‌ای اجازه‌ی پردازشش را می‌دهی. مطمئن شو اجازه‌ی استفاده از آنچه آپلود می‌کنی را داری. اگر منبع یا صاحب حقی به چیزی که برایت منتشر کرده‌ایم اعتراض کند، به محض اطلاع تو یا او برش می‌داریم.',
+        ],
+      },
+      {
+        title: 'در دسترس بودن و محدودیت‌ها',
+        body: [
+          'اینستاگرام و متا پلتفرمشان را بدون اطلاع قبلی تغییر می‌دهند. وقتی این اتفاق بیفتد ممکن است یک قابلیت تا وقتی خودمان را وفق بدهیم متوقف شود. سرویس را با دقت اداره می‌کنیم اما هیچ تضمینی برای در دسترس بودن، ریچ یا تعداد فالوور نمی‌دهیم؛ نتیجه‌ی یک پست را اینستاگرام تعیین می‌کند.',
+          'تا جایی که قانون اجازه می‌دهد، مسئولیت ما محدود به مبلغی است که در سه ماه پیش از بروز مشکل به ما پرداخته‌ای. هیچ‌چیز در اینجا مسئولیت ناشی از عمد، قصور فاحش یا آسیب به جان و سلامت را محدود نمی‌کند.',
+        ],
+      },
+      {
+        title: 'پایان دادن',
+        body: [
+          'هر وقت بخواهی می‌توانی با قطع کردن اکانت یا نوشتن به ما متوقفش کنی؛ آنچه داریم را طبق سیاست حریم خصوصی پاک می‌کنیم. ما هم می‌توانیم سرویس اکانتی را که قواعد اینستاگرام یا این شرایط را زیر پا می‌گذارد پایان دهیم، و دلیلش را می‌گوییم.',
+        ],
+      },
+      {
+        title: 'تغییرات و تماس',
+        body: [
+          `با هر تغییر در این شرایط، تاریخ بالای صفحه عوض می‌شود و به کسانی که اکانت وصل‌شده دارند پیش از اجرا ایمیل می‌زنیم. درباره‌ی هر چیزی در این صفحه به ${CONTACT} بنویس.`,
+        ],
+      },
+    ],
+  },
+
+  de: {
+    title: 'AGB',
+    updated: TERMS_UPDATED,
+    lead: 'Was du akzeptierst, wenn du Diwche nutzt — in klaren Worten.',
+    sections: [
+      {
+        title: 'Was Diwche ist',
+        body: [
+          'Diwche ist ein Veröffentlichungsassistent für professionelle Instagram-Konten, betrieben von Helabyte. Er liest Nachrichtenquellen, die du auswählst, bereitet Beiträge und kurze Videos vor, veröffentlicht sie nach deinem Zeitplan auf deinem Konto und kann Kommentare in einem Ton beantworten, den du festlegst.',
+        ],
+      },
+      {
+        title: 'Dein Konto',
+        body: [
+          'Du brauchst ein professionelles Instagram-Konto (Business oder Creator), das du verwalten darfst. Die Verbindung läuft über Metas eigenen Anmeldebildschirm; du kannst sie jederzeit in deinen Instagram-Einstellungen widerrufen, und alles stoppt in diesem Moment.',
+          'Für das, was auf deinem Konto erscheint, bist du verantwortlich. Diwche entwirft; Zeitplan und Regeln bestimmst du. Prüfe die ersten Beiträge, bevor du es laufen lässt.',
+        ],
+      },
+      {
+        title: 'Was wir nicht tun',
+        body: [
+          'Wir fragen nicht nach deinem Instagram-Passwort und speichern es nicht. Wir fordern keinen Zugriff auf deine Direktnachrichten an und speichern keine Kommentare. Wir veröffentlichen nichts außerhalb des Zeitplans und der Regeln, die du gesetzt hast, und nutzen dein Konto für niemanden sonst.',
+        ],
+      },
+      {
+        title: 'Inhalte',
+        body: [
+          'Beiträge entstehen aus öffentlichen Nachrichtenquellen und aus Material, das du hochlädst. Die Rechte daran bleiben bei dir; du erlaubst uns die Verarbeitung nur für den Zweck, den du beauftragt hast. Stelle sicher, dass du das Hochgeladene verwenden darfst. Widerspricht eine Quelle oder ein Rechteinhaber etwas, das wir für dich veröffentlicht haben, nehmen wir es auf Hinweis von dir oder ihm herunter.',
+        ],
+      },
+      {
+        title: 'Verfügbarkeit und Haftung',
+        body: [
+          'Instagram und Meta ändern ihre Plattform ohne Vorankündigung. Dann kann eine Funktion pausieren, bis wir nachgezogen haben. Wir betreiben den Dienst sorgfältig, versprechen aber keine Verfügbarkeit, keine Reichweite und keine Followerzahlen; über das Ergebnis eines Beitrags entscheidet Instagram.',
+          'Soweit gesetzlich zulässig, ist unsere Haftung auf den Betrag begrenzt, den du in den drei Monaten vor dem Problem an uns gezahlt hast. Für Vorsatz, grobe Fahrlässigkeit und Schäden an Leben, Körper und Gesundheit gilt keine Begrenzung.',
+        ],
+      },
+      {
+        title: 'Beenden',
+        body: [
+          'Du kannst jederzeit aufhören, indem du dein Konto trennst oder uns schreibst; wir löschen, was wir haben, wie in der Datenschutzerklärung beschrieben. Wir können den Dienst für ein Konto beenden, das gegen Instagrams Regeln oder diese Bedingungen verstößt, und sagen warum.',
+        ],
+      },
+      {
+        title: 'Änderungen und Kontakt',
+        body: [
+          `Ändern sich diese Bedingungen, ändert sich das Datum oben, und Personen mit verbundenem Konto erfahren es vorab per E-Mail. Schreib zu allem auf dieser Seite an ${CONTACT}.`,
         ],
       },
     ],

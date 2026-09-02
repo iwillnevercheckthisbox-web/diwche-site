@@ -24,7 +24,7 @@ import {
   getAudit,
   getTopics,
   startIdea,
-  requestProof,
+  
   saveLead,
   saveWaitingLead,
   startAudit,
@@ -37,6 +37,9 @@ import {
   type Projection,
   type Size,
   type Topic,
+  startProof,
+  getProof,
+  type Proof,
 } from '../lib/publicApi';
 import { turnstileToken } from './turnstile';
 
@@ -50,7 +53,7 @@ const STORE = 'diwche-funnel';
  * walk resolves to a different screen, and an over-large one is clamped straight
  * onto the last one. State that does not match this version is dropped.
  */
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 /**
  * The wait, which is now doing real work rather than covering for it.
  *
@@ -64,7 +67,7 @@ const RING = 327;
 /** Screen order for the four blockers, and so the order of the cards. */
 const BLOCKERS = ['ideas', 'editing', 'script', 'dm'] as const;
 /** Past these there are no steps left to take, so the counter stops describing them. */
-const CLOSING = new Set(['analyzing', 'result', 'plan']);
+const CLOSING = new Set(['verify', 'analyzing', 'result', 'plan']);
 
 /**
  * The one string said outside `run()`, so it cannot read the payload from the
@@ -96,6 +99,8 @@ interface Saved {
   screen: string;
   answers: Answers;
   auditId: string | null;
+  /** The proof in flight, so a reload lands back on the code rather than asking again. */
+  proofId: string | null;
   handle: string;
   branch: 'page' | 'idea';
 }
@@ -137,6 +142,7 @@ function run(root: HTMLElement) {
   let index = 0;
   let answers: Answers = {};
   let auditId: string | null = null;
+  let proofId: string | null = null;
   let handle = '';
   let branch: 'page' | 'idea' = 'page';
 
@@ -162,6 +168,8 @@ function run(root: HTMLElement) {
    */
   function isActive(screen: HTMLElement): boolean {
     if (screen.dataset.kind === 'error') return false;
+    // Only a page can be proven. The idea branch has nothing to send a code from.
+    if (screen.dataset.kind === 'verify') return branch === 'page';
     const when = screen.dataset.when;
     if (!when) return true;
     const at = when.indexOf(':');
@@ -205,6 +213,7 @@ function run(root: HTMLElement) {
         screen: steps[index]?.dataset.screen ?? '',
         answers,
         auditId,
+        proofId,
         handle,
         branch,
       };
@@ -330,6 +339,10 @@ function run(root: HTMLElement) {
   /** Work that has to happen the moment a particular screen becomes live. */
   function onEnter(screen: HTMLElement | undefined) {
     if (!screen) return;
+    if (screen.dataset.kind === 'verify') {
+      void runVerify(screen);
+      return;
+    }
     if (screen.dataset.kind === 'analyzing') {
       renderRest(screen);
       void runAnalyzing();
@@ -507,12 +520,32 @@ function run(root: HTMLElement) {
       if (isIdea) {
         answers.idea = idea;
         beginIdea(idea, human.token);
-      } else {
-        handle = value.replace(/^@/, '');
-        answers.handle = handle;
-        beginRead(handle, human.token);
+        next();
+        return;
       }
-      next();
+
+      handle = value.replace(/^@/, '');
+      answers.handle = handle;
+      recomputeSteps();
+      // The read waits for the proof. A server with the proof step switched off
+      // says so with a 503, and the read then goes ahead on the token instead.
+      if (submit) submit.disabled = true;
+      try {
+        const proof = await startProof(handle, human.token);
+        if (!proof) {
+          beginRead(handle, human.token, null);
+          go(steps.findIndex((s) => s.dataset.kind === 'analyzing'));
+          return;
+        }
+        proofId = proof.id;
+        proofShown = proof;
+        save();
+        next();
+      } catch (err) {
+        complain(err instanceof ApiError ? err.message : say.runtime.generic);
+      } finally {
+        if (submit) submit.disabled = false;
+      }
     });
   }
 
@@ -525,9 +558,9 @@ function run(root: HTMLElement) {
     });
   }
 
-  function beginRead(clean: string, human: string | null) {
+  function beginRead(clean: string, human: string | null, proof: string | null) {
     read = (async () => {
-      const started = await startAudit(clean, human, document.documentElement.lang || 'en');
+      const started = await startAudit(clean, human, document.documentElement.lang || 'en', proof);
       return track(started.id).done;
     })().catch((err) => {
       readFailed = err;
@@ -573,6 +606,124 @@ function run(root: HTMLElement) {
       throw err;
     });
   }
+
+  // ---- Proving the page is theirs ----------------------------------------------
+
+  /** The proof as last seen from the server; what the verify screen paints. */
+  let proofShown: Proof | null = null;
+  let proofTimer: number | null = null;
+  const PROOF_POLL_MS = 4000;
+
+  /**
+   * Paints the code and watches for the verdict.
+   *
+   * The screen is static markup with every status line already in it; this
+   * fills the code, the handles and the link, then shows the one line that is
+   * true. Polling stops the moment the screen is left, and a verified proof
+   * starts the read and moves on by itself.
+   */
+  async function runVerify(screen: HTMLElement) {
+    stopProofWatch();
+    if (!proofId) {
+      go(steps.findIndex((s) => s.dataset.kind === 'start'));
+      return;
+    }
+
+    const paint = (proof: Proof) => {
+      proofShown = proof;
+      const account = `@${proof.account}`;
+      const page = `@${proof.handle}`;
+      const sentBy = proof.sentBy ? `@${proof.sentBy}` : '';
+      const code = screen.querySelector<HTMLElement>('[data-proof-code]');
+      if (code) code.textContent = proof.code;
+      const link = screen.querySelector<HTMLAnchorElement>('[data-proof-link]');
+      if (link) link.href = `https://ig.me/m/${proof.account}`;
+      for (const el of screen.querySelectorAll<HTMLElement>('[data-proof-step], [data-proof-status]')) {
+        if (!el.dataset.template) el.dataset.template = el.textContent ?? '';
+        el.textContent = el.dataset.template
+          .replace(/\{account\}/g, account)
+          .replace(/\{handle\}/g, page)
+          .replace(/\{sentBy\}/g, sentBy);
+      }
+      for (const el of screen.querySelectorAll<HTMLElement>('[data-proof-status]')) {
+        el.hidden = el.dataset.proofStatus !== proof.status;
+      }
+      const done = proof.status !== 'waiting';
+      const again = screen.querySelector<HTMLElement>('[data-proof-again]');
+      if (again) again.hidden = !done || proof.status === 'verified';
+      const wrap = screen.querySelector<HTMLElement>('[data-proof-code-wrap]');
+      if (wrap) wrap.hidden = done;
+      if (link) link.hidden = done;
+    };
+
+    if (proofShown && proofShown.id === proofId) paint(proofShown);
+
+    const id = proofId;
+    const tick = async () => {
+      if (proofId !== id || steps[index] !== screen) return;
+      let proof: Proof;
+      try {
+        proof = await getProof(id);
+      } catch (err) {
+        // A limit here is the poll allowance, which a real visitor never
+        // reaches; anything else is transient. Either way: try again later.
+        proofTimer = window.setTimeout(tick, PROOF_POLL_MS * 3);
+        return;
+      }
+      if (proofId !== id || steps[index] !== screen) return;
+      paint(proof);
+      if (proof.status === 'verified') {
+        beginRead(proof.handle, null, proof.id);
+        window.setTimeout(() => {
+          if (steps[index] === screen) next();
+        }, 900);
+        return;
+      }
+      if (proof.status === 'waiting') proofTimer = window.setTimeout(tick, PROOF_POLL_MS);
+    };
+    void tick();
+  }
+
+  function stopProofWatch() {
+    if (proofTimer !== null) {
+      clearTimeout(proofTimer);
+      proofTimer = null;
+    }
+  }
+
+  // A fresh code, for a proof that ended without passing. Costs a new human
+  // check, minted on the button that asks for it.
+  root.querySelector<HTMLButtonElement>('[data-proof-again]')?.addEventListener('click', async (ev) => {
+    const button = ev.currentTarget as HTMLButtonElement;
+    const screen = steps[index];
+    if (!screen || screen.dataset.kind !== 'verify') return;
+    button.disabled = true;
+    try {
+      const human = await turnstileToken(button);
+      const proof = await startProof(handle, human.token);
+      if (!proof) {
+        beginRead(handle, human.token, null);
+        go(steps.findIndex((s) => s.dataset.kind === 'analyzing'));
+        return;
+      }
+      proofId = proof.id;
+      proofShown = proof;
+      save();
+      void runVerify(screen);
+    } catch {
+      /* The status line already says what happened; leave it. */
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  root.querySelector<HTMLElement>('[data-proof-change]')?.addEventListener('click', () => {
+    stopProofWatch();
+    proofId = null;
+    proofShown = null;
+    save();
+    go(steps.findIndex((s) => s.dataset.kind === 'start'), true);
+  });
 
   // ---- Analysing ------------------------------------------------------------------
 
@@ -1111,34 +1262,6 @@ function run(root: HTMLElement) {
       planTitle.textContent = planTitle.dataset.planHeadlineStarter;
     }
 
-    const block = root.querySelector<HTMLElement>('[data-proof-block]');
-    const fallback = root.querySelector<HTMLElement>('[data-proof-fallback]');
-
-    const showFallback = () => {
-      if (block) block.hidden = true;
-      if (fallback) fallback.hidden = false;
-    };
-
-    if (!auditId) {
-      showFallback();
-      return;
-    }
-    try {
-      const proof = await requestProof(auditId);
-      const code = root.querySelector<HTMLElement>('[data-proof-code]');
-      const account = root.querySelector<HTMLElement>('[data-proof-account]');
-      const link = root.querySelector<HTMLAnchorElement>('[data-proof-link]');
-      if (code) code.textContent = proof.code;
-      if (account) account.textContent = `@${proof.account}`;
-      if (link) link.href = `https://ig.me/m/${proof.account}`;
-      if (block) block.hidden = false;
-      if (fallback) fallback.hidden = true;
-    } catch {
-      // Proving ownership needs a permission we do not have yet. Showing a code
-      // nobody can act on would be worse than closing on the address, which is
-      // real: an unverified read still reaches them.
-      showFallback();
-    }
   }
 
   root.querySelector<HTMLElement>('[data-copy-code]')?.addEventListener('click', async (ev) => {
@@ -1169,6 +1292,7 @@ function run(root: HTMLElement) {
   if (saved && saved.screen) {
     answers = saved.answers ?? {};
     auditId = saved.auditId;
+    proofId = saved.proofId ?? null;
     handle = saved.handle ?? '';
     branch = saved.branch ?? 'page';
     if (typeof answers.stage === 'string') applyStage(answers.stage);
@@ -1184,7 +1308,9 @@ function run(root: HTMLElement) {
     const kind = at >= 0 ? steps[at]?.dataset.kind : '';
     // Landing straight back on the analysing screen with no read behind it
     // would hang, so that one goes back to the screen that asks.
-    if (at < 0 || (!auditId && CLOSING.has(kind ?? ''))) {
+    // A proof in flight is the one closing screen worth landing back on.
+    const proving = kind === 'verify' && Boolean(proofId);
+    if (at < 0 || (!auditId && CLOSING.has(kind ?? '') && !proving)) {
       const asks = steps.findIndex((s) => s.dataset.kind === 'start');
       at = asks >= 0 ? asks : 0;
     }

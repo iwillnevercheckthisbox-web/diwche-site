@@ -218,6 +218,41 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
             </div>
           )}
 
+          {screen.kind === 'verify' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow">{copy.verify.eyebrow}</p>
+              <h1 class="screen__title">{copy.verify.title}</h1>
+              <p class="screen__lead">{copy.verify.lead}</p>
+
+              <ol class="proof__steps">
+                <li data-proof-step="follow">{copy.verify.steps.follow}</li>
+                <li data-proof-step="send">{copy.verify.steps.send}</li>
+                <li data-proof-step="wait">{copy.verify.steps.wait}</li>
+              </ol>
+
+              <div class="proof__code" data-proof-code-wrap>
+                <output class="proof__digits" data-proof-code aria-live="polite">······</output>
+                <button class="btn btn--quiet" type="button" data-copy-code>{copy.ui.copy}</button>
+              </div>
+
+              <a class="btn btn--wide" data-proof-link href="https://instagram.com" target="_blank" rel="noopener">
+                {copy.verify.open}
+              </a>
+
+              <p class="proof__status" data-proof-status="waiting">{copy.verify.waiting}</p>
+              <p class="proof__status proof__status--ok" data-proof-status="verified" hidden>{copy.verify.verified}</p>
+              <p class="proof__status proof__status--warn" data-proof-status="wrong_account" hidden>{copy.verify.wrongAccount}</p>
+              <p class="proof__status proof__status--warn" data-proof-status="not_following" hidden>{copy.verify.notFollowing}</p>
+              <p class="proof__status proof__status--warn" data-proof-status="expired" hidden>{copy.verify.expired}</p>
+              <p class="proof__status proof__status--warn" data-proof-status="unavailable" hidden>{copy.verify.unavailable}</p>
+
+              <p class="proof__ways">
+                <button class="linklike" type="button" data-proof-again hidden>{copy.verify.again}</button>
+                <button class="linklike" type="button" data-proof-change>{copy.verify.change}</button>
+              </p>
+            </div>
+          )}
+
           {screen.kind === 'analyzing' && (
             <div class="screen__inner screen__inner--wide">
               <div class="ring" role="presentation">
@@ -671,6 +706,75 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
   /* The two screens that are a moment rather than a step do sit centred: there
      is no list under them whose length could shift anything. */
+  /* ---- Proof ------------------------------------------------------------ */
+
+  .proof__steps {
+    margin: var(--s-6) 0 0;
+    padding-inline-start: 1.4em;
+    display: grid;
+    gap: var(--s-3);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  .proof__steps b {
+    font-weight: 600;
+  }
+
+  .proof__code {
+    margin-top: var(--s-6);
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+  }
+
+  .proof__digits {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: clamp(2rem, 1.2rem + 3vw, 2.75rem);
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    padding: var(--s-2) var(--s-4);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--paper-2);
+    direction: ltr;
+    user-select: all;
+  }
+
+  .proof__status {
+    margin-top: var(--s-5);
+    font-size: 0.9375rem;
+    color: var(--ink-3);
+  }
+
+  .proof__status--ok {
+    color: var(--ok, #1a7f4b);
+    font-weight: 600;
+  }
+
+  .proof__status--warn {
+    color: var(--warn, #a15c00);
+  }
+
+  .proof__ways {
+    margin-top: var(--s-4);
+    display: flex;
+    gap: var(--s-5);
+    font-size: 0.875rem;
+  }
+
+  .linklike {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: var(--ink-2);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
   .screen[data-kind='analyzing'],
   .screen[data-kind='error'] {
     justify-content: center;

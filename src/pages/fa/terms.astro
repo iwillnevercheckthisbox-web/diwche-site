@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import LegalDoc from '../../components/LegalDoc.astro';
+import { TERMS } from '../../content/legal';
+import { HOME_FA } from '../../content/home';
+
+/**
+ * Terms of service. Meta's dashboard has a field for this URL too, so it
+ * lives at a stable path in every language, like the privacy policy.
+ */
+const doc = TERMS['fa'];
+---
+
+<Base
+  locale="fa"
+  copy={HOME_FA}
+  title={`${doc.title} — Diwche`}
+  description={doc.lead}
+>
+  <LegalDoc doc={doc} />
+</Base>

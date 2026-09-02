@@ -194,6 +194,7 @@ export const EN: FunnelCopy = {
       },
     },
 
+    { id: 'verify', kind: 'verify' },
     { id: 'analyzing', kind: 'analyzing' },
     { id: 'result', kind: 'result' },
     { id: 'plan', kind: 'plan' },
@@ -232,6 +233,26 @@ export const EN: FunnelCopy = {
       title: 'Pick the hour and walk away.',
       text: 'He publishes at the time you chose and starts the rest of the chain the moment he does — replies watching, performance tracking. No 2 a.m. alarm to tap Publish.',
     },
+  },
+
+  verify: {
+    eyebrow: 'One thing first',
+    title: 'Show him the page is yours.',
+    lead: 'He reads a page only for the person who owns it. Two taps in Instagram and he knows.',
+    steps: {
+      follow: 'Follow {account} on Instagram.',
+      send: 'Send this code to {account} in a direct message — from {handle}.',
+      wait: 'Come back here. He notices on his own.',
+    },
+    open: 'Open the chat in Instagram',
+    waiting: 'Waiting for your message…',
+    verified: 'That is you. Reading now.',
+    wrongAccount: 'That code came from {sentBy}, not {handle}. Send it from the page you named.',
+    notFollowing: 'He got the code — but you are not following {account} yet. Follow, then send it once more.',
+    expired: 'That code has expired. Ask for a fresh one.',
+    unavailable: 'He cannot take codes right now, so this read goes ahead without the check.',
+    again: 'New code',
+    change: 'Different page',
   },
 
   analyzing: {
