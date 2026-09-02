@@ -129,7 +129,18 @@ async function waitForTurnstile(): Promise<TurnstileApi | null> {
  */
 export async function turnstileToken(anchor?: HTMLElement | null): Promise<HumanToken> {
   const key = document.documentElement.dataset.turnstileKey;
-  if (!key) return { token: null, failed: false };
+  if (!key) {
+    // A page that asks for a token and was never given a key cannot get one, and the
+    // backend will refuse what it posts with a sentence about not being able to tell
+    // the visitor was a person. That is what the consent page did for its whole life,
+    // on a layout that never loaded any of this — no consent was ever recorded, and
+    // nothing anywhere said why. Say why.
+    console.error(
+      'Turnstile: this page asked for a token but carries no site key. ' +
+        'The layout it uses has to opt in, or every post from it will be refused.'
+    );
+    return { token: null, failed: true };
+  }
 
   const api = await waitForTurnstile();
   if (!api) return { token: null, failed: false };

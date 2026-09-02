@@ -17,16 +17,38 @@ interface Props {
   locale?: Locale;
   /** Nav and footer are chrome: they speak whatever the page speaks. */
   copy?: HomeCopy;
+  /**
+   * Whether this page has to prove its visitor is a person.
+   *
+   * Opt-in, and it must be opted into by every page that posts to a guarded endpoint.
+   * The consent page did not, for its whole life: it called for a token, there was no
+   * key on the document and no Cloudflare script on the page, so it posted nothing and
+   * the backend refused it with "he could not tell that you were a person". Not one
+   * consent was ever recorded. It is a prop rather than something every page gets
+   * because loading a third party on pages that do not need it is a cost paid by
+   * readers who were only ever going to read.
+   */
+  turnstile?: boolean;
 }
 
-const { title, description, locale = DEFAULT_LOCALE, copy = HOME_EN } = Astro.props;
+const {
+  title,
+  description,
+  locale = DEFAULT_LOCALE,
+  copy = HOME_EN,
+  turnstile = false,
+} = Astro.props;
+
+// Nothing third-party is loaded without a key, so an unconfigured build is the page
+// exactly as it was.
+const turnstileKey = turnstile ? (import.meta.env.PUBLIC_TURNSTILE_KEY ?? '') : '';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Direction follows the content language, resolved in one place.
 const dir = dirFor(locale);
 ---
 
 <!doctype html>
-<html lang={locale} dir={dir}>
+<html lang={locale} dir={dir} data-turnstile-key={turnstileKey || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,6 +59,17 @@ const dir = dirFor(locale);
          The toggle rewrites these when it switches. -->
     <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
+
+    {
+      turnstileKey && (
+        <script
+          is:inline
+          async
+          defer
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        />
+      )
+    }
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Diwche" />
