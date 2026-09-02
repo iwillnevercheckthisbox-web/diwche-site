@@ -315,7 +315,5 @@ export const EN: FunnelCopy = {
     errorEyebrow: 'He stopped',
     waitingTitle: 'Leave an address and he will send the read when he can.',
     waitingCta: 'Send it when he can',
-    humanFailed:
-      'He could not tell that you were a person. That is his problem, not yours — try once more, or reload the page.',
   },
 };

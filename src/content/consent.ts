@@ -22,8 +22,7 @@ export const CONSENT_COPY = {
     "handleInvalid": "That is not an Instagram handle — letters, numbers, dots.",
     "emailInvalid": "That address does not look right.",
     "agreeFirst": "Tick the box, and he will know he may go ahead.",
-    "failed": "Something went wrong on our side, not yours.",
-    "humanFailed": "He could not tell that you were a person. That is his problem, not yours — try once more, or reload the page."
+    "failed": "Something went wrong on our side, not yours."
   },
   "fa": {
     "eyebrow": "قبل از اینکه بتواند وصل شود",
@@ -41,8 +40,7 @@ export const CONSENT_COPY = {
     "handleInvalid": "این آیدی اینستاگرام نیست — حروف، عدد و نقطه.",
     "emailInvalid": "این آدرس درست به نظر نمی‌رسد.",
     "agreeFirst": "تیک را بزن تا بداند اجازه دارد ادامه بدهد.",
-    "failed": "یه چیزی از سمت ما به هم ریخت، نه از سمت تو.",
-    "humanFailed": "نتوانست تشخیص بدهد که آدمی. مشکل از اوست، نه از تو — یک بار دیگر امتحان کن، یا صفحه را دوباره باز کن."
+    "failed": "یه چیزی از سمت ما به هم ریخت، نه از سمت تو."
   },
   "de": {
     "eyebrow": "Bevor er es verbinden kann",
@@ -60,7 +58,6 @@ export const CONSENT_COPY = {
     "handleInvalid": "Das ist kein Instagram-Profilname — Buchstaben, Zahlen, Punkte.",
     "emailInvalid": "Diese Adresse sieht nicht richtig aus.",
     "agreeFirst": "Setz das Häkchen, damit er weiß, dass er darf.",
-    "failed": "Bei uns ist etwas schiefgegangen, nicht bei dir.",
-    "humanFailed": "Er konnte nicht erkennen, dass du ein Mensch bist. Das ist sein Problem, nicht deins — versuch es noch einmal oder lade die Seite neu."
+    "failed": "Bei uns ist etwas schiefgegangen, nicht bei dir."
   }
 } as const;

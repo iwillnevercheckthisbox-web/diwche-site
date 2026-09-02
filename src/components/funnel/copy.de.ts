@@ -319,7 +319,5 @@ export const DE: FunnelCopy = {
     errorEyebrow: 'Er hat aufgehört',
     waitingTitle: 'Lass eine Adresse da, und er schickt die Analyse, sobald er kann.',
     waitingCta: 'Schick sie, sobald es geht',
-    humanFailed:
-      'Er konnte nicht erkennen, dass du ein Mensch bist. Das ist sein Problem, nicht deins — versuch es noch einmal oder lade die Seite neu.',
   },
 };

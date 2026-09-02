@@ -221,7 +221,5 @@ export interface FunnelCopy {
     errorEyebrow: string;
     waitingTitle: string;
     waitingCta: string;
-    /** Shown under a form when the proof-of-human check could not be completed. */
-    humanFailed: string;
   };
 }
