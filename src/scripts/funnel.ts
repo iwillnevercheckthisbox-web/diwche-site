@@ -498,7 +498,11 @@ function run(root: HTMLElement) {
       if (submit) submit.disabled = true;
       const human = await turnstileToken(submit);
       if (submit) submit.disabled = false;
-      if (human.failed) return complain(say.runtime.humanFailed);
+      // Never refused here. Whether a missing token matters is the backend's decision
+      // and only the backend knows the answer: it may have the check switched off, it
+      // may be unconfigured, or it may refuse — and if it refuses it says so in words
+      // this page then shows. Deciding locally is how a page went on blocking people
+      // for an hour after the server had started letting everybody through.
 
       if (isIdea) {
         answers.idea = idea;
@@ -1017,7 +1021,11 @@ function run(root: HTMLElement) {
     };
 
     const human = await turnstileToken(submit);
-    if (human.failed) return giveBack(say.runtime.humanFailed);
+      // Never refused here. Whether a missing token matters is the backend's decision
+      // and only the backend knows the answer: it may have the check switched off, it
+      // may be unconfigured, or it may refuse — and if it refuses it says so in words
+      // this page then shows. Deciding locally is how a page went on blocking people
+      // for an hour after the server had started letting everybody through.
 
     try {
       if (auditId) {
@@ -1061,14 +1069,12 @@ function run(root: HTMLElement) {
     if (error) error.hidden = true;
     submit.disabled = true;
     const human = await turnstileToken(submit);
-    if (human.failed) {
-      if (error) {
-        error.textContent = say.runtime.humanFailed;
-        error.hidden = false;
-      }
-      submit.disabled = false;
-      return;
-    }
+      // Never refused here. Whether a missing token matters is the backend's decision
+      // and only the backend knows the answer: it may have the check switched off, it
+      // may be unconfigured, or it may refuse — and if it refuses it says so in words
+      // this page then shows. Deciding locally is how a page went on blocking people
+      // for an hour after the server had started letting everybody through.
+
     try {
       await saveWaitingLead(handle, email, consent, answers, human.token);
       submit.textContent = say.ui.sent;

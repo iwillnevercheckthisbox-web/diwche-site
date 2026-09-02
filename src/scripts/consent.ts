@@ -92,16 +92,12 @@ function run(root: HTMLElement) {
     submit.disabled = true;
     submit.textContent = copy.working;
 
-    // The proof-of-human runs before the request, above the button being
-    // pressed. Once it has failed to produce anything twice, the page says so
-    // rather than posting another null and letting the backend refuse it.
+    // The proof-of-human runs before the request, above the button being pressed. What a
+    // missing token means is not decided here: the backend may have the check switched
+    // off, may be unconfigured, or may refuse in words this page then shows. Deciding
+    // locally is how this page went on blocking people after the server had started
+    // letting everybody through.
     const human = await turnstileToken(submit);
-    if (human.failed) {
-      show(copy.humanFailed ?? copy.failed);
-      submit.disabled = false;
-      submit.textContent = copy.submit;
-      return;
-    }
 
     try {
       const res = await fetch('/api/public/consent', {
