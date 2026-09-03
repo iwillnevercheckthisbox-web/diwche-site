@@ -99,6 +99,23 @@ export type Screen =
       placeholder: string;
       shot: Shot;
     })
+  | (Base & {
+      /**
+       * Who they measure themselves against.
+       *
+       * Optional, and skippable in one tap. The finder can only propose pages a visitor already
+       * mentions in their own captions, which finds nothing at all for a page that tags nobody —
+       * and a comparison the reader chose themselves is the one they believe, because they know
+       * their own scene better than any heuristic does.
+       */
+      kind: 'rivals';
+      eyebrow: string;
+      title: string;
+      lead: string;
+      placeholder: string;
+      cta: string;
+      skip: string;
+    })
   | (Base & { kind: 'verify' | 'analyzing' | 'result' | 'plan' | 'error' });
 
 /** One of the things he also does, shown while the read runs. */
@@ -187,6 +204,46 @@ export interface FunnelCopy {
     waiting: string;
     /** After unlock: what the subject rewards, with `{format}` and `{pace}`. */
     rewards: string;
+
+    /**
+     * The chart: every post the read ran on, by date and by how it did.
+     *
+     * The evidence the rest of the report is drawn from, and the one part of the page a reader
+     * can check against their own grid — which is why it is never held back.
+     */
+    chartTitle: string;
+    chartNote: string;
+    chartEmpty: string;
+
+    /**
+     * The report's sections, in the order the backend sends them.
+     *
+     * The headings live here rather than arriving with the findings because they are words. The
+     * backend used to send an English label per card, which is how a Persian page came to be
+     * headed in uppercase English — the figures are the arithmetic's, the words are the locale's.
+     */
+    sections: Record<'rhythm' | 'format' | 'audience' | 'peers' | 'words', string>;
+
+    /**
+     * One word for how a section is doing.
+     *
+     * Deliberately blunt in every language. A verdict that hedges is worth less than none: the
+     * reader handed over a handle precisely because they cannot tell whether their own numbers
+     * are good.
+     */
+    verdicts: Record<'good' | 'weak' | 'bad' | 'dead' | 'neutral', string>;
+
+    /**
+     * The heading on each card, keyed by the finding's key.
+     *
+     * A key the backend sends and this map has no entry for falls back to the English label that
+     * travelled with it, so a new finding shows up in English rather than blank.
+     */
+    labels: Record<string, string>;
+
+    peersTitle: string;
+    peersNamed: string;
+    peersFound: string;
   };
   plan: {
     eyebrow: string;

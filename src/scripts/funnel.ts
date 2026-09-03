@@ -34,14 +34,18 @@ import {
   type AuditResult,
   type Fact,
   type IdeaResult,
+  type Peer,
   type Projection,
+  type Section,
   type Size,
   type Topic,
+  type Verdict,
   startProof,
   getProof,
   type Proof,
 } from '../lib/publicApi';
 import { turnstileToken } from './turnstile';
+import { drawTimeline } from './readChart';
 
 const HANDLE = /^@?[A-Za-z0-9._]{1,30}$/;
 const STORE = 'diwche-funnel';
@@ -53,7 +57,7 @@ const STORE = 'diwche-funnel';
  * walk resolves to a different screen, and an over-large one is clamped straight
  * onto the last one. State that does not match this version is dropped.
  */
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 /**
  * The wait, which is now doing real work rather than covering for it.
  *
@@ -103,12 +107,26 @@ interface Saved {
   proofId: string | null;
   handle: string;
   branch: 'page' | 'idea';
+  /**
+   * The receipt for an address left on this read.
+   *
+   * Kept so a reload does not ask for the address again, and sent on every later view. It
+   * belongs to this visitor rather than to the read: a cached read is shared by everyone who
+   * looks up the same handle, and the gate used to open for all of them the moment one person
+   * left an address.
+   */
+  token: string | null;
+  /** Pages the visitor named to be measured against, so a reload does not lose them. */
+  rivals: string[];
 }
 
 /**
  * The slice of `FunnelCopy` the script needs, mirrored here because the script
  * reads it out of the page as JSON rather than importing the module.
  */
+/** The order the report is drawn in. The backend sorts to it too; this is what names them. */
+const SECTIONS: Section[] = ['rhythm', 'format', 'audience', 'peers', 'words'];
+
 interface RuntimeCopy {
   ui: {
     continue: string;
@@ -122,7 +140,7 @@ interface RuntimeCopy {
     copyByHand: string;
   };
   runtime: Record<string, string>;
-  result: Record<string, string>;
+  result: Record<string, any>;
   plan: { sizeTitle: Record<string, string> };
 }
 
@@ -145,6 +163,8 @@ function run(root: HTMLElement) {
   let proofId: string | null = null;
   let handle = '';
   let branch: 'page' | 'idea' = 'page';
+  let token: string | null = null;
+  let rivals: string[] = [];
 
   /**
    * The screens actually in the walk, recomputed whenever an answer changes.
@@ -216,6 +236,8 @@ function run(root: HTMLElement) {
         proofId,
         handle,
         branch,
+        token,
+        rivals,
       };
       sessionStorage.setItem(STORE, JSON.stringify(state));
     } catch {
@@ -549,6 +571,23 @@ function run(root: HTMLElement) {
     });
   }
 
+  // ---- Who they are up against ---------------------------------------------------
+
+  const rivalsForm = root.querySelector<HTMLFormElement>('[data-rivals-form]');
+  rivalsForm?.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    rivals = Array.from(rivalsForm.querySelectorAll<HTMLInputElement>('[data-rival]'))
+      .map((input) => input.value.trim().replace(/^@/, ''))
+      .filter((value) => HANDLE.test(value));
+    save();
+    next();
+  });
+  root.querySelector<HTMLElement>('[data-rivals-skip]')?.addEventListener('click', () => {
+    rivals = [];
+    save();
+    next();
+  });
+
   function track(id: string) {
     auditId = id;
     save();
@@ -560,7 +599,8 @@ function run(root: HTMLElement) {
 
   function beginRead(clean: string, human: string | null, proof: string | null) {
     read = (async () => {
-      const started = await startAudit(clean, human, document.documentElement.lang || 'en', proof);
+      const started = await startAudit(
+        clean, human, document.documentElement.lang || 'en', proof, rivals);
       return track(started.id).done;
     })().catch((err) => {
       readFailed = err;
@@ -583,7 +623,7 @@ function run(root: HTMLElement) {
       save();
       readProgress = 0.55;
       readLine = say.runtime.thinking;
-      const answer = await getTopics(started.id, 'idea', idea, locale);
+      const answer = await getTopics(started.id, 'idea', idea, locale, token);
       readProgress = 1;
       return answer;
     })().catch((err) => {
@@ -596,7 +636,7 @@ function run(root: HTMLElement) {
   function resumeRead(id: string) {
     read = (async () => {
       try {
-        return await getAudit(id);
+        return await getAudit(id, token);
       } catch (err) {
         if (err instanceof ApiError && err.kind === 'error') return await track(id).done;
         throw err;
@@ -838,7 +878,7 @@ function run(root: HTMLElement) {
       result = value;
       if (headline) headline.textContent = value.headline;
       renderStarter(null);
-      renderFacts(value.facts);
+      renderReport(value);
       renderProjection(value);
       renderSize(value.size);
     }
@@ -957,54 +997,151 @@ function run(root: HTMLElement) {
     return value == null ? '—' : value.toLocaleString(document.documentElement.lang || 'en');
   }
 
-  function renderFacts(facts: Fact[]) {
-    const host = steps
-      .find((s) => s.dataset.kind === 'result')
-      ?.querySelector<HTMLElement>('[data-facts]');
+  /**
+   * The whole read, as a report.
+   *
+   * The chart first — it is the evidence every section below is drawn from, and the only part a
+   * reader can check against their own grid. Then one block per section, each headed by its own
+   * word and a single verdict, so that findings which share an input are visibly grouped rather
+   * than presented as five separate discoveries.
+   */
+  function renderReport(value: AuditResult) {
+    const screen = steps.find((s) => s.dataset.kind === 'result');
+    if (!screen) return;
+
+    renderChart(screen, value);
+
+    const host = screen.querySelector<HTMLElement>('[data-sections]');
     if (!host) return;
-    host.hidden = false;
     host.textContent = '';
 
-    for (const fact of facts) {
-      const el = tpl('fact');
-      // A locked fact arrives with its value and text empty. The card still
-      // earns its place on the label; a shape stands in for the figure.
-      const locked = Boolean(fact.locked);
-      el.toggleAttribute('data-locked', locked);
-      field(el, 'label')!.textContent = fact.label;
-      field(el, 'value')!.textContent = locked ? '' : fact.value;
-      field(el, 'text')!.textContent = locked ? '' : fact.text;
-      const held = field(el, 'held');
-      if (held) {
-        held.textContent = say.result.heldBack;
-        held.hidden = !locked;
-      }
-      const ghost = field(el, 'ghost');
-      if (ghost) ghost.hidden = !locked;
+    for (const section of SECTIONS) {
+      const facts = value.facts.filter((f) => f.section === section);
+      const peers = section === 'peers' ? value.peers ?? [] : [];
+      if (!facts.length && !peers.length) continue;
 
-      const meter = field(el, 'meter');
-      if (fact.meter && meter && !locked) {
-        meter.hidden = false;
-        const width = Math.max(0, Math.min(100, (fact.meter.value / fact.meter.max) * 100));
-        const fill = field(el, 'meter-fill');
-        requestAnimationFrame(() => {
-          if (fill) fill.style.width = `${width}%`;
-        });
-        const mark = field(el, 'meter-mark');
-        if (mark && typeof fact.meter.benchmark === 'number') {
-          mark.style.insetInlineStart = `${Math.max(0, Math.min(100, (fact.meter.benchmark / fact.meter.max) * 100))}%`;
-        } else if (mark) {
-          mark.hidden = true;
-        }
-        const legend = field(el, 'meter-legend');
-        if (legend) {
-          legend.textContent = fact.meter.benchmarkLabel
-            ? `The mark is the ${fact.meter.benchmarkLabel} for pages your size.`
-            : '';
-        }
+      const block = tpl('section');
+      field(block, 'title')!.textContent = say.result.sections?.[section] ?? section;
+
+      // The verdict is the section's own where the backend computed one for the whole thing,
+      // and otherwise the worst of the findings under it — a section is only as good as its
+      // weakest true statement.
+      const verdict = verdictFor(section, facts, value);
+      const word = field(block, 'verdict');
+      if (word) {
+        word.textContent = verdict ? say.result.verdicts?.[verdict] ?? '' : '';
+        if (verdict) word.setAttribute('data-verdict', verdict);
+        word.hidden = !verdict;
       }
-      host.append(el);
+
+      const factsHost = field(block, 'facts');
+      if (factsHost) for (const fact of facts) factsHost.append(card(fact));
+
+      const peersHost = field(block, 'peers');
+      if (peersHost) {
+        peersHost.hidden = peers.length === 0;
+        for (const peer of peers) peersHost.append(peerRow(peer));
+      }
+
+      host.append(block);
     }
+  }
+
+  /** How bad a section reads: what the backend said about it, else its worst finding. */
+  function verdictFor(section: Section, facts: Fact[], value: AuditResult): Verdict | null {
+    if (section === 'rhythm' && value.rhythm) return value.rhythm.verdict;
+    if (section === 'audience' && value.audience) return value.audience.verdict;
+    const rank: Verdict[] = ['dead', 'bad', 'weak', 'neutral', 'good'];
+    for (const level of rank) {
+      if (facts.some((f) => f.verdict === level)) return level;
+    }
+    return null;
+  }
+
+  /**
+   * One post per bar, drawn from the timeline the backend always sends.
+   *
+   * Skipped rather than faked when there is nothing datable to draw: an empty frame under a
+   * heading promising every post is worse than no frame.
+   */
+  function renderChart(screen: HTMLElement, value: AuditResult) {
+    const wrap = screen.querySelector<HTMLElement>('[data-chart]');
+    const plot = screen.querySelector<HTMLElement>('[data-chart-plot]');
+    if (!wrap || !plot) return;
+    const points = value.timeline ?? [];
+    if (points.length < 2) {
+      wrap.hidden = true;
+      return;
+    }
+    const locale = document.documentElement.lang || 'en';
+    const drawn = drawTimeline(plot, points, {
+      locale,
+      rtl: document.documentElement.dir === 'rtl',
+      summary: say.result.chartTitle ?? '',
+    });
+    wrap.hidden = !drawn;
+  }
+
+  /** One finding. Locked ones keep their heading and show a shape where the figure would be. */
+  function card(fact: Fact): HTMLElement {
+    const el = tpl('fact');
+    const locked = Boolean(fact.locked);
+    el.toggleAttribute('data-locked', locked);
+    // The heading comes from the locale, keyed by the finding. The English label the backend
+    // computed under is the fallback, so a finding added on the server shows up in English
+    // rather than blank.
+    field(el, 'label')!.textContent = say.result.labels?.[fact.key] ?? fact.label;
+    field(el, 'value')!.textContent = locked ? '' : fact.value;
+    field(el, 'text')!.textContent = locked ? '' : fact.text;
+    const held = field(el, 'held');
+    if (held) {
+      held.textContent = say.result.heldBack;
+      held.hidden = !locked;
+    }
+    const ghost = field(el, 'ghost');
+    if (ghost) ghost.hidden = !locked;
+
+    const meter = field(el, 'meter');
+    if (fact.meter && meter && !locked) {
+      meter.hidden = false;
+      const width = Math.max(0, Math.min(100, (fact.meter.value / fact.meter.max) * 100));
+      const fill = field(el, 'meter-fill');
+      requestAnimationFrame(() => {
+        if (fill) fill.style.width = `${width}%`;
+      });
+      const mark = field(el, 'meter-mark');
+      if (mark && typeof fact.meter.benchmark === 'number') {
+        mark.style.insetInlineStart = `${Math.max(0, Math.min(100, (fact.meter.benchmark / fact.meter.max) * 100))}%`;
+      } else if (mark) {
+        mark.hidden = true;
+      }
+      const legend = field(el, 'meter-legend');
+      if (legend) {
+        legend.textContent = fact.meter.benchmarkLabel
+          ? `The mark is the ${fact.meter.benchmarkLabel} for pages your size.`
+          : '';
+      }
+    }
+    return el;
+  }
+
+  /** One page this read is measured against, in the same four columns as the starter branch. */
+  function peerRow(peer: Peer): HTMLElement {
+    const el = tpl('page');
+    field(el, 'handle')!.textContent = `@${peer.handle}`;
+    field(el, 'followers-label')!.textContent = say.result.fieldFollowers;
+    field(el, 'followers')!.textContent = peer.followersText || count(peer.followers);
+    field(el, 'pace-label')!.textContent = say.result.fieldPace;
+    field(el, 'pace')!.textContent = peer.postsPerMonth == null ? '—' : String(peer.postsPerMonth);
+    field(el, 'rate-label')!.textContent = say.result.fieldRate;
+    field(el, 'rate')!.textContent = peer.rate;
+    // Who chose this page. A comparison the visitor asked for reads very differently from one
+    // we proposed, and the difference is worth one word.
+    field(el, 'format-label')!.textContent = peer.named
+      ? say.result.peersNamed
+      : say.result.peersFound;
+    field(el, 'format')!.textContent = peer.bestFormat ?? '·';
+    return el;
   }
 
   function renderProjection(value: AuditResult) {
@@ -1188,9 +1325,15 @@ function run(root: HTMLElement) {
           renderStarter(opened);
         } else if ('facts' in opened) {
           result = opened;
-          renderFacts(opened.facts);
+          renderReport(opened);
           renderProjection(opened);
           renderSize(opened.size);
+        }
+        // The receipt is what keeps this read open on a reload, and what stops the next
+        // visitor to the same cached handle inheriting the unlock.
+        if (typeof opened.token === 'string') {
+          token = opened.token;
+          save();
         }
       }
       await toPlan();
@@ -1295,6 +1438,8 @@ function run(root: HTMLElement) {
     proofId = saved.proofId ?? null;
     handle = saved.handle ?? '';
     branch = saved.branch ?? 'page';
+    token = saved.token ?? null;
+    rivals = Array.isArray(saved.rivals) ? saved.rivals : [];
     if (typeof answers.stage === 'string') applyStage(answers.stage);
     recomputeSteps();
     restoreChoices();

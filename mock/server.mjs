@@ -39,6 +39,32 @@ const STEPS = [
 
 const audits = new Map();
 
+const DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * A believable grid: a steady run, a three-week hole, one post that travelled.
+ *
+ * The chart is the part of the read that has to look right before anything else does, and it is
+ * the part a static fixture gets wrong most easily — evenly spaced bars of equal height say
+ * nothing, which is exactly the failure the whole rewrite is about.
+ */
+function timeline(count = 26) {
+  const points = [];
+  let at = Date.now() - 4 * DAY;
+  for (let i = 0; i < count; i++) {
+    const format = i % 5 === 0 ? 'reel' : i % 3 === 0 ? 'carousel' : 'photo';
+    const base = format === 'reel' ? 90 : 34;
+    points.push({
+      at,
+      engagement: i === 3 ? 343 : i === 11 ? null : Math.round(base + Math.sin(i) * 18 + i),
+      format,
+    });
+    // A twenty-one day silence in the middle, so the shaded gap has something to shade.
+    at -= (i === 8 ? 21 : 2 + (i % 4)) * DAY;
+  }
+  return points;
+}
+
 const strong = (handle) => ({
   handle,
   source: 'discovery',
@@ -46,38 +72,128 @@ const strong = (handle) => ({
     'Your reels do more than twice what your photos do — and almost everything you post is a photo.',
   facts: [
     {
+      key: 'pace',
+      label: 'The pace',
+      value: 'one post every 10 days',
+      text: 'You posted 6 times in the last 60 days — one post every 10 days. Pages that grow post at least twice a week.',
+      section: 'rhythm',
+      verdict: 'bad',
+    },
+    {
+      key: 'gap',
+      label: 'The quiet stretch',
+      value: '21 days',
+      text: 'Between July and August you went 21 days without posting. What you posted after it has been running at about 60% of what you were doing before.',
+      section: 'rhythm',
+      verdict: 'bad',
+    },
+    {
       key: 'format',
       label: 'Format mismatch',
       value: '2.3×',
-      text: 'Your reels average 2.3 times the response of your photos. Photos are most of what you post.',
-      meter: { value: 23, max: 100, benchmark: 62, benchmarkLabel: 'reels' },
+      text: 'Your reels get 2.3 times the likes and comments your photos get. 71% of what you post is photos.',
+      section: 'format',
+      verdict: 'bad',
+      meter: { value: 23, max: 100, benchmark: 62, benchmarkLabel: 'photos' },
     },
     {
       key: 'best',
       label: 'The one that worked',
-      value: '4.1×',
-      text: 'Your best post did four times your own median. It was a reel, on a Tuesday evening, and nothing since has had its shape.',
+      value: '5.1×',
+      text: 'Your best post got 343 likes and comments — 5.1 times everyone who follows you. It was a reel, recently, and it went well past your own audience.',
+      section: 'format',
+      verdict: 'good',
     },
     {
-      key: 'cadence',
-      label: 'The quiet stretch',
-      value: '23 days',
-      text: 'You went twenty-three days without posting in July. What you posted after it did about half of what you were doing before.',
+      key: 'answering',
+      label: 'How much they answer',
+      value: '0.6%',
+      text: 'A typical post gets 48 likes and comments from your 8,420 followers, which is 0.6% of them. A page your size usually sees about 3%.',
+      section: 'audience',
+      verdict: 'bad',
+      meter: { value: 0.6, max: 6, benchmark: 3, benchmarkLabel: 'usual rate' },
     },
     {
-      key: 'rate',
-      label: 'Against your size',
-      value: '1.4%',
-      text: 'For pages between five and twenty thousand, that sits just under the middle. Not bad. Not the ceiling either.',
+      key: 'asleep',
+      label: 'The ones who never answer',
+      value: '6,820',
+      text: 'About 6,820 of your 8,420 followers show no sign of life on a typical post. The number on your profile is bigger than the audience behind it.',
+      section: 'audience',
+      verdict: 'bad',
+    },
+    {
+      key: 'peer-pace',
+      label: 'How often they post',
+      value: '3.4×',
+      text: '@theirpage posts about 14 times a month. You post about 4.',
+      section: 'peers',
+      verdict: 'bad',
+    },
+    {
+      key: 'hashtags',
+      label: 'Hashtags',
+      value: '24',
+      text: 'Your captions carry about 24 hashtags. Past a handful they stop finding anyone and start reading like a search box.',
+      section: 'words',
+      verdict: 'bad',
+    },
+    {
+      key: 'prune',
+      label: 'What to do about it',
+      value: 'Clear it out',
+      text: 'Instagram decides who sees a post partly by how many of your own followers answer it, so followers who never do are pulling every post down.',
+      section: 'audience',
+      verdict: 'bad',
       locked: true,
-      meter: { value: 44, max: 100, benchmark: 50, benchmarkLabel: 'median' },
     },
     {
-      key: 'asked',
-      label: 'What they keep asking',
-      value: 'Unanswered',
-      text: 'The question that comes up most in your comments is one you have never made a post about.',
+      key: 'peer',
+      label: 'A page your size',
+      value: '2.4×',
+      text: '@theirpage is about the size of your page and gets 2.4 times the likes and comments you do, for every follower.',
+      section: 'peers',
+      verdict: 'bad',
       locked: true,
+    },
+    {
+      key: 'asks',
+      label: 'Asking for a reply',
+      value: 'None',
+      text: 'None of your last 22 captions ask the reader anything. A comment is worth more to Instagram than a like, and it costs one sentence.',
+      section: 'words',
+      verdict: 'weak',
+      locked: true,
+    },
+  ],
+  timeline: timeline(),
+  rhythm: {
+    firstPostAt: null,
+    postsRead: 26,
+    postsLast60Days: 6,
+    perWeek: 0.7,
+    longestGapDays: 21,
+    daysSinceLast: 4,
+    verdict: 'bad',
+  },
+  audience: { rate: 0.006, reference: 0.03, typical: 48, verdict: 'bad' },
+  peers: [
+    {
+      handle: 'theirpage',
+      followers: 9100,
+      followersText: '9,100',
+      postsPerMonth: 14,
+      rate: '1.4%',
+      named: true,
+      bestFormat: 'reels',
+    },
+    {
+      handle: 'anotherpage',
+      followers: 6400,
+      followersText: '6,400',
+      postsPerMonth: 9,
+      rate: '2.1%',
+      named: false,
+      bestFormat: 'carousels',
     },
   ],
   projection: {
@@ -131,39 +247,61 @@ const weak = (handle) => ({
   headline: 'You have posted the same kind of thing eleven times in a row, and it is getting quieter each time.',
   facts: [
     {
-      key: 'hook',
+      key: 'window',
+      label: 'What he read',
+      value: '18',
+      text: 'This is your last 18 posts, back to March.',
+      section: 'rhythm',
+      verdict: 'neutral',
+    },
+    {
+      key: 'trend',
+      label: 'Which way it is going',
+      value: '0.6×',
+      text: 'You posted 1.4 times as much these last 3 months, and each post now gets 60% of the likes and comments it used to.',
+      section: 'rhythm',
+      verdict: 'bad',
+    },
+    {
+      key: 'answering',
+      label: 'How much they answer',
+      value: '0.6%',
+      text: 'A typical post gets 11 likes and comments from your 1,900 followers, which is 0.6% of them. A page your size usually sees about 3%.',
+      section: 'audience',
+      verdict: 'weak',
+      meter: { value: 0.6, max: 6, benchmark: 3, benchmarkLabel: 'usual rate' },
+    },
+    {
+      key: 'opening',
       label: 'The same opening',
       value: '11 in a row',
-      text: 'Your last eleven captions open the same way. The response has fallen with almost every one.',
-    },
-    {
-      key: 'rate',
-      label: 'Against your size',
-      value: '0.6%',
-      text: 'For pages your size that sits in the bottom quarter. It is the number most worth moving.',
-      meter: { value: 18, max: 100, benchmark: 50, benchmarkLabel: 'median' },
-    },
-    {
-      key: 'length',
-      label: 'Caption habit',
-      value: '340 vs 90',
-      text: 'Your captions run about 340 characters. Your five best run about ninety.',
-    },
-    {
-      key: 'hour',
-      label: 'When you post',
-      value: '09:00',
-      text: 'You post in the morning. Your own best posts went up in the evening.',
+      text: 'Your last 11 captions all open the same way.',
+      section: 'words',
+      verdict: 'weak',
       locked: true,
     },
     {
-      key: 'asked',
-      label: 'What they keep asking',
-      value: 'Unanswered',
-      text: 'The question that comes up most in your comments is one you have never made a post about.',
+      key: 'caption',
+      label: 'Caption habit',
+      value: '340 vs 90',
+      text: 'Your captions run about 340 characters. Your best ones run about 90.',
+      section: 'words',
+      verdict: 'weak',
       locked: true,
     },
   ],
+  timeline: timeline(18),
+  rhythm: {
+    firstPostAt: null,
+    postsRead: 18,
+    postsLast60Days: 9,
+    perWeek: 1.05,
+    longestGapDays: 21,
+    daysSinceLast: 4,
+    verdict: 'weak',
+  },
+  audience: { rate: 0.006, reference: 0.03, typical: 11, verdict: 'weak' },
+  peers: [],
   projection: {
     headline: 'about 120 more likes and comments a month',
     assumption:
@@ -275,6 +413,24 @@ const WAITING = { perWeek: 3, byNextYear: 156, ifThreeMonths: 117 };
  * placeholder, never a blurred copy of the real text — and the projection and
  * size block are withheld with them.
  */
+/**
+ * The receipt a read is opened with, exactly as the backend mints one.
+ *
+ * The fixture server used to flip a flag on the audit itself, which quietly reproduced the bug
+ * the real gate had: reads are cached per handle, so one address opened the report for every
+ * later visitor to the same page. Dev has to show the behaviour production has, or the gate is
+ * only ever tested by the person who just paid for it.
+ */
+function receiptFor(id) {
+  return 'mock-receipt-' + id;
+}
+
+/** Whether this request carries the receipt for this read. */
+function opens(req, id) {
+  const presented = req.headers['x-read-token'];
+  return typeof presented === 'string' && presented === receiptFor(id);
+}
+
 function pageView(body, unlocked) {
   if (unlocked) {
     return { ...body, unlocked: true, facts: body.facts.map((f) => ({ ...f, locked: false })) };
@@ -283,7 +439,17 @@ function pageView(body, unlocked) {
     ...body,
     unlocked: false,
     facts: body.facts.map((f) =>
-      f.locked ? { key: f.key, label: f.label, value: '', text: '', locked: true } : f
+      f.locked
+        ? {
+            key: f.key,
+            label: f.label,
+            value: '',
+            text: '',
+            locked: true,
+            section: f.section,
+            verdict: f.verdict,
+          }
+        : f
     ),
     projection: null,
     size: null,
@@ -466,7 +632,7 @@ const server = createServer(async (req, res) => {
         } else if (audit.kind === 'not_found') {
           emit('failed', { kind: 'not_found', message: 'He could not find that page.' });
         } else {
-          emit('result', pageView({ id: eventsMatch[1], ...audit.body }, audit.unlocked));
+          emit('result', pageView({ id: eventsMatch[1], ...audit.body }, opens(req, eventsMatch[1])));
         }
         res.end();
       }, audit.duration)
@@ -493,7 +659,7 @@ const server = createServer(async (req, res) => {
             : 'He could not find that page.',
       });
     }
-    return send(res, 200, pageView({ id: auditMatch[1], ...audit.body }, audit.unlocked));
+    return send(res, 200, pageView({ id: auditMatch[1], ...audit.body }, opens(req, auditMatch[1])));
   }
 
   const topicsMatch = path.match(/^\/audit\/([^/]+)\/topics$/);
@@ -501,8 +667,7 @@ const server = createServer(async (req, res) => {
     const { branch = 'page' } = await readBody(req);
     await new Promise((r) => setTimeout(r, 2600));
     if (branch === 'idea') {
-      const audit = audits.get(topicsMatch[1]);
-      return send(res, 200, ideaView(Boolean(audit?.unlocked)));
+      return send(res, 200, ideaView(opens(req, topicsMatch[1])));
     }
     return send(res, 200, { unlocked: true, topics: TOPICS.page, field: null, waiting: null });
   }
@@ -523,9 +688,16 @@ const server = createServer(async (req, res) => {
     const audit = audits.get(leadMatch[1]);
     await new Promise((r) => setTimeout(r, 700));
     if (!audit) return send(res, 404, { kind: 'error', message: 'Unknown audit.' });
-    audit.unlocked = true;
-    if (audit.kind === 'idea') return send(res, 200, { ok: true, ...ideaView(true) });
-    return send(res, 200, { ok: true, ...pageView({ id: leadMatch[1], ...audit.body }, true) });
+
+    // The receipt, the way the backend mints one. The site keeps it and sends it back, so a
+    // reload stays unlocked and the next visitor to the same cached handle does not inherit it.
+    const receipt = receiptFor(leadMatch[1]);
+    if (audit.kind === 'idea') return send(res, 200, { ok: true, token: receipt, ...ideaView(true) });
+    return send(res, 200, {
+      ok: true,
+      token: receipt,
+      ...pageView({ id: leadMatch[1], ...audit.body }, true),
+    });
   }
 
   if (req.method === 'POST' && path === '/lead') {
@@ -535,6 +707,14 @@ const server = createServer(async (req, res) => {
     }
     await new Promise((r) => setTimeout(r, 600));
     return send(res, 200, { ok: true });
+  }
+
+  // The proof step, as a deployment that has not nominated an account for it. A 503 is how the
+  // backend says "switched off", and the site then reads the page on the human token instead.
+  // Without this route the fixture server answered 404, the site treated that as a refusal, and
+  // the walk stopped dead on the handle screen — which made the whole read unreachable in dev.
+  if (req.method === 'POST' && path === '/proof') {
+    return send(res, 503, { kind: 'error', message: 'The proof step is off in this fixture.' });
   }
 
   const proofMatch = path.match(/^\/audit\/([^/]+)\/proof$/);

@@ -25,9 +25,21 @@ export interface AuditProgress {
   progress: number;
 }
 
+/** Which part of the report a finding belongs under. Decides the heading it sits beneath. */
+export type Section = 'rhythm' | 'format' | 'audience' | 'peers' | 'words';
+
+/** How a finding, or a whole section, reads. The word for it comes from the locale. */
+export type Verdict = 'good' | 'weak' | 'bad' | 'dead' | 'neutral';
+
 export interface Fact {
   key: string;
-  /** Two or three words, sits above the value. */
+  /**
+   * The English label the backend computed it under.
+   *
+   * A fallback only. The heading the page shows comes from `copy.result.labels[key]`, so a
+   * Persian read is headed in Persian — the arithmetic is published in no language and the words
+   * are the locale's job.
+   */
   label: string;
   /** The figure itself — already formatted by the backend, never re-derived here. */
   value: string;
@@ -43,6 +55,58 @@ export interface Fact {
   locked?: boolean;
   /** Optional bar: where this page sits against pages of its size. */
   meter?: { value: number; max: number; benchmark?: number; benchmarkLabel?: string };
+  section?: Section | null;
+  verdict?: Verdict | null;
+}
+
+/**
+ * One post, for the chart.
+ *
+ * Sent with every read, locked or not: the chart is the evidence the findings are drawn from,
+ * and holding the evidence back while showing the conclusions would be the wrong way round.
+ */
+export interface TimelinePoint {
+  at: number;
+  /** Null when the page hides its like counts. Drawn as unknown, never as a zero. */
+  engagement: number | null;
+  format: string;
+}
+
+/** How often the page posts, judged over the last sixty days. From the dates alone. */
+export interface Rhythm {
+  firstPostAt: number | null;
+  postsRead: number;
+  postsLast60Days: number;
+  perWeek: number;
+  longestGapDays: number;
+  daysSinceLast: number;
+  verdict: Verdict;
+}
+
+/**
+ * How much of the following answers.
+ *
+ * `reference` is what a page this size ordinarily gets back — from pages this deployment has
+ * actually read once there are enough of them, and from an editorial rule of thumb until then.
+ * Null means nothing is ranked, only stated.
+ */
+export interface Audience {
+  rate: number;
+  reference: number | null;
+  typical: number;
+  verdict: Verdict;
+}
+
+/** One page this read is measured against. `named` means the visitor asked for it. */
+export interface Peer {
+  handle: string;
+  followers: number;
+  followersText: string;
+  postsPerMonth: number | null;
+  rate: string;
+  named: boolean;
+  /** Null while the read is held back. */
+  bestFormat: string | null;
 }
 
 export interface Side {
@@ -126,6 +190,11 @@ export interface AuditResult {
   /** False until an address has been left. The locked facts, projection and size follow it. */
   unlocked: boolean;
   facts: Fact[];
+  /** Every post the arithmetic ran on. Never held back. */
+  timeline: TimelinePoint[] | null;
+  rhythm: Rhythm | null;
+  audience: Audience | null;
+  peers: Peer[];
   /** Null until unlocked — and legitimately null after it, when there was too little to say. */
   projection: Projection | null;
   size: Size | null;
@@ -197,7 +266,15 @@ export interface IdeaResult {
  * topics answer. The site replaces what it holds with this and re-renders —
  * it never flips `locked` by itself.
  */
-export type LeadResult = ({ ok: true } & AuditResult) | ({ ok: true } & IdeaResult);
+/**
+ * What leaving an address returns: the same view unlocked, and the receipt for it.
+ *
+ * The token is the visitor's proof, not the read's. Reads are cached per handle, so a gate that
+ * asked "has anybody left an address for this audit" opened the report for every later visitor
+ * to the same page — see the backend's ReadTokens. The site keeps this and sends it back.
+ */
+export type LeadResult = ({ ok: true; token?: string } & AuditResult)
+  | ({ ok: true; token?: string } & IdeaResult);
 
 export interface PostPreview {
   topicId: string;
@@ -231,17 +308,19 @@ class ApiError extends Error {
   }
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function post<T>(path: string, body: unknown, token?: string | null): Promise<T> {
   const res = await fetch(BASE + path, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: token
+      ? { 'content-type': 'application/json', 'X-Read-Token': token }
+      : { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
   return unwrap<T>(res);
 }
 
-async function get<T>(path: string): Promise<T> {
-  return unwrap<T>(await fetch(BASE + path));
+async function get<T>(path: string, token?: string | null): Promise<T> {
+  return unwrap<T>(await fetch(BASE + path, token ? { headers: { 'X-Read-Token': token } } : undefined));
 }
 
 async function unwrap<T>(res: Response): Promise<T> {
@@ -268,12 +347,18 @@ async function unwrap<T>(res: Response): Promise<T> {
 export { ApiError };
 
 /** Starts a read. Returns as soon as the audit has an id — the work runs on. */
-export function startAudit(handle: string, turnstile: string | null, locale = 'en', proofId: string | null = null) {
+export function startAudit(
+  handle: string,
+  turnstile: string | null,
+  locale = 'en',
+  proofId: string | null = null,
+  rivals: string[] = []
+) {
   // The locale rides with the request so the findings come back written in the
   // language the walk is in. Without it a Persian funnel ends on English facts,
   // which looks finished right up until the last screen. The proof id is what a
   // read costs once the proof step is on; the backend refuses without it then.
-  return post<{ id: string }>('/audit', { handle, turnstile, locale, proofId });
+  return post<{ id: string }>('/audit', { handle, turnstile, locale, proofId, rivals });
 }
 
 /**
@@ -312,16 +397,18 @@ export function startIdea(idea: string, turnstile: string | null) {
 // idea and the topics he would start with — an empty list of either is a
 // legitimate answer rather than a failure.
 
-export function getAudit(id: string) {
-  return get<AuditResult>(`/audit/${id}`);
+export function getAudit(id: string, token?: string | null) {
+  return get<AuditResult>(`/audit/${id}`, token);
 }
 
-export function getTopics(id: string, branch: 'page' | 'idea', idea?: string, locale = 'en') {
-  return post<IdeaResult>(`/audit/${id}/topics`, {
-    branch,
-    idea: idea ?? null,
-    locale,
-  });
+export function getTopics(
+  id: string,
+  branch: 'page' | 'idea',
+  idea?: string,
+  locale = 'en',
+  token?: string | null
+) {
+  return post<IdeaResult>(`/audit/${id}/topics`, { branch, idea: idea ?? null, locale }, token);
 }
 
 export function makePost(id: string, topicId: string) {

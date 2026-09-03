@@ -36,6 +36,22 @@
   --btn-text: #f3f6ff;
   --alarm: #e05a6a;
 
+  /* ---- The read's chart and verdicts --------------------------------------
+     The public read draws one bar per post and heads each section with a single
+     word. Both need colour that carries meaning rather than decoration, so they
+     are tokens here beside everything else and get their light values in the
+     light room below — never defined only inside one theme. Formats are told
+     apart by hue on the champagne/neutral axis rather than by a traffic-light
+     palette, which is reserved for the verdicts. */
+  --chart-reel: #c9a668;
+  --chart-carousel: #5b8ff9;
+  --chart-photo: #55607d;
+  --chart-quiet: rgba(255, 255, 255, 0.06);
+  --chart-axis: #2a3450;
+  --verdict-good: #4fb286;
+  --verdict-weak: #d8a83f;
+  --verdict-bad: #e05a6a;
+
   /* ---- Effects ------------------------------------------------------------ */
   --shine: rgba(255, 255, 255, 0.05);
   --shine-strong: rgba(255, 255, 255, 0.10);
@@ -87,6 +103,9 @@
   --section-y: clamp(3.5rem, 2rem + 7vw, 8.75rem);
   --width: 1120px;
   --width-prose: 68ch;
+  /* The sticky nav's own height, so anything that has to clear it — an anchor
+     jump, a sticky sidebar — can say so instead of guessing. */
+  --nav-h: 68px;
 
   /* ---- Shape: max 10px radius, hairline rules, shadows only under frames -- */
   --r-1: 4px;
@@ -132,6 +151,18 @@
   --horn: #8a6a2c;
   --horn-soft: #6e5322;
   --horn-deep: #c9a668;
+
+  /* The chart and the verdicts, on near-white. The gold darkens with the rest of
+     champagne, and the three verdict colours deepen so they hold against paper
+     rather than glowing off it. */
+  --chart-reel: #8a6a2c;
+  --chart-carousel: #2f66cc;
+  --chart-photo: #7a8398;
+  --chart-quiet: rgba(20, 23, 31, 0.07);
+  --chart-axis: #d8d6cc;
+  --verdict-good: #2f7d59;
+  --verdict-weak: #9a7220;
+  --verdict-bad: #a63d33;
 
   --accent: #0f52ba;
   --accent-soft: #2f66cc;

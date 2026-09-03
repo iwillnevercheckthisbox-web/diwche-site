@@ -218,6 +218,42 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
             </div>
           )}
 
+          {screen.kind === 'rivals' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow">{screen.eyebrow}</p>
+              <h1 class="screen__title">{screen.title}</h1>
+              <p class="screen__lead">{screen.lead}</p>
+
+              {/* Three, because each one is a call to Instagram made while somebody waits, and
+                  because nobody has more than three pages they genuinely measure themselves
+                  against. Skipping is a first-class answer, not a way out. */}
+              <form class="rivals" data-rivals-form novalidate>
+                {[0, 1, 2].map((i) => (
+                  <div class="start__field">
+                    <span class="start__at" aria-hidden="true">@</span>
+                    <label class="sr" for={`rival-${i}`}>{screen.title}</label>
+                    <input
+                      class="start__input"
+                      id={`rival-${i}`}
+                      data-rival
+                      type="text"
+                      autocomplete="off"
+                      autocapitalize="off"
+                      autocorrect="off"
+                      spellcheck="false"
+                      maxlength="30"
+                      placeholder={i === 0 ? screen.placeholder : ''}
+                    />
+                  </div>
+                ))}
+                <button class="btn btn--wide" type="submit">{screen.cta}</button>
+                <button class="btn btn--quiet btn--wide" type="button" data-rivals-skip>
+                  {screen.skip}
+                </button>
+              </form>
+            </div>
+          )}
+
           {screen.kind === 'verify' && (
             <div class="screen__inner">
               <p class="screen__eyebrow">{copy.verify.eyebrow}</p>
@@ -304,7 +340,21 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
               </figure>
 
               <h1 class="screen__title" data-result-headline />
-              <div class="facts" data-facts />
+
+              {/* The evidence, before any of the claims. One bar per post, by date. Never held
+                  back: holding the evidence while showing the conclusions is the wrong way
+                  round, and it is the only part of the page a reader can check against their
+                  own grid. */}
+              <section class="chart" data-chart hidden>
+                <p class="chart__title">{copy.result.chartTitle}</p>
+                <div class="chart__plot" data-chart-plot />
+                <p class="chart__note">{copy.result.chartNote}</p>
+              </section>
+
+              {/* The report itself, one section per heading, drawn from the template below. */}
+              <div class="report" data-sections />
+
+              <div class="facts" data-facts hidden />
 
               {/* The starter branch. No page was read, so what is shown is the
                   field the idea is walking into: the pages already working it,
@@ -469,8 +519,14 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   <template data-tpl="fact">
     <article class="fact">
       <p class="fact__label"><span data-f="label"></span><span class="fact__held" data-f="held" hidden></span></p>
-      <p class="fact__value" data-f="value"></p>
-      <p class="fact__text" data-f="text"></p>
+      {/* dir="auto" on both, because a figure and its sentence are the two places a read mixes
+          scripts. On a Persian page an English value like "21 days" is a left-to-right run inside
+          a right-to-left paragraph, and the paragraph's direction reorders it into "days 21" —
+          true characters, wrong sentence. Letting each element take its direction from its own
+          first strong character puts every wording the narrator can produce the right way round,
+          in all three languages, without hardcoding a direction anywhere. */}
+      <p class="fact__value" data-f="value" dir="auto"></p>
+      <p class="fact__text" data-f="text" dir="auto"></p>
       {/* A shape to blur while the figure is held back. Never real text: a
           blur can be lifted, and a placeholder has nothing under it to lift. */}
       <div class="ghost" data-f="ghost" hidden aria-hidden="true">
@@ -484,6 +540,17 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
         <p class="meter__legend" data-f="meter-legend"></p>
       </div>
     </article>
+  </template>
+
+  <template data-tpl="section">
+    <section class="block">
+      <header class="block__head">
+        <h2 class="block__title" data-f="title"></h2>
+        <p class="block__verdict" data-f="verdict"></p>
+      </header>
+      <div class="facts" data-f="facts"></div>
+      <div class="field__list" data-f="peers" hidden></div>
+    </section>
   </template>
 
   <template data-tpl="topic">
@@ -1398,6 +1465,100 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     font-variant-numeric: tabular-nums;
   }
 
+  /* ---- The report ---------------------------------------------------------- */
+
+  .report {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .block {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .block__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-2);
+    border-block-end: 1px solid var(--rule);
+    padding-block-end: var(--s-2);
+  }
+
+  .block__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* One word, and it is allowed to be loud. A verdict that reads like the label above it is a
+     verdict nobody registers, which is the whole reason the old page said nothing. */
+  .block__verdict {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink-3);
+  }
+
+  .block__verdict[data-verdict='good'] {
+    color: var(--verdict-good);
+  }
+
+  .block__verdict[data-verdict='weak'] {
+    color: var(--verdict-weak);
+  }
+
+  .block__verdict[data-verdict='bad'],
+  .block__verdict[data-verdict='dead'] {
+    color: var(--verdict-bad);
+  }
+
+  /* ---- The chart ----------------------------------------------------------- */
+
+  .chart {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    background: var(--paper-2);
+    background-image: var(--sheen);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+  }
+
+  .chart__title {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* The plot keeps its own aspect and never makes the page scroll sideways. */
+  .chart__plot svg {
+    display: block;
+    width: 100%;
+    height: 140px;
+  }
+
+  .chart__note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-3);
+  }
+
+  .chart__month,
+  .chart__gap {
+    font-size: 11px;
+    fill: var(--ink-3);
+  }
+
+  .chart__gap {
+    font-weight: 600;
+  }
+
   .facts,
   .topics {
     display: grid;
@@ -1497,6 +1658,12 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
   .ghost__line--short {
     width: 62%;
+  }
+
+  .rivals {
+    display: grid;
+    gap: var(--s-2);
+    margin-block-start: var(--s-4);
   }
 
   /* ---- The field, and the cost of waiting (starter branch) ------------------ */
