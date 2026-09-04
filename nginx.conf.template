@@ -1,8 +1,50 @@
 # The public read is rate limited here rather than in the app: a request that
 # never reaches Java costs nothing, and this is the only door to it.
-# 6/minute per address with a small burst is generous for a person and useless
-# for a script; the app still keeps its own daily cap behind this.
-limit_req_zone $binary_remote_addr zone=publicread:10m rate=6r/m;
+#
+# Two things about the shape below were learned from a broken read in
+# production, and neither is obvious from the outside.
+#
+# 1. Who the visitor is. Everything arrives through the Cloudflare tunnel, which
+#    runs beside this container, so $remote_addr is 172.17.0.1 for every visitor
+#    on earth — one shared bucket, and whoever walks the funnel first spends
+#    everybody else's allowance for the minute. The access log says so plainly:
+#    every line is `172.17.0.1 ... "77.119.254.130"`, the real address only in
+#    the forwarded field. Cloudflare sets CF-Connecting-IP at its own edge and
+#    overwrites whatever the client sent, so on this path it is the address;
+#    $binary_remote_addr remains the fallback for a deployment with no tunnel in
+#    front of it. Nothing here is the last line of defence — the app keeps its
+#    own per-address hourly, poll and daily allowances behind this door.
+#
+# 2. Starting a read and watching one are not the same request. The progress
+#    stream reconnects, and its polling fallback asks every 800–1200ms, so one
+#    genuine visitor whose stream drops makes five requests in six seconds.
+#    Against 6r/m that is an immediate 429, which the site reads as the daily
+#    cap and shows as "he has read all he can today" — a working read killed by
+#    its own progress bar. So watching gets its own generous zone and the strict
+#    one is left to the calls that actually start work.
+map $http_cf_connecting_ip $visitor {
+    default $http_cf_connecting_ip;
+    ""      $binary_remote_addr;
+}
+
+# Watching something already running: GET /audit/{id}, its /events stream and
+# /topics, and GET /proof/{id}. Everything else under the prefix — POST /audit,
+# /idea, /proof, /lead, /audit/{id}/lead — is starting something, and pays the
+# strict rate. $uri rather than $request_uri so a query string cannot dodge the
+# anchor at the end of the pattern.
+map $uri $publicread_key {
+    default                                                 $visitor;
+    "~^/api/public/(audit|proof)/[^/]+(/(events|topics))?$" "";
+}
+map $uri $publicwatch_key {
+    default                                                 "";
+    "~^/api/public/(audit|proof)/[^/]+(/(events|topics))?$" $visitor;
+}
+
+# An empty key is not accounted, so each request is only ever counted in one of
+# these — the map above decides which.
+limit_req_zone $publicread_key  zone=publicread:10m  rate=6r/m;
+limit_req_zone $publicwatch_key zone=publicwatch:10m rate=120r/m;
 
 server {
     listen 80;
@@ -27,6 +69,7 @@ server {
     # cache and a daily spend cap.
     location /api/public/ {
         limit_req zone=publicread burst=5 nodelay;
+        limit_req zone=publicwatch burst=30 nodelay;
         limit_req_status 429;
 
         proxy_pass http://192.168.1.100:5556;

@@ -62,8 +62,36 @@ let queue: Promise<unknown> = Promise.resolve();
 function settle(token: string | null) {
   const waiting = pending;
   pending = null;
-  if (host) host.style.pointerEvents = 'none';
+  conceal();
   waiting?.(token);
+}
+
+/**
+ * Out of the way the moment the answer is in.
+ *
+ * The widget is not only a challenge, it is a result: a Managed widget that a
+ * visitor ticked stays on screen afterwards saying it succeeded, and since the
+ * host is a fixed box on `document.body` it sat over the page for the rest of
+ * the visit — a Cloudflare badge floating on the funnel with nothing left to
+ * ask. Hiding it rather than removing it keeps the rendered widget alive for
+ * the next `execute`, which is the whole reason it is rendered once.
+ *
+ * Hidden with visibility, never `display:none`: the widget is only re-shown by
+ * `place()` before an execute, and a widget rendered into a box with no layout
+ * is what Cloudflare answers with error 300010 and no token.
+ */
+function conceal() {
+  if (!host) return;
+  host.style.visibility = 'hidden';
+  host.style.opacity = '0';
+  host.style.pointerEvents = 'none';
+}
+
+function reveal() {
+  if (!host) return;
+  host.style.visibility = 'visible';
+  host.style.opacity = '1';
+  host.style.pointerEvents = 'auto';
 }
 
 function dropWidget() {
@@ -90,7 +118,7 @@ function place(anchor: HTMLElement | null | undefined) {
     host.setAttribute('data-turnstile-host', '');
     host.style.cssText =
       `position:fixed;width:${WIDTH}px;height:${HEIGHT}px;z-index:2147483000;` +
-      'pointer-events:none;background:transparent;';
+      'pointer-events:none;background:transparent;visibility:hidden;opacity:0;';
     document.body.append(host);
   }
   const vw = window.innerWidth;
@@ -108,7 +136,7 @@ function place(anchor: HTMLElement | null | undefined) {
   top = Math.max(GAP, Math.min(vh - HEIGHT - GAP, top));
   host.style.left = `${Math.round(left)}px`;
   host.style.top = `${Math.round(top)}px`;
-  host.style.pointerEvents = 'auto';
+  reveal();
 }
 
 /** The script is async, so it may not have arrived by the time the button is pressed. */
