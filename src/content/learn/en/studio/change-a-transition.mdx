@@ -1,0 +1,92 @@
+---
+title: Change the transition between two clips
+description: Turn a straight cut into a dissolve, a wipe or a dip to black, and set how long it takes.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['transition', 'dissolve', 'crossfade', 'fade', 'wipe', 'cut', 'jump cut', 'dip to black', 'iris', 'zoom', 'blur', 'slide', 'roll']
+related: ['studio/trim-a-clip', 'studio/add-a-zoom-or-pan']
+shots: ['ve-junction', 've-transitions']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Every cut on Video 1 already **is** a transition. You never add one — you change
+what the one that is already there does.
+
+That is why there is no "add transition" button, and why looking for one is the
+usual way people get stuck here.
+
+## Find the cut
+
+Where two clips meet on Video 1 there is a **◆** — a small diamond sitting in a
+full-height strip.
+
+<Shot name="ve-junction" callouts={[
+  { x: 41, y: 66, text: 'The diamond. Click it' },
+  { x: 62, y: 66, text: 'Every cut has one' },
+]} />
+
+## Change it
+
+1. **Click the ◆.** The Inspector on the right jumps to its **✨ Effects** tab by
+   itself.
+2. Pick a transition from the list.
+3. Set **Duration** with the slider underneath.
+
+<Shot name="ve-transitions" callouts={[
+  { x: 44, y: 13, text: 'It switches here on its own' },
+  { x: 50, y: 26, text: 'The one this cut is using' },
+  { x: 22, y: 92, text: 'How long it takes' },
+]} />
+
+## The eleven
+
+| Transition | What it does |
+| --- | --- |
+| **◐ Cross Dissolve** | One shot fades through into the next. The safe one |
+| **◎ Iris** | A circle opens out of the new shot |
+| **↷ Jump Cut** | A hard cut, no blend. This is the default |
+| **⚡ Smash Cut** | A hard cut with a jolt |
+| **⬛ Dip to Black** | Out to black, then in again. Reads as time passing |
+| **▥ Wipe** | A hard edge travels across |
+| **⬅ Slide left** | The new shot pushes in from the right |
+| **➡ Slide right** | The new shot pushes in from the left |
+| **⬆ Push up** | The new shot pushes in from below |
+| **🔍 Zoom through** | Pushes into one shot and out of the next |
+| **〰 Blur dissolve** | Blurs out and back in. Softer than a dissolve |
+
+## How long
+
+**Duration** runs from **0.2** to **3** seconds and starts at **0.5**. Two
+things worth knowing:
+
+- The transition *overlaps* the two clips, so a long one makes the video
+  slightly shorter.
+- Under about 0.3 seconds most of them stop reading as anything but a cut.
+
+For an ordinary dissolve between two talking shots, 0.4–0.6 is right. For a dip
+to black between two scenes, 1 second or more.
+
+## Go back to a plain cut
+
+Select the **◆** and pick **↷ Jump Cut**. You cannot delete a transition,
+because there is always a cut there — a plain cut *is* Jump Cut.
+
+## Move the cut without changing the length
+
+Drag the **strip**, not the diamond. One clip gains exactly what the other
+loses, the cut moves, and the video stays the same length. This is a *roll*, and
+it is how you fix a cut that lands a beat too early.
+
+Two targets on the same few pixels: **the diamond selects, the strip rolls.**
+
+## Only on Video 1
+
+Video 2 and the audio lanes have the same draggable strip where two items touch,
+and it rolls the same way — but no diamond, and no transition. Transitions
+belong to the main sequence.
+
+## What next
+
+- [Trim a clip](/learn/studio/trim-a-clip/)
+- [Add a zoom or a pan](/learn/studio/add-a-zoom-or-pan/)

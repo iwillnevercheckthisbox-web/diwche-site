@@ -1,0 +1,105 @@
+---
+/**
+ * A screenshot in the guide.
+ *
+ * The author writes a name and, optionally, where to point:
+ *
+ *   <Shot name="ve-transition-junction" callouts={[
+ *     { x: 42, y: 61, text: 'Click the ◆ to select the cut' },
+ *   ]} />
+ *
+ * Everything else — the file, its intrinsic size, its description, the frame
+ * label — comes from `public/shots/manifest.json`, which `npm run shoot` writes
+ * as it captures. Same shape as `Art.astro`, with one deliberate difference:
+ *
+ * `Art.astro` throws on an unknown drawing, which is right for five hero
+ * illustrations. It is wrong for a hundred and eighty screenshots, because the
+ * writing has to be able to run ahead of the capturing. A missing shot renders a
+ * labelled placeholder and warns; `LEARN_STRICT_SHOTS=1` turns that into a
+ * throw, and CI sets it. Same "lenient locally, strict in CI" shape as
+ * `LEARN_STRICT_LOCALES`.
+ */
+import manifest from '../../../public/shots/manifest.json';
+import Screenshot from '../Screenshot.astro';
+
+interface Callout {
+  /** Percentage across and down the image, so a re-shoot at another size keeps them. */
+  x: number;
+  y: number;
+  /** Shown in the numbered legend under the frame, not on the image. */
+  text: string;
+}
+
+interface Props {
+  name: string;
+  /** Overrides the description captured with the shot. */
+  alt?: string;
+  /** Overrides the caption in the frame's title bar. */
+  label?: string;
+  callouts?: Callout[];
+  loading?: 'lazy' | 'eager';
+}
+
+const { name, alt, label, callouts = [], loading = 'lazy' } = Astro.props;
+
+interface Entry {
+  name: string;
+  width: number;
+  height: number;
+  alt: string;
+  label?: string;
+}
+
+const shot = (manifest as Entry[]).find((m) => m.name === name);
+
+if (!shot) {
+  const msg = `learn: no capture named "${name}" — run npm run shoot -- --only '${name}'`;
+  if (import.meta.env.LEARN_STRICT_SHOTS) throw new Error(msg);
+  console.warn(msg);
+}
+---
+
+{
+  shot ? (
+    <Screenshot
+      src={`/shots/${name}.webp`}
+      alt={alt ?? shot.alt}
+      width={shot.width}
+      height={shot.height}
+      label={label ?? shot.label}
+      callouts={callouts}
+      loading={loading}
+      class="shot--learn"
+    />
+  ) : (
+    <figure class="shot-missing">
+      <img src="/shots/_placeholder-pending.svg" alt="" width="1440" height="900" />
+      <figcaption>Capture pending — <code>{name}</code></figcaption>
+    </figure>
+  )
+}
+
+<style>
+  /* Deliberately visible rather than tasteful: an un-captured screen must be
+     impossible to miss in a draft, and impossible to mistake for the real one. */
+  .shot-missing {
+    margin: 0;
+    border: 1px dashed var(--rule);
+    border-radius: var(--r-3);
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+
+  .shot-missing img {
+    width: 100%;
+    height: auto;
+    opacity: 0.5;
+  }
+
+  .shot-missing figcaption {
+    padding: var(--s-3) var(--s-4);
+    border-block-start: 1px solid var(--rule-soft);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+</style>

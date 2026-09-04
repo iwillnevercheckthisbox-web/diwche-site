@@ -1,0 +1,123 @@
+---
+title: Connect your Instagram account
+description: Link an account to Instagram so Diwche can publish to it, and read the connection card afterwards.
+updated: 2026-09-04
+appPath: /accounts
+keywords:
+  ['instagram', 'connect', 'link account', 'authorise', 'authorize', 'reconnect', 'expired', 'disconnected', 'business account', 'creator account', 'professional account', 'permission', 'not posting']
+related: []
+shots: ['ig-card-not-connected', 'ig-card-connected', 'accounts-list']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Nothing publishes until this is done. Diwche can find topics, write captions and
+build every design without it — it just has nowhere to send them.
+
+## Before you start
+
+Your Instagram account has to be a **Professional** account, Business or Creator.
+On your phone: Instagram → Settings → **Account type and tools**. Switching is
+free, takes a few taps, and changes nothing about your handle, posts or
+followers.
+
+You do not need a Facebook account or a Facebook Page.
+
+## Connect it
+
+1. Open **Accounts** in the left rail and click the account you want to connect.
+
+2. At the top of the page, above the tabs, find the **Instagram connection**
+   card.
+
+   <Shot name="ig-card-not-connected" callouts={[
+     { x: 83, y: 14, text: 'The badge — this is where a problem shows up first' },
+     { x: 25, y: 60, text: 'Click here' },
+   ]} />
+
+3. Click **Connect Instagram**. The button changes to *Opening Facebook…* and
+   the whole page navigates away to Instagram. It is a full-page redirect, not a
+   pop-up — you have not lost anything.
+
+4. Sign in, then read the permissions screen and **accept all of them**. You can
+   switch individual permissions off, and a connection missing one looks
+   completely fine until the thing it covers stops working.
+
+5. Instagram sends you back to the same page, and a message says *Instagram
+   connected.*
+
+   <Shot name="ig-card-connected" callouts={[
+     { x: 84, y: 10, text: 'Connected' },
+     { x: 33, y: 20, text: 'The account it will post as' },
+     { x: 36, y: 29, text: 'When you next need to reconnect' },
+     { x: 36, y: 58, text: 'The permissions Instagram granted' },
+   ]} />
+
+That is it. The account can publish now.
+
+## Read the badge
+
+The badge in the corner of the card is how Diwche tells you something needs
+doing. It is checked on a schedule, so a problem usually appears here days
+before a post would have failed.
+
+| Badge | Do this |
+| --- | --- |
+| **Connected** | Nothing |
+| **Reconnect soon** | Click **Reconnect Instagram** before the date on the card |
+| **Expired** | Click **Reconnect Instagram** |
+| **Access withdrawn** | Click **Reconnect Instagram** |
+| **Missing permission** | Click **Reconnect Instagram** and accept every permission |
+| **Not connected** | Click **Connect Instagram** |
+
+The accounts list says it more bluntly — an account that needs you carries a
+**⚠ Reconnect needed** link straight to its page.
+
+<Shot name="accounts-list" label="Accounts" />
+
+## Reconnect, twice a year
+
+A connected card usually shows a line reading *Reauthorisation due by* and a
+date. Click **Reconnect Instagram** before it, sign in, accept the same
+permissions. Fifteen seconds, and nothing about the account changes — same
+handle, same history, same schedule.
+
+Leave it and the badge turns to **Reconnect soon**, then **Expired**, and posts
+stop going out.
+
+## Get comments faster
+
+If comment auto-reply is on, the card says how comments reach Diwche:
+
+- *Comments arrive instantly* — nothing to do.
+- *Comments are still polled every half hour* — click **switch to instant
+  delivery** next to it. One second, no downside.
+
+## Check a connection
+
+**Test Instagram**, top right of the account page, asks Instagram who Diwche is
+talking to. It posts nothing.
+
+A good result names the handle, lists the permissions, and calls out the one
+that is easiest to lose:
+
+> Insights permission: ✓ granted
+
+If that says **missing**, posting works but Performance will have no numbers in
+it. Reconnect and accept everything.
+
+## Disconnect
+
+**Disconnect** on the card stops the account posting until it is connected
+again. Nothing else goes — feeds, keywords, palettes, characters, schedule,
+identity and the whole Activity Log stay exactly as they are.
+
+## If it will not connect
+
+| What you see | What to do |
+| --- | --- |
+| *Connecting isn't set up on this server yet* | Nothing to do with your account — ask an administrator |
+| *No Instagram business account was found* | The account is still personal, or not linked to a Page you manage |
+| *Instagram did not identify the account* | Switch it to Professional in the Instagram app, then try again |
+| *That connection attempt has expired* | Go back to the account and click **Connect Instagram** again |
+| It says connected, but posts fail | Look at the badge — **Missing permission** looks almost identical to **Connected** |

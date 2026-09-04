@@ -1,0 +1,61 @@
+---
+title: Crop, rotate and flip a photo
+description: Set the shape of the picture, straighten it, and keep the important part out of Instagram's own furniture.
+updated: 2026-09-04
+appPath: /visual-studio
+shots: ['pe-crop']
+keywords: ['crop', 'ratio', 'rotate', 'flip', 'straighten', 'safe area', 'aspect', 'square', '4:5']
+related: ['editors/adjust-a-photo', 'editors/publish-a-photo']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+**Crop** is the first tool in the rail, and the editor opens on it.
+
+## Crop it
+
+1. Pick a shape from the row of ratios, or leave it on **Freeform**.
+2. Drag the frame on the picture to choose what is kept, and **Photo zoom** to
+   size the picture inside it.
+3. **Done**, or **Cancel** to abandon it. **↺ Revert** puts the picture back.
+
+<Shot name="pe-crop" callouts={[
+  { x: 79, y: 30, text: 'The shape' },
+  { x: 73, y: 36, text: 'Rotate, flip, and start again' },
+  { x: 80, y: 62, text: 'Level the horizon' },
+  { x: 74, y: 75, text: 'What Instagram will actually show' },
+]} />
+
+## The shapes
+
+| Ratio | What for |
+| --- | --- |
+| **4:5** | A feed post. The tallest Instagram allows, so the biggest on a phone |
+| **1:1** | Square |
+| **9:16** | Story and Reel |
+| **16:9** | Landscape |
+| **Freeform** | Any shape you drag |
+
+**4:5 is the right default for a feed post.** A square wastes a fifth of the
+screen a scrolling reader gives you. A **⌾ Portrait** button flips the current
+ratio on its side.
+
+## Straighten and flip
+
+**Straighten** is a dial in tenths of a degree. Levelling a horizon is usually
+the difference between a photo that looks taken and one that looks snapped.
+
+**↻ Rotate** turns it in quarter turns. **⇔ Flip H** and **⇕ Flip V** mirror it.
+
+## The safe-area overlay
+
+On story and reel sizes an overlay marks the parts of the screen Instagram's own
+interface covers: your handle at the top, and the reply box, caption and buttons
+at the bottom.
+
+**Keep faces and words out of those bands.** It is the single most common reason
+a design that looked right in the editor looks broken in the app.
+
+## What next
+
+- [Adjust a photo](/learn/editors/adjust-a-photo/)

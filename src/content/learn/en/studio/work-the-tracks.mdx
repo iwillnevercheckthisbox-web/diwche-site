@@ -1,0 +1,64 @@
+---
+title: Work the tracks
+description: What each lane of the timeline is for, and how to lock, mute or solo one while you work on another.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['tracks', 'lanes', 'layers', 'video 2', 'overlay', 'audio lanes', 'lock', 'mute', 'solo', 'a1', 'a2', 'a3']
+related: ['studio/add-music-and-sound', 'studio/add-text-on-screen']
+shots: ['ve-timeline']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+The timeline is a stack of lanes. Top of the stack draws on top.
+
+<Shot name="ve-timeline" callouts={[
+  { x: 5, y: 22, text: 'Titles and captions you typed' },
+  { x: 5, y: 42, text: 'Zooms and pans' },
+  { x: 5, y: 66, text: 'The main sequence' },
+  { x: 5, y: 88, text: 'Three lanes of sound' },
+]} />
+
+## The lanes, top to bottom
+
+| Lane | What goes on it |
+| --- | --- |
+| **Text** | Titles and captions you typed. Drag the text itself on the Program monitor to place it |
+| **Subtitles** | Transcribed captions. Appears only once there are cues |
+| **Overlays** | Stickers, shapes, logos, the progress bar. Appears only once you add one |
+| **Effects** | Zooms, pans and tilts. Applies to whatever is under it |
+| **Video 2** | Anything laid *over* the main sequence. Hidden until you use it |
+| **Video 1** | The main sequence. Cuts, transitions, the spine of the video |
+| **A1** | Music |
+| **A2** | Sound effects and voice-over |
+| **A3** | The clips' own sound |
+
+**Three of them are invisible until they have something on them** — Video 2,
+Overlays and Subtitles. A fresh project shows four lanes, not seven, and nothing
+is missing.
+
+## Add Video 2
+
+A ghost lane sits above Video 1 with a **+ V2** button on it. Click that, or just
+drag a pool item onto the strip marked **Drop here for Video 2**.
+
+Use it for a cutaway over someone talking, a logo bug, or a picture-in-picture.
+
+## Get one lane out of the way
+
+Every lane header has a **🔓** that turns into **🔒**. A locked lane cannot be
+dragged, trimmed or deleted — the usual reason to lock Video 1 while you fiddle
+with titles above it.
+
+The three audio lanes have two more:
+
+- **M** mutes that lane.
+- **S** solos it — everything else goes quiet.
+
+Beside them is a volume slider for the whole lane, separate from any one clip's
+volume.
+
+## What next
+
+- [Add music and sound](/learn/studio/add-music-and-sound/)
+- [Add text on screen](/learn/studio/add-text-on-screen/)

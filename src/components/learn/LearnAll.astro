@@ -1,0 +1,120 @@
+---
+/**
+ * Every article on one page.
+ *
+ * This is what the search box points at before its JavaScript has loaded, and
+ * what it points at forever for a reader who has JavaScript off: a page holding
+ * every title and every description, where the browser's own find is a complete,
+ * honest search with no index to go stale. It is also the human sitemap.
+ */
+import Learn from '../../layouts/Learn.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { LEARN_UI } from '../../content/learn/ui';
+import { learnHome, type Entry, type NavSection } from '../../lib/learn';
+import { DEFAULT_LOCALE, type Locale } from '../../lib/direction';
+
+interface Props {
+  locale: Locale;
+  nav: NavSection[];
+  entries: Entry[];
+}
+
+const { locale, nav, entries } = Astro.props;
+const ui = LEARN_UI[locale];
+
+const descriptionOf = (slug: string) =>
+  (
+    entries.find((x) => x.id === `${locale}/${slug}`) ??
+    entries.find((x) => x.id === `${DEFAULT_LOCALE}/${slug}`)
+  )?.data.description ?? '';
+---
+
+<Learn
+  title={`${ui.everything} — ${ui.landingTitle}`}
+  description={ui.everythingLead}
+  locale={locale}
+  nav={nav}
+>
+  <Breadcrumbs
+    locale={locale}
+    label={ui.crumbs}
+    trail={[{ title: ui.name, href: learnHome(locale) }, { title: ui.everything }]}
+  />
+
+  <header class="all__head">
+    <h1 class="all__title">{ui.everything}</h1>
+    <p class="all__lead">{ui.everythingLead}</p>
+  </header>
+
+  {
+    nav.map((s) => (
+      <section class="all__sec">
+        <h2 class="all__sname">
+          <a href={s.href}>{s.title}</a>
+        </h2>
+        <ul class="all__list">
+          {s.articles.map((a) => (
+            <li>
+              <a class="all__link" href={a.href} lang={a.translated ? undefined : 'en'}>
+                {a.title}
+              </a>
+              <span class="all__desc">{descriptionOf(a.slug)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Learn>
+
+<style>
+  .all__head {
+    margin-block: var(--s-4) var(--s-7);
+  }
+
+  .all__title {
+    font-size: var(--t-subhead);
+  }
+
+  .all__lead {
+    margin-block-start: var(--s-3);
+    color: var(--ink-2);
+  }
+
+  .all__sec + .all__sec {
+    margin-block-start: var(--s-7);
+  }
+
+  .all__sname {
+    font-size: 1.375rem;
+    padding-block-end: var(--s-3);
+    border-block-end: 1px solid var(--rule-soft);
+  }
+
+  .all__sname a {
+    text-decoration: none;
+  }
+
+  .all__list {
+    list-style: none;
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .all__link {
+    display: block;
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration-color: var(--horn-deep);
+    text-underline-offset: 0.22em;
+  }
+
+  .all__desc {
+    display: block;
+    margin-block-start: var(--s-1);
+    font-size: var(--t-meta);
+    color: var(--ink-2);
+  }
+</style>

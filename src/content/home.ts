@@ -106,6 +106,7 @@ export const HOME_EN: HomeCopy = {
       { href: '/#pilot', label: 'The free read' },
       { href: '/#reliability', label: 'Reliability' },
       { href: '/#faq', label: 'FAQ' },
+      { href: '/learn', label: 'Learn' },
     ],
     // Short enough to sit in a nav bar, and it says what happens rather than
     // asking permission for it. "Let him look" was neither.
@@ -250,7 +251,7 @@ export const HOME_EN: HomeCopy = {
       },
       {
         title: 'Learn',
-        links: [{ href: '/#faq', label: 'FAQ' }, { label: 'Guides' }, { label: 'About Diwche' }],
+        links: [{ href: '/#faq', label: 'FAQ' }, { href: '/learn', label: 'Guides' }, { label: 'About Diwche' }],
       },
       { title: 'Legal', links: [{ href: '/privacy', label: 'Privacy' }, { href: '/terms', label: 'Terms' }] },
     ],
@@ -273,6 +274,7 @@ export const HOME_FA: HomeCopy = {
       { href: '/fa/#pilot', label: 'خوانش رایگان' },
       { href: '/fa/#reliability', label: 'قابل‌اتکا بودن' },
       { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
+      { href: '/fa/learn', label: 'راهنماها' },
     ],
     cta: 'خوانش رایگان',
     theme: 'رفتن به تم روشن',
@@ -408,7 +410,7 @@ export const HOME_FA: HomeCopy = {
         title: 'یادگیری',
         links: [
           { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
-          { label: 'راهنماها' },
+          { href: '/fa/learn', label: 'راهنماها' },
           { label: 'درباره‌ی دیوچه' },
         ],
       },
@@ -436,6 +438,7 @@ export const HOME_DE: HomeCopy = {
       { href: '/de/#pilot', label: 'Die kostenlose Analyse' },
       { href: '/de/#reliability', label: 'Verlässlichkeit' },
       { href: '/de/#faq', label: 'Fragen' },
+      { href: '/de/learn', label: 'Anleitungen' },
     ],
     cta: 'Kostenlose Analyse',
     theme: 'Zum hellen Design wechseln',
@@ -571,7 +574,7 @@ export const HOME_DE: HomeCopy = {
         title: 'Lernen',
         links: [
           { href: '/de/#faq', label: 'Fragen' },
-          { label: 'Anleitungen' },
+          { href: '/de/learn', label: 'Anleitungen' },
           { label: 'Über Diwche' },
         ],
       },

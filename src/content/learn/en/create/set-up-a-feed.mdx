@@ -1,0 +1,81 @@
+---
+title: Set up a feed that posts for you
+description: Point Diwche at news sources, filter them by keyword, and decide whether posts wait for your approval.
+updated: 2026-09-04
+appPath: /rss
+keywords: ['rss', 'feed', 'keywords', 'automatic', 'schedule', 'smart', 'review', 'cta', 'pause', 'clear history', 'pipeline']
+related: ['manage/schedule-and-approve', 'page/find-more-sources']
+shots: ['rss-page']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+This is the automatic side of Diwche: it watches news feeds, keeps the articles
+that match your keywords, and posts them on a schedule.
+
+<Shot name="rss-page" label="RSS Pipeline" />
+
+## Add a feed
+
+1. **RSS** in the left rail, and pick your account.
+2. At the bottom, fill in **Feed name** and **RSS URL (https://…)**, then **+ Add
+   Feed**.
+3. Repeat for each source.
+
+## Add keywords
+
+Expand the feed. Add keywords with **+ add keyword** → **Add**. Only articles
+matching a keyword are ever considered.
+
+Each keyword chip has **two toggles**:
+
+- **AI image for this keyword** — generate a picture
+- **Use article's own photo for this keyword** — take the photograph from the
+  article
+
+The legend under them shows which is which. Use the article's own photo for news;
+generate for subjects where the source photography is poor.
+
+## Write the call to action
+
+**Default Call to Action** is appended to every auto-posted caption. **Save
+CTA**.
+
+## Set the schedule
+
+<Shot name="rss-schedule" callouts={[
+  { x: 22, y: 55, text: 'Leave this on until you trust it' },
+]} />
+
+**Posting Schedule** offers two modes:
+
+- **Manual times** — you add the times. Predictable.
+- **Smart (adaptive)** — it works out the best times from your own results.
+  **↻ Recompute Now** refreshes them.
+
+Then the checkbox that matters most:
+
+> **Require review before posting to Instagram** — saves as "Pending Review" in
+> the Activity Log instead of publishing
+
+**Leave this on until you trust it.** With it on, everything the pipeline makes
+waits for you in the Activity Log. Turn it off and posts go out by themselves.
+
+**Save Schedule**.
+
+## Run it and watch
+
+**Run now** does a pass immediately, with a live log. **Pause** stops the
+schedule and keeps everything. **Clear history** wipes the record of what has
+been posted — which also means articles it has already used can come round
+again.
+
+## Nothing gets posted twice
+
+Every article is checked against what this account has already published. That is
+the one thing you do not have to manage.
+
+## What next
+
+- [Schedule and approve](/learn/manage/schedule-and-approve/)
+- [Work the Activity Log](/learn/manage/work-the-activity-log/)

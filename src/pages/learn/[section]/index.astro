@@ -1,0 +1,16 @@
+---
+import LearnSection from '../../../components/learn/LearnSection.astro';
+import { sectionPaths } from '../../../lib/learn-paths';
+
+export const getStaticPaths = sectionPaths('en');
+const { locale, nav, section, entries, copy, articles } = Astro.props;
+---
+
+<LearnSection
+  locale={locale}
+  nav={nav}
+  section={section}
+  entries={entries}
+  copy={copy}
+  articles={articles}
+/>

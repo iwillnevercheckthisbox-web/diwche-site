@@ -1,0 +1,8 @@
+---
+import LearnAll from '../../../components/learn/LearnAll.astro';
+import { learnIndex } from '../../../lib/learn-paths';
+
+const { all, nav } = await learnIndex('de');
+---
+
+<LearnAll locale="de" nav={nav} entries={all} />

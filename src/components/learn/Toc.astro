@@ -1,0 +1,131 @@
+---
+/**
+ * On this page.
+ *
+ * Depth 2–3 only: an h4 in this guide is a control inside a panel, and listing
+ * every one of them turns the contents into a second copy of the article.
+ *
+ * Without JavaScript it is a plain list of working anchors, which is most of the
+ * value. The script only adds the highlight that says where you are.
+ */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  label: string;
+}
+
+const { headings, label } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 1 && (
+    <nav class="toc" aria-label={label}>
+      <h2 class="eyebrow toc__title">{label}</h2>
+      <ul>
+        {items.map((h) => (
+          <li class:list={['toc__item', h.depth === 3 && 'toc__item--sub']}>
+            <a href={`#${h.slug}`} data-toc={h.slug}>
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    font-size: var(--t-meta);
+    padding-block-end: var(--s-6);
+  }
+
+  .toc__title {
+    margin-block-end: var(--s-3);
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-inline-start: 1px solid var(--rule-soft);
+  }
+
+  .toc__item a {
+    display: block;
+    padding: var(--s-2) var(--s-3);
+    border-inline-start: 2px solid transparent;
+    margin-inline-start: -1px;
+    color: var(--ink-3);
+    text-decoration: none;
+    line-height: 1.4;
+    transition:
+      color var(--dur) ease,
+      border-color var(--dur) ease;
+  }
+
+  .toc__item--sub a {
+    padding-inline-start: var(--s-5);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .toc__item a:hover {
+      color: var(--ink-2);
+    }
+  }
+
+  .toc__item a[aria-current='true'] {
+    color: var(--ink);
+    border-inline-start-color: var(--horn);
+  }
+</style>
+
+<script>
+  /*
+   * Which heading is being read.
+   *
+   * The bottom margin is the trick: with a `-70%` bottom inset the observer only
+   * counts a heading as "in view" while it is in the top third of the window, so
+   * the highlight tracks what you are reading rather than flickering between two
+   * headings that happen to share the screen. The top inset clears the sticky nav
+   * for the same reason `scroll-padding` does.
+   */
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc]');
+
+  if (links.length) {
+    const navH = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue('--nav-h') || '68',
+      10
+    );
+    const byId = new Map([...links].map((a) => [a.dataset.toc!, a]));
+    const seen = new Set<string>();
+
+    const mark = () => {
+      let active: string | undefined;
+      // The last heading that has entered the band is the one being read.
+      for (const id of byId.keys()) if (seen.has(id)) active = id;
+      for (const [id, a] of byId) {
+        if (id === active) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      }
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) seen.add(e.target.id);
+          else seen.delete(e.target.id);
+        }
+        mark();
+      },
+      { rootMargin: `-${navH + 8}px 0px -70% 0px` }
+    );
+
+    for (const id of byId.keys()) {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    }
+  }
+</script>

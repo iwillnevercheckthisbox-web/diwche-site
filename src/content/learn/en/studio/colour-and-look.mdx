@@ -1,0 +1,75 @@
+---
+title: Give a clip a look
+description: Grade one clip, put a filter on it, and copy that look onto every other clip in one press.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['colour', 'color', 'grade', 'filter', 'saturation', 'temperature', 'grain', 'vignette', 'black and white', 'green screen', 'chroma key', 'mask']
+related: ['studio/move-and-scale-a-clip', 'studio/export-the-video']
+shots: ['ve-inspector-video']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Select a clip. Everything here is on the **🎬 Video** tab of the Inspector,
+below the transform controls.
+
+<Shot name="ve-colour" label="Colour and filters" />
+
+## Grade it
+
+The **Color** block, in the order colourists use them:
+
+- **Lift** — the darks.
+- **Gamma** — the midtones, which is where faces live.
+- **Gain** — the brights.
+- **Saturation** and **Hue**.
+
+Small moves. A ±10 change on Gamma is already visible.
+
+## Or just use a filter
+
+The **Filter** strip has two dozen looks — Mono, Warm, Cool, Vivid, Fade,
+Clarendon, Moon, Noir, Cinema, Golden hour and the rest. Click one, then set
+**Intensity** to dial it back.
+
+**Adjust** underneath adds **Temperature**, **Tint**, **Vignette** and **Grain**.
+
+There are also two one-press buttons: **◐ Black & white** and **🎨 Restore
+colour**.
+
+## Make every clip match
+
+This is the useful part.
+
+1. Grade one clip until it looks right.
+2. **Copy look**.
+3. **Apply look to all clips** — or select another clip and **Paste look**.
+
+**Reset** puts a clip back to untouched.
+
+## Green screen
+
+The **Key & mask** block:
+
+1. Turn on **Chroma key (green screen)**.
+2. Press **Green** or **Blue**, or pick the exact colour with the swatch.
+3. Raise **Tolerance** until the background disappears.
+4. Raise **Softness** to stop the edge looking cut out with scissors.
+5. **Spill removal** takes the green reflected onto hair and shoulders.
+
+## Mask a shape
+
+**Mask** gives you **Rectangle** or **Ellipse**, with **Inset**, **Corner
+radius**, **Feather** and **Invert**. Useful for a spotlight, or for hiding a
+corner of the frame.
+
+## One thing to know before you export
+
+Filter, temperature, tint, vignette and grain are drawn **in your browser**. The
+editor says so under the strip. Export from the editor and they are in the file;
+send the project to the server to render and they are not. If a look matters,
+export it here.
+
+## What next
+
+- [Export the video](/learn/studio/export-the-video/)

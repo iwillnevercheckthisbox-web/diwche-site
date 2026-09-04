@@ -8,6 +8,22 @@ export default defineConfig({
   site: 'https://diwche.com',
   integrations: [mdx()],
   build: { format: 'directory' },
+
+  markdown: {
+    /*
+     * Both themes are emitted at once as CSS variables, and neither is the
+     * default — `learn.css` picks one from `[data-theme='light']`. Shiki's own
+     * dual-theme switch keys on `prefers-color-scheme`, which is wrong here:
+     * this site's theme is an attribute stamped before first paint, and a
+     * reader who chose light on a dark OS would get light prose around dark
+     * code.
+     */
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      defaultColor: false,
+      wrap: false,
+    },
+  },
   devToolbar: { enabled: false },
 
   vite: {

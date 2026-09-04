@@ -1,0 +1,85 @@
+---
+title: Work the Activity Log
+description: Approve, edit, schedule or reject everything waiting to go out, and see what already went.
+updated: 2026-09-04
+appPath: /activity
+keywords: ['activity log', 'approve', 'review', 'pending', 'schedule', 'reject', 'retry', 'resume', 'failed', 'history', 'preview']
+related: ['manage/schedule-and-approve', 'fix/my-post-failed']
+shots: ['activity-log']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Everything Diwche makes ends up here, and everything that publishes leaves from
+here.
+
+<Shot name="activity-log" callouts={[
+  { x: 12, y: 12, text: 'Filter by account, status and date' },
+  { x: 55, y: 42, text: 'What state each post is in' },
+]} />
+
+## Find something
+
+Four filters across the top: **Account** (or *All Accounts*), **Status**, and a
+**from** and **to** date.
+
+The statuses: **Pending Review**, **In Progress**, **Posted**, **Failed**,
+**Skipped**, **Rejected**.
+
+## Look at it first
+
+Click the thumbnail. A lightbox opens — video plays, carousels get **‹** and
+**›** with a counter, and the caption is underneath. Click the background to
+close.
+
+Do this before approving. It is the only place you see the post as a reader will.
+
+## Approve a pending post
+
+The button names what it will do: **✔ Approve & Post**, **✔ Approve & Post
+Carousel**, or **✔ Approve & Post Reel**. It asks to confirm, then publishes
+immediately.
+
+## Change it first
+
+On a pending row, before you approve:
+
+| Button | What it does |
+| --- | --- |
+| **✎ Title/Caption** | Edit both. Saving **redraws the banner** with the new title |
+| **🖌 Edit image** | Retouch the picture in the photo editor |
+| **🖼 Cover** | Pick the Reels-tab cover. Reads *Cover set* afterwards |
+| **✂ Final touch** | Re-cut a YouTube-pool reel in the editor |
+| **⬇ Download** | Take the file without posting |
+
+## Schedule instead of posting
+
+Pick a date and time in the box, then **📅 Schedule**. The row then shows **⏰**
+and the time, and publishes itself. **📅 Reschedule** changes it; **✕ Cancel
+schedule** puts it back to manual.
+
+## Say no
+
+**✕ Reject** discards it. It will not be re-queued.
+
+## When something failed
+
+A failed row shows **⚠** and the reason, plus what the automatic retry is doing —
+*Auto-retry in ~5m (attempt 2)*, or *Auto-retry stopped after N attempts*.
+
+**↻ Retry** tries again now. **✕ Remove** throws the record away.
+
+## Half-finished work
+
+**In Progress** rows are drafts you left in a studio. **▶ Resume** takes you back
+to the right one — Reels Studio, Article Carousel or Data Infographic — exactly
+where you stopped. **✕ Discard** throws it away.
+
+## Video projects
+
+A second table at the bottom, **Video Editor Projects**, lists your editor
+projects with where they are saved and what is in them. **▶ Resume** opens one.
+
+## What next
+
+- [Schedule and approve](/learn/manage/schedule-and-approve/)

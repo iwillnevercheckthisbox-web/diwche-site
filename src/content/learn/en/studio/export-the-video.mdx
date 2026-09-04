@@ -1,0 +1,56 @@
+---
+title: Export the video
+description: Render the finished video, then download it or post it as a Reel or a Story.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['export', 'render', 'download', 'mp4', 'post', 'reel', 'story', 'quality', 'frame rate', 'publish']
+related: ['studio/set-up-the-project', 'manage/work-the-activity-log']
+shots: ['ve-export']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+## Export it
+
+1. Press **▶ Export**, top right of the toolbar. A sheet opens below the editor.
+2. Set the three things it asks for.
+3. Press **▶ Start export** and leave the page alone.
+
+<Shot name="ve-export" callouts={[
+  { x: 20, y: 24, text: 'Same four sizes as the project' },
+  { x: 20, y: 44, text: '30 unless you shot at 60' },
+  { x: 20, y: 62, text: 'High is the sensible default' },
+]} />
+
+| Setting | What to pick |
+| --- | --- |
+| **Size** | The same one the project is composed for |
+| **Frame rate** | **30 fps**, unless you filmed at 60 and want the smoothness |
+| **Quality** | **High**. **Maximum** is for footage you will edit again elsewhere |
+
+If you set an **In → Out** range on the timeline, a checkbox offers to export
+only that stretch.
+
+**If you export at a different size from the project**, a warning says so — every
+clip is re-fitted to the new frame, which is not the framing you approved. Change
+the project size in the top bar instead, look at it, then export.
+
+A log runs while it works, with **✕ Cancel export** beside it.
+
+## Then what
+
+When it finishes, the video appears with the next step attached:
+
+- **📤 Post as Reel** or **📤 Post as Story** — with a caption box, **✨
+  Caption** and **# Hashtags** to write one for you, and a checkbox to use the
+  playhead's frame as the Reel cover.
+- **⬇** download the MP4.
+- **🎬 Use in Reel** or **✓ Use this video for the scene**, if you came here
+  from Reels Studio or D1.
+
+Posting sends it to the **Activity Log** for approval, the same as everything
+else.
+
+## What next
+
+- [Work the Activity Log](/learn/manage/work-the-activity-log/)

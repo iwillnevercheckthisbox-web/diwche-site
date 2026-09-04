@@ -161,4 +161,16 @@ server {
         expires 1h;
         add_header Cache-Control "public, must-revalidate";
     }
+
+    # The guide's search indexes: /learn-index.en.json and its two siblings.
+    #
+    # They sit at the root with this name precisely so one prefix match covers
+    # all three — under /learn/ they would have been three separate paths and
+    # forced a regex location. Not content-hashed (the client fetches a fixed
+    # URL), so they revalidate rather than pin.
+    location /learn-index. {
+        include conf.d/security-headers.conf;
+        expires 1h;
+        add_header Cache-Control "public, must-revalidate";
+    }
 }

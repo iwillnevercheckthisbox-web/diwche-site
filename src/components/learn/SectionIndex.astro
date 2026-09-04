@@ -1,0 +1,39 @@
+---
+/**
+ * A grid of articles — the body of a section page and of the landing page.
+ */
+import ArticleCard from './ArticleCard.astro';
+import type { NavArticle } from '../../lib/learn';
+
+interface Props {
+  articles: NavArticle[];
+  /** Descriptions, keyed by slug — the index has them, the nav does not. */
+  descriptions: Record<string, string>;
+  englishOnly: string;
+  eyebrows?: Record<string, string>;
+}
+
+const { articles, descriptions, englishOnly, eyebrows = {} } = Astro.props;
+---
+
+<div class="sindex">
+  {
+    articles.map((a) => (
+      <ArticleCard
+        title={a.title}
+        description={descriptions[a.slug] ?? ''}
+        href={a.href}
+        eyebrow={eyebrows[a.slug]}
+        english={a.translated ? false : englishOnly}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .sindex {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: var(--s-4);
+  }
+</style>

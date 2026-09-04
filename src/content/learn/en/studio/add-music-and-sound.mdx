@@ -1,0 +1,70 @@
+---
+title: Add music and sound
+description: Put a track under the video, cut the picture to its beats, and duck it under speech.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['music', 'audio', 'sound effect', 'sfx', 'volume', 'fade', 'ducking', 'beats', 'normalise', 'normalize', 'pan', 'echo', 'reverb']
+related: ['studio/work-the-tracks', 'studio/add-text-on-screen']
+shots: ['ve-inspector-audio']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Sound lives on three lanes: **A1** music, **A2** sound effects and voice-over,
+**A3** the clips' own audio.
+
+<Shot name="ve-inspector-audio" callouts={[
+  { x: 44, y: 12, text: 'The Audio tab' },
+]} />
+
+## Put music under it
+
+1. Open the **🎵 Audio** tab of the Inspector. The **Audio Track** card is
+   always there, whether or not anything is selected.
+2. Choose from **Pick music…** and press **+ Add**, or **🎵 Upload** your own
+   (MP3, WAV or M4A).
+3. It lands on **A1**. Drag it to where it should start; drag its ends to trim.
+
+**🔊 SFX** beside it opens the effects — camera shutter, whoosh, hits, ding,
+clicks, UI, riser. Those go on **A2**.
+
+## Set the level
+
+Select the music item. In the Inspector:
+
+- **Vol** for the whole item.
+- **Fade In** and **Fade Out**, with **Linear** or **Exponential**. Exponential
+  sounds more natural on a music fade.
+- **Volume automation** — the same **◆** keyframe widget as the picture, so you
+  can drop the level under one line and bring it back after.
+
+## Duck it under speech
+
+Instead of automating by hand, turn on **Ducking**:
+
+> Lower this under speech (voice-over and the video's own sound)
+
+Then set **Amount** (how far it drops), **Sensitivity** (how easily speech
+triggers it) and **Fade** (how quickly it moves). This is the single biggest
+improvement to a video where someone is talking over music.
+
+## Cut to the beat
+
+In **Level & beats**:
+
+1. **⚖ Normalise** — brings the track to a sensible level.
+2. **♪ Detect beats** — marks them along the item, and timeline drags snap to
+   them from then on.
+3. **✂ Cut clips to beats** — chops Video 1 at the beats.
+
+## Shape it
+
+**Mix** sets the **Lane**, **Pan**, and **Mute** / **Solo** / **Loop**.
+
+**Effects** adds up to seven: **📞 Phone / Radio**, **🔁 Echo**, **🏛 Reverb**,
+**🎛 Equalizer**, **📣 Megaphone**, **🌊 Underwater**, **🤖 Robot**. Each gets
+its own parameters, and **▲ ▼** reorder them — order changes the result.
+
+## What next
+
+- [Add text on screen](/learn/studio/add-text-on-screen/)

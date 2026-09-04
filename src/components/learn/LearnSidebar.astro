@@ -1,0 +1,167 @@
+---
+/**
+ * The section tree.
+ *
+ * A `<details>` per section rather than a flat list of everything: nine sections
+ * of eight articles is seventy links, and a rail that long stops being
+ * navigation and becomes a wall. The section holding the current page is open;
+ * the rest are one click away.
+ *
+ * No JavaScript, for the reason `LangSwitch.astro` gives about itself —
+ * `<details>` opens on its own, before hydration, and is keyboard-operable
+ * without anything being wired up.
+ *
+ * Untranslated articles stay listed and are marked, rather than being hidden.
+ * Hiding them would tell a Persian reader the guide is three articles long.
+ */
+import type { NavSection } from '../../lib/learn';
+import type { Locale } from '../../lib/direction';
+
+interface Props {
+  nav: NavSection[];
+  locale: Locale;
+  /** `start/what-diwche-does`, or the bare section on a section index. */
+  current?: string;
+  /** The word for the rail, in this page's language. */
+  label: string;
+  /** What an English-only row is called here. */
+  englishOnly: string;
+}
+
+const { nav, current = '', label, englishOnly } = Astro.props;
+const currentSection = current.split('/')[0];
+---
+
+<nav class="rail" aria-label={label}>
+  {
+    nav.map((s) => (
+      <details class="rail__group" open={s.section === currentSection}>
+        <summary class="rail__summary">
+          <span>{s.title}</span>
+          <svg class="rail__caret" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+
+        <ul class="rail__list">
+          {s.articles.map((a) => (
+            <li>
+              <a
+                class="rail__link"
+                href={a.href}
+                aria-current={a.slug === current ? 'page' : undefined}
+                lang={a.translated ? undefined : 'en'}
+                dir={a.translated ? undefined : 'ltr'}
+              >
+                {a.title}
+                {!a.translated && <span class="rail__en" title={englishOnly}>EN</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    ))
+  }
+</nav>
+
+<style>
+  .rail {
+    font-size: var(--t-meta);
+    padding-block-end: var(--s-6);
+  }
+
+  .rail__group + .rail__group {
+    margin-block-start: var(--s-1);
+  }
+
+  .rail__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-2);
+    color: var(--ink);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--dur) ease;
+  }
+
+  .rail__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .rail__summary:hover {
+      background-color: var(--paper-4);
+    }
+  }
+
+  .rail__caret {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .rail__group[open] .rail__caret {
+    transform: rotate(180deg);
+  }
+
+  .rail__list {
+    list-style: none;
+    margin: var(--s-1) 0 var(--s-3);
+    padding: 0;
+    /* The hairline the active marker sits on. Logical, so it is on the reader's
+       starting edge in both directions. */
+    margin-inline-start: var(--s-4);
+    border-inline-start: 1px solid var(--rule-soft);
+  }
+
+  .rail__link {
+    display: block;
+    padding: var(--s-2) var(--s-3);
+    /* The 2px marker replaces this border when the row is current, so the text
+       never moves between states. */
+    border-inline-start: 2px solid transparent;
+    margin-inline-start: -1px;
+    color: var(--ink-2);
+    text-decoration: none;
+    line-height: 1.45;
+    transition:
+      color var(--dur) ease,
+      border-color var(--dur) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .rail__link:hover {
+      color: var(--ink);
+      border-inline-start-color: var(--horn-deep);
+    }
+  }
+
+  .rail__link[aria-current='page'] {
+    color: var(--ink);
+    /* Champagne as a mark, not a fill — DNA §2. */
+    border-inline-start-color: var(--horn);
+  }
+
+  /* Not --alarm and not a colour that reads as broken: an untranslated article
+     is a gap, not a failure. */
+  .rail__en {
+    margin-inline-start: var(--s-2);
+    padding: 0 4px;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-1);
+    color: var(--ink-3);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    vertical-align: 1px;
+    unicode-bidi: isolate;
+  }
+</style>

@@ -1,0 +1,20 @@
+# Compose overlay for the capture stack — used with `docker compose -f … -f …`.
+#
+# The e2e suite's own stack is deliberately credential-free: it never talks to
+# Meta, so `app.meta.app-id` and `app.instagram.app-id` are blank and every
+# Instagram connection screen renders "Connecting isn't set up on this server
+# yet". That is correct for the tests and useless for the guide, where the whole
+# point of the article is the card the reader will actually see.
+#
+# These are not credentials. They are the strings "demo", present only so
+# `isConfigured()` returns true and the card renders its real states. Nothing in
+# a capture run ever calls Meta: the connected state is seeded straight into the
+# database by shots-seed.sql, exactly as a real connection would leave it.
+services:
+  backend:
+    environment:
+      APP_META_APP_ID: demo-facebook-app
+      APP_META_APP_SECRET: demo-facebook-secret
+      APP_INSTAGRAM_APP_ID: demo-instagram-app
+      APP_INSTAGRAM_APP_SECRET: demo-instagram-secret
+      APP_INSTAGRAM_WEBHOOK_VERIFY_TOKEN: demo-verify

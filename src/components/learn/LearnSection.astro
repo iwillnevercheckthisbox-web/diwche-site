@@ -1,0 +1,94 @@
+---
+/**
+ * A section index: what this part of the guide covers, and every article in it.
+ */
+import Learn from '../../layouts/Learn.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import SectionIndex from './SectionIndex.astro';
+import { LEARN_UI } from '../../content/learn/ui';
+import { APP_NAV_LABEL, type Section } from '../../content/learn/spine';
+import { learnHome, type Entry, type NavArticle, type NavSection } from '../../lib/learn';
+import { DEFAULT_LOCALE, type Locale } from '../../lib/direction';
+
+interface Props {
+  locale: Locale;
+  nav: NavSection[];
+  section: Section;
+  entries: Entry[];
+  copy: { title: string; blurb: string };
+  articles: NavArticle[];
+}
+
+const { locale, nav, section, entries, copy, articles } = Astro.props;
+const ui = LEARN_UI[locale];
+
+/**
+ * Descriptions come from whichever file the card actually links to, so an
+ * English-only row shows its English sentence rather than a blank line.
+ */
+const descriptions = Object.fromEntries(
+  articles.map((a) => {
+    const e =
+      entries.find((x) => x.id === `${locale}/${a.slug}`) ??
+      entries.find((x) => x.id === `${DEFAULT_LOCALE}/${a.slug}`);
+    return [a.slug, e?.data.description ?? ''];
+  })
+);
+
+const appLabel = APP_NAV_LABEL[section];
+---
+
+<Learn
+  title={`${copy.title} — ${ui.landingTitle}`}
+  description={copy.blurb}
+  locale={locale}
+  nav={nav}
+  current={section}
+>
+  <Breadcrumbs
+    locale={locale}
+    label={ui.crumbs}
+    trail={[{ title: ui.name, href: learnHome(locale) }, { title: copy.title }]}
+  />
+
+  <header class="sec__head">
+    <h1 class="sec__title">{copy.title}</h1>
+    <p class="sec__lead">{copy.blurb}</p>
+    {
+      /* Where this lives in the app. Named so a reader can go from the guide to
+         the screen without translating a section name into a nav item. */
+      appLabel && <p class="sec__where">In Diwche: <strong>{appLabel}</strong></p>
+    }
+  </header>
+
+  <SectionIndex articles={articles} descriptions={descriptions} englishOnly={ui.englishOnly} />
+</Learn>
+
+<style>
+  .sec__head {
+    margin-block: var(--s-4) var(--s-7);
+  }
+
+  .sec__title {
+    font-size: var(--t-subhead);
+  }
+
+  .sec__lead {
+    margin-block-start: var(--s-3);
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  .sec__where {
+    margin-block-start: var(--s-3);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+
+  .sec__where strong {
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+</style>

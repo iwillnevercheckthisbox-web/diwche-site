@@ -1,0 +1,64 @@
+---
+title: Move, scale and animate a clip
+description: Reframe a shot inside the video, and make it drift or push in over time with keyframes.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['transform', 'scale', 'position', 'rotate', 'crop', 'keyframe', 'animate', 'reframe', 'flip', 'opacity', 'speed']
+related: ['studio/colour-and-look', 'studio/add-a-zoom-or-pan']
+shots: ['ve-inspector-video']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Select a clip on Video 1 or Video 2. The Inspector opens on **🎬 Video**, and
+everything here applies to that one clip.
+
+<Shot name="ve-inspector-video" callouts={[
+  { x: 20, y: 14, text: 'Where the clip starts and ends' },
+  { x: 40, y: 36, text: 'Reframe it here' },
+]} />
+
+## Reframe it
+
+The **Transform** block:
+
+- **Scale** — bigger than 100% crops in, smaller pulls back.
+- **Link X/Y scale** — off, and you can squash it.
+- **Position X / Y** — slide the picture inside the frame.
+- **Rotation**, **Anchor X / Y** — the point it scales and turns around.
+- **⇋ Flip H** and **⇵ Flip V**.
+- **Fit** — *Fit inside* letterboxes, *Fill* crops to the edges.
+
+**Crop** below it takes off the left, right, top or bottom without moving what
+is left.
+
+## Make it move
+
+Every value with a **◆** beside it can change over time.
+
+1. Put the playhead where the movement should **start**.
+2. Set the value — say Scale 100.
+3. Click the **◆**. It fills in: that value is now pinned to that moment.
+4. Move the playhead to where it should **end**.
+5. Change the value — Scale 115. A keyframe is added automatically.
+
+Play it back and the clip pushes in over that stretch.
+
+The marker tells you the state: **◆** a keyframe here · **◇** animated, but not
+at this frame · **·** not animated. **◀ ▶** jump between keyframes. **Remove all
+keyframes** puts it back to a fixed value.
+
+Everything in the Transform block reads *at the playhead's frame*, so if a value
+looks wrong, check where the playhead is before you change it.
+
+## Speed, sound and opacity
+
+- **Speed** — under 100% slows it down, over speeds it up.
+- **Opacity** — mostly useful on a Video 2 overlay.
+- **Clip audio** — **Fade in**, **Fade out**, **Mute** for this clip's own sound.
+- **🎧 Detach audio** moves the clip's sound onto an audio lane so you can cut
+  it separately from the picture.
+
+## What next
+
+- [Colour and look](/learn/studio/colour-and-look/)

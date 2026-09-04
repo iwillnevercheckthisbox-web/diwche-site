@@ -104,8 +104,9 @@
   --width: 1120px;
   --width-prose: 68ch;
   /* The sticky nav's own height, so anything that has to clear it — an anchor
-     jump, a sticky sidebar — can say so instead of guessing. */
-  --nav-h: 68px;
+     jump, a sticky sidebar — can say so instead of guessing. Measured, not
+     estimated: 72.5px at every width where the bar fits on one line. */
+  --nav-h: 73px;
 
   /* ---- Shape: max 10px radius, hairline rules, shadows only under frames -- */
   --r-1: 4px;
@@ -125,6 +126,36 @@
   --dur-fast: 160ms;
   --dur: 220ms;
   --dur-slow: 420ms;
+}
+
+/*
+ * One width where the nav still wraps to two rows, and --nav-h has to follow or
+ * every anchor jump lands under it.
+ *
+ * The other two overrides that used to live here are gone, and so is the reason
+ * for them. Brand + links + language + theme + CTA was more than the bar could
+ * hold, and there was no menu to hand the links to — so below 760px the links
+ * were simply hidden and `Features`, the free read, `Reliability`, the FAQ and
+ * the guides were unreachable on a phone. There is a menu now (`Nav.astro`),
+ * the phone bar is one row again, and the 119px override it needed at 420px was
+ * describing a layout that no longer exists.
+ *
+ * This one stays as the **no-JS fallback**. `Nav.astro` measures the bar and
+ * writes the real height into this token as soon as its script runs, so with
+ * JavaScript this rule is overwritten within a frame and only its generosity
+ * matters.
+ *
+ * Generous on purpose, and it is why the bound is 1060px rather than the 845px
+ * the English bar actually needs: where the bar wraps depends on how long the
+ * words are, and the same nav comes back to one row at 849px in English, 946px
+ * in Persian and 1052px in German. A bound tuned to English would be wrong for
+ * the other two — and wrong in the direction that hides a heading behind the
+ * bar, rather than the one that leaves a little too much air above it.
+ */
+@media (max-width: 1060px) and (min-width: 761px) {
+  :root {
+    --nav-h: 96px;
+  }
 }
 
 /* ---- The light room -------------------------------------------------------

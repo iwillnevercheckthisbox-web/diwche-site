@@ -29,6 +29,21 @@ interface Props {
    * readers who were only ever going to read.
    */
   turnstile?: boolean;
+  /**
+   * Where this same page lives in the other languages.
+   *
+   * Only the locales that actually have it. The guide is translated article by
+   * article, so a blanket "every page exists in every language" alternate — which
+   * is what a sitemap integration would emit — would advertise URLs that 404.
+   */
+  alternates?: { locale: Locale; href: string }[];
+  /**
+   * The social card image, as an absolute path.
+   *
+   * The site has declared `summary_large_image` since it launched and never set
+   * one, so every share has been a bare text card.
+   */
+  image?: string;
 }
 
 const {
@@ -37,6 +52,8 @@ const {
   locale = DEFAULT_LOCALE,
   copy = HOME_EN,
   turnstile = false,
+  alternates = [],
+  image,
 } = Astro.props;
 
 // Nothing third-party is loaded without a key, so an unconfigured build is the page
@@ -55,6 +72,20 @@ const dir = dirFor(locale);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {
+      alternates.map((a) => (
+        <link rel="alternate" hreflang={a.locale} href={new URL(a.href, Astro.site)} />
+      ))
+    }
+    {
+      alternates.length > 0 && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(alternates.find((a) => a.locale === DEFAULT_LOCALE)?.href ?? Astro.url.pathname, Astro.site)}
+        />
+      )
+    }
     <!-- Two entries, so the browser chrome matches the room the reader lands in.
          The toggle rewrites these when it switches. -->
     <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
@@ -77,6 +108,7 @@ const dir = dirFor(locale);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
+    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <!-- The drawn horns, for the places that will not take an SVG. -->

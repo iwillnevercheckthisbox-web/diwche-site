@@ -1,0 +1,74 @@
+---
+title: Trim a clip
+description: Shorten a clip from either end, and choose whether everything after it moves up or a gap is left behind.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['trim', 'cut', 'shorten', 'ripple', 'split', 'gap', 'select tool', 'trim tool', 'snapping', 'delete']
+related: ['studio/change-a-transition', 'studio/work-the-tracks']
+shots: ['ve-toolbar', 've-trim-tool', 've-timeline']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Trimming is dragging the end of a clip. The only thing you have to decide first
+is what happens to everything after it.
+
+## The two tools
+
+<Shot name="ve-toolbar" callouts={[
+  { x: 9, y: 50, text: 'Edges stop at the neighbour' },
+  { x: 22, y: 50, text: 'Edges push everything along' },
+]} />
+
+**↖ Select** (key **A**) — dragging an edge stops at the next clip. Shorten a
+clip and a **gap** opens where it was. Nothing else moves.
+
+**⇥ Trim** (key **T**) — dragging an edge moves everything after it. Shorten a
+clip and the rest of the video slides up to meet it. This is a *ripple*.
+
+Use Select when you are fine-tuning one shot and want the timing of everything
+else left alone. Use Trim when you are tightening the whole thing.
+
+## Trim it
+
+1. Hover the left or right end of a clip. A handle appears.
+2. Drag it inward to shorten, outward to lengthen — as far as the original
+   footage goes, and no further. The handle stops and marks itself when you hit
+   that limit.
+3. Let go.
+
+<Shot name="ve-timeline" callouts={[
+  { x: 26, y: 68, text: 'Drag either end of a clip' },
+  { x: 50, y: 68, text: 'The diamond is the cut between two clips' },
+]} />
+
+## Cut a clip in two
+
+Put the playhead where you want the cut and press **S**, or select the clip and
+press **✂ Split** in the Inspector. You now have two clips and a new cut between
+them.
+
+## Remove a clip
+
+- **Delete** takes the clip out and leaves a gap.
+- **Shift + Delete** takes it out and closes the gap.
+- **⇤ Close gaps** under the timeline removes every gap on the selected clip's
+  track at once.
+
+## Snapping
+
+Edges snap to the playhead, to other clips, to markers and to your In and Out
+points, and a vertical line shows what they caught on. **Hold Alt** (Option on a
+Mac) while dragging to ignore snapping entirely.
+
+## Ripple, globally
+
+**⇄ Ripple on** in the top bar is a separate switch. With it on, anything that
+makes Video 1 longer or shorter — a Trim-tool drag, an insert, a ripple delete —
+moves the other tracks with it, so your music and titles keep their place
+against the picture. Turn it off when you want the other tracks to stay put.
+
+## What next
+
+- [Change the transition between two clips](/learn/studio/change-a-transition/)
+- [Keyboard shortcuts](/learn/studio/keyboard-shortcuts/)

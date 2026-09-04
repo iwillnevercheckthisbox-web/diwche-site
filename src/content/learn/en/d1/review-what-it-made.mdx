@@ -1,0 +1,98 @@
+---
+title: Review what D1 made
+description: Check the voice, the captions and the cuts, change your mind about a clip, and re-cut.
+updated: 2026-09-04
+appPath: /d1
+keywords: ['review', 'd1', 'voice', 'subtitles', 'fix the words', 'recut', 'took out', 'clips', 'approve', 'caption']
+related: ['d1/what-happens-while-it-works', 'studio/open-the-editor']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+The review screen is the video on the left and a column of cards on the right.
+Work down the cards.
+
+The header tells you what it did: **N seconds of recording became M**, plus how
+many bits were removed.
+
+<Shot name="d1-ask" label="Where it started" />
+
+## The voice
+
+Three choices: **Yours**, **Write me a script**, **No voice**.
+
+*Yours* keeps what you said. *No voice* strips it and lets the pictures carry it.
+*Write me a script* writes narration that fits what is on screen, then reads it —
+choose **What to say** and **Read by**, and press **Read it for me**.
+
+If nobody spoke in the footage, it says so.
+
+## Subtitles
+
+**On** or **Off**, and a **Language**.
+
+**Fix the words** opens a fold with one line per caption and a timecode. Correct
+anything misheard and press **Fix the captions** — it only lights up once you
+have changed something.
+
+## What we took out
+
+Every removed piece, with a reason: **pause**, **filler**, **said again**,
+**restarted**, or **for length**.
+
+Read this. It is the fastest way to see whether it cut something you wanted —
+and if it did, the fix is to open it in the editor and put it back.
+
+If your take was already tight it says *Nothing — your take was already tight.*
+
+## Things to know
+
+Decisions it had to make on your behalf. Only appears when there were any, and
+worth a look.
+
+## What we used
+
+Only on the footage door: every clip you gave it and what it became — **you
+talking**, **cutaway**, **on screen** or **not used** — with the reason.
+
+## What D1 heard and saw
+
+The card that lets you argue with it.
+
+**Show it** opens one block per clip: what it heard, a description of what the
+picture looked like, and a dropdown for the clip's job — **you talking** /
+**something to look at** / **leave it out**.
+
+Two things you can change here:
+
+- **The transcript.** Fix a misheard word. Keep **one word per word** so each
+  keeps its timing — it warns you if the count no longer matches.
+- **The job.** Promote a clip it skipped, or demote one it leaned on.
+
+On the footage door you can also set the **First line on screen** and the
+**Closing line**.
+
+Then:
+
+- **Re-cut with these changes** — only enabled once something has changed
+- **Cut it again as it is** — a fresh cut from the same material
+
+A re-cut takes about as long as a render. **Nothing is listened to again**, so it
+is cheap to try.
+
+There is also a checkbox to have the reader look at the pile again with your
+corrected words — one model call, worth it when you fixed a name that appears
+throughout.
+
+## Happy with it?
+
+Write a **Caption**, then:
+
+- **Use this video** — into the Activity Log for approval, like everything else
+- **Open in the editor** — the same edit, with every cut, caption and card as a
+  normal layer you can change
+
+## What next
+
+- [Work the Activity Log](/learn/manage/work-the-activity-log/)
+- [Open the video editor](/learn/studio/open-the-editor/)

@@ -1,0 +1,20 @@
+---
+/**
+ * An h4 from MDX, with a link to itself.
+ *
+ * Astro already gives every markdown heading an `id`, so the override receives
+ * one as a prop and there is no need for `rehype-slug` or
+ * `rehype-autolink-headings` — two dependencies avoided by using the props that
+ * are already there. The mark is hidden until hover or focus; `learn.css` owns
+ * that, because it is a prose rule rather than a component rule.
+ */
+interface Props {
+  id?: string;
+}
+const { id } = Astro.props;
+---
+
+<h4 id={id}>
+  <slot />
+  {id && <a class="anchor" href={`#${id}`} aria-label="Link to this section">#</a>}
+</h4>

@@ -1,0 +1,58 @@
+---
+title: Transcribe a video
+description: Turn speech into captions in Subtitle Studio, from any video or audio file on your computer.
+updated: 2026-09-04
+appPath: /subtitles
+keywords: ['subtitle', 'caption', 'transcribe', 'whisper', 'speech to text', 'srt', 'burn in', 'translate']
+related: ['subtitles/fix-the-words', 'subtitles/style-the-captions']
+shots: ['subs-studio']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Subtitle Studio takes a file, listens to it, and gives you captions you can edit,
+style and burn in. It works on any video or audio file — it does not have to be
+something you made in Diwche.
+
+<Shot name="subs-studio" callouts={[
+  { x: 25, y: 30, text: 'Choose the file' },
+  { x: 25, y: 50, text: 'Tell it what to expect' },
+]} />
+
+## Do it
+
+1. Open **Subtitles** in the left rail, under Library.
+2. Under **Video / audio file**, choose your file.
+3. Set the Whisper options below it (next section).
+4. Press **Transcribe** and wait. A panel shows what it is doing.
+
+When it finishes you land in the two-column studio: the video with live captions
+on the left, the controls on the right.
+
+## The options that matter
+
+<Shot name="subs-whisper" label="Whisper Options" />
+
+| Option | What to set |
+| --- | --- |
+| **Task** | *Transcribe* keeps the spoken language. *Translate to English* gives you English captions over any language |
+| **Language** | Leave on **Auto-detect** unless it guesses wrong, then name it |
+| **Vocabulary hint** | Names, places and jargon it will otherwise mangle. Worth filling in |
+| **Voice activity filter** | Leave on. Skips silence |
+| **Word-level timestamps** | Leave on. Required for karaoke and word-by-word styles |
+
+The **Vocabulary hint** is the one people skip and then re-do the whole
+transcript by hand. If your video says *Rijksmuseum*, *ultramarine* and
+*Vermeer*, type those three words in.
+
+## A note on the backend
+
+A chip near the top reads **● Mac**, **● NAS** or **○ Unavailable** — which
+machine is doing the listening. If it says CPU, it will be slower and less
+accurate. If it says transcription is turned off, an administrator has to switch
+it on.
+
+## What next
+
+- [Fix the words](/learn/subtitles/fix-the-words/)
+- [Style the captions](/learn/subtitles/style-the-captions/)

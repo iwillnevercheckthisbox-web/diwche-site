@@ -1,0 +1,325 @@
+/*
+ * The guide: layout, and the prose styles for MDX output.
+ *
+ * Everything else on this site keeps its CSS in a scoped `<style>` beside its
+ * component, and that is still the right default. It cannot work here. MDX
+ * output is not authored inside a component, so Astro's scoping never reaches
+ * it — styling it from a scoped block would mean `:global()` on every single
+ * selector, which is a stylesheet pretending to be scoped. One file under one
+ * class is the honest version, and it loads once for the whole section.
+ *
+ * Loaded only by Learn.astro, so the marketing pages pay nothing for it.
+ *
+ * The DNA rules this file has to keep, in one place so a reviewer can run them:
+ * radius never above --r-3 and no pill anywhere; headings stay weight 400;
+ * transitions name their properties and never say `all`; every hover sits inside
+ * `(hover: hover) and (pointer: fine)`; spacing comes from --s-*; --alarm appears
+ * only on a warning; and every inset is logical, because half of this section is
+ * going to be read right to left.
+ */
+
+/* ---- Layout -------------------------------------------------------------- */
+
+.learn {
+  display: grid;
+  /* Sidebar · prose · contents. Wider than --width (1120px): three columns and a
+     68ch measure do not fit inside the marketing width, and squeezing the prose
+     to make them is the wrong trade. */
+  grid-template-columns: 264px minmax(0, 1fr) 232px;
+  gap: var(--s-7);
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: var(--s-5);
+  padding-block: var(--s-6) var(--s-9);
+  align-items: start;
+}
+
+/*
+ * Sidebar and contents are grid columns, not floats or absolute boxes, which is
+ * the entire reason this needs no RTL code: a grid lays its columns out along
+ * the inline axis, so `dir="rtl"` puts the sidebar on the right by itself.
+ */
+.learn__rail,
+.learn__toc {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--s-5));
+  max-height: calc(100vh - var(--nav-h) - var(--s-7));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Room for the scrollbar so hovering the rail does not shift its text. */
+  scrollbar-width: thin;
+}
+
+.learn__body {
+  min-width: 0;
+}
+
+/* The search trigger sits under the rail's own title, above the tree. */
+.learn__rail .lsearch--field {
+  margin-block: var(--s-3) var(--s-4);
+}
+
+/*
+ * The measure lives on the text, not on the column.
+ *
+ * 72ch rather than the site's 68ch, because this prose carries step lists and
+ * tables and a measure tuned for uninterrupted paragraphs squeezes them. But a
+ * screenshot is not text: constraining the column meant every capture was shown
+ * at 656px no matter how much detail was in it, and a wide panel crop was
+ * illegible. Figures and tables get the whole column instead.
+ */
+.learn__body > *,
+.prose > * {
+  max-width: 72ch;
+}
+
+.learn__body > figure,
+.prose > figure,
+.prose > .table-scroll {
+  max-width: none;
+}
+
+/* The contents column is the first thing to go — it is a convenience, and the
+   sidebar is navigation. Below it, the sidebar goes too and the mobile switcher
+   in Learn.astro takes over. */
+@media (max-width: 1180px) {
+  .learn {
+    grid-template-columns: 264px minmax(0, 1fr);
+  }
+  .learn__toc {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .learn {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-5);
+    padding-block: var(--s-4) var(--s-8);
+  }
+  .learn__rail {
+    display: none;
+  }
+  .learn__body {
+    max-width: none;
+  }
+}
+
+/* ---- Prose --------------------------------------------------------------- */
+
+.prose {
+  color: var(--ink-2);
+  font-size: var(--t-body);
+  line-height: 1.7;
+}
+
+.prose > * + * {
+  margin-block-start: var(--s-4);
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--ink);
+  /* `scroll-margin` and not `scroll-padding`: the padding is on <html> for the
+     nav, this is the heading asking for a little air of its own on top of it.
+     The two *add up* — the browser aligns the element's scroll-margin box with
+     the scrollport's padding edge — so this is the air alone. Naming the nav
+     height again here put every anchor 105px too low. */
+  scroll-margin-block-start: var(--s-4);
+}
+
+.prose h2 {
+  font-size: var(--t-subhead);
+  margin-block-start: var(--s-8);
+  padding-block-start: var(--s-5);
+  border-block-start: 1px solid var(--rule-soft);
+}
+
+.prose h3 {
+  font-size: 1.375rem;
+  margin-block-start: var(--s-6);
+}
+
+.prose h4 {
+  font-size: 1.0625rem;
+  margin-block-start: var(--s-5);
+}
+
+/* The anchor mark. Present in the DOM always, revealed on hover or focus, so
+   copying a link to a heading is possible without it being visual noise. */
+.prose .anchor {
+  margin-inline-start: var(--s-2);
+  color: var(--horn);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--dur) ease;
+}
+
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .prose h2:hover .anchor,
+  .prose h3:hover .anchor,
+  .prose h4:hover .anchor {
+    opacity: 1;
+  }
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 500; /* never 600+ — DNA §3 */
+}
+
+.prose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--horn-deep);
+  text-underline-offset: 0.22em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .prose a:hover {
+    text-decoration-color: var(--horn);
+  }
+}
+
+.prose ul,
+.prose ol {
+  /* Logical, so the markers sit on the correct side in Persian. */
+  padding-inline-start: var(--s-5);
+}
+
+.prose li + li {
+  margin-block-start: var(--s-2);
+}
+
+.prose li::marker {
+  color: var(--ink-3);
+}
+
+.prose blockquote {
+  padding-inline-start: var(--s-4);
+  border-inline-start: 2px solid var(--horn-deep);
+  color: var(--ink-2);
+  font-style: normal; /* the site has no italic display face */
+}
+
+.prose hr {
+  height: 1px;
+  border: 0;
+  background: var(--rule-soft);
+  margin-block: var(--s-7);
+}
+
+/* ---- Code ---------------------------------------------------------------- */
+
+.prose :not(pre) > code {
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--r-1);
+  background: var(--paper-3);
+  color: var(--ink);
+  font-size: 0.9em;
+  /* A snippet is not prose in the page's language; isolate it so an identifier
+     inside a Persian sentence does not reorder around the punctuation. */
+  unicode-bidi: isolate;
+}
+
+.prose pre {
+  padding: var(--s-4);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--r-3);
+  background: var(--paper-3);
+  overflow-x: auto;
+  /* Code is left-to-right in every language on earth. */
+  direction: ltr;
+  text-align: left;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/*
+ * Shiki, driven by the attribute rather than by the media query.
+ *
+ * Its dual-theme mode keys off `prefers-color-scheme`, and this site's theme is
+ * `data-theme` on <html> — so a reader who toggles to light would keep dark code
+ * blocks, and one who toggles to dark on a light system would keep light ones.
+ * `defaultColor: false` in astro.config.mjs makes Shiki emit both as custom
+ * properties and leaves the choosing to here, where the attribute is.
+ */
+.prose pre,
+.prose pre span {
+  color: var(--shiki-dark, inherit);
+  background-color: transparent;
+}
+
+:root[data-theme='light'] .prose pre,
+:root[data-theme='light'] .prose pre span {
+  color: var(--shiki-light, inherit);
+}
+
+/* ---- Tables -------------------------------------------------------------- */
+
+/* Wrapped by the MDX map, because a wide table must scroll inside its own box
+   and never give the page a horizontal scrollbar. */
+.prose .table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--r-3);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-meta);
+}
+
+.prose th,
+.prose td {
+  padding: var(--s-3) var(--s-4);
+  text-align: start;
+  border-block-end: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+
+.prose th {
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+/* ---- Figures ------------------------------------------------------------- */
+
+.prose figure {
+  margin-block: var(--s-6);
+}
+
+.prose figcaption {
+  margin-block-start: var(--s-3);
+  font-size: var(--t-meta);
+  color: var(--ink-3);
+}
+
+/* ---- Persian ------------------------------------------------------------- */
+
+/*
+ * base.css already swaps the face, zeroes the tracking and opens the leading for
+ * `[lang='fa']`. What it cannot know about is this section's own furniture.
+ */
+[lang='fa'] .prose h2,
+[lang='fa'] .prose h3,
+[lang='fa'] .prose h4 {
+  line-height: 1.6;
+}
+
+[lang='fa'] .prose {
+  line-height: 1.95;
+}

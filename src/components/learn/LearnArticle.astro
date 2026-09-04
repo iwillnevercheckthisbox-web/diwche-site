@@ -1,0 +1,205 @@
+---
+/**
+ * One article: the whole page, so the nine route files stay three lines each.
+ */
+import { render } from 'astro:content';
+import Learn from '../../layouts/Learn.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import PrevNext from './PrevNext.astro';
+import Toc from './Toc.astro';
+import MdH2 from './MdH2.astro';
+import MdH3 from './MdH3.astro';
+import MdH4 from './MdH4.astro';
+import MdTable from './MdTable.astro';
+import { LEARN_UI } from '../../content/learn/ui';
+import { SECTION_COPY } from '../../content/learn/spine';
+import { hrefFor, learnHome, sectionHref, sectionOf, type Entry, type NavSection } from '../../lib/learn';
+import { DEFAULT_LOCALE, type Locale } from '../../lib/direction';
+
+interface Props {
+  entry: Entry;
+  locale: Locale;
+  nav: NavSection[];
+  slug: string;
+  prev: { title: string; href: string } | null;
+  next: { title: string; href: string } | null;
+  available: Locale[];
+}
+
+const { entry, locale, nav, slug, prev, next, available } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const ui = LEARN_UI[locale];
+const section = sectionOf(slug);
+const sectionTitle = SECTION_COPY[locale][section].title;
+
+/**
+ * The reader is on a translated URL but this file is English.
+ *
+ * It cannot normally happen — the router only builds a path for a file that
+ * exists — but the case is worth carrying rather than assuming away: an English
+ * fallback that says nothing about being English is exactly the quiet lie the
+ * whole locale policy exists to avoid.
+ */
+const isFallback = locale !== DEFAULT_LOCALE && !available.includes(locale);
+
+const related = entry.data.related.map((r) => ({
+  slug: r,
+  href: hrefFor(available.includes(locale) ? locale : DEFAULT_LOCALE, r),
+  title: nav.flatMap((s) => s.articles).find((a) => a.slug === r)?.title ?? r,
+}));
+
+const appOrigin = 'https://app.diwche.com';
+---
+
+<Learn
+  title={`${entry.data.title} — ${ui.landingTitle}`}
+  description={entry.data.description}
+  locale={locale}
+  nav={nav}
+  current={slug}
+  available={available}
+>
+  <Fragment slot="toc">
+    <Toc headings={headings} label={ui.onThisPage} />
+  </Fragment>
+
+  <Breadcrumbs
+    locale={locale}
+    label={ui.crumbs}
+    trail={[
+      { title: ui.name, href: learnHome(locale) },
+      { title: sectionTitle, href: sectionHref(locale, section) },
+      { title: entry.data.title },
+    ]}
+  />
+
+  <header class="art__head">
+    <h1 class="art__title">{entry.data.title}</h1>
+    <p class="art__lead">{entry.data.description}</p>
+
+    {
+      entry.data.appPath && (
+        <a class="art__app" href={`${appOrigin}${entry.data.appPath}`} rel="noopener">
+          {ui.openInApp}
+        </a>
+      )
+    }
+  </header>
+
+  {
+    isFallback && (
+      <p class="art__fallback" lang="en" dir="ltr">
+        {LEARN_UI[locale].notTranslated}
+      </p>
+    )
+  }
+
+  <div class="prose">
+    <Content components={{ h2: MdH2, h3: MdH3, h4: MdH4, table: MdTable }} />
+  </div>
+
+  {
+    related.length > 0 && (
+      <aside class="art__related">
+        <h2 class="eyebrow">{ui.related}</h2>
+        <ul>
+          {related.map((r) => (
+            <li>
+              <a href={r.href}>{r.title}</a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
+
+  <p class="art__updated">
+    <span class="eyebrow">{ui.updated}</span>
+    <time datetime={entry.data.updated.toISOString().slice(0, 10)}>
+      {
+        entry.data.updated.toLocaleDateString(locale === 'fa' ? 'fa-IR' : locale, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      }
+    </time>
+  </p>
+
+  <PrevNext prev={prev} next={next} prevLabel={ui.prev} nextLabel={ui.next} />
+</Learn>
+
+<style>
+  .art__head {
+    margin-block: var(--s-4) var(--s-7);
+  }
+
+  .art__title {
+    font-size: var(--t-subhead);
+    line-height: 1.1;
+  }
+
+  .art__lead {
+    margin-block-start: var(--s-3);
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  .art__app {
+    display: inline-block;
+    margin-block-start: var(--s-4);
+    font-size: var(--t-meta);
+    color: var(--horn);
+    text-decoration: underline;
+    text-decoration-color: var(--horn-deep);
+    text-underline-offset: 0.22em;
+  }
+
+  /* A note, not an error: --alarm is reserved for something that has actually
+     gone wrong (DNA §9). */
+  .art__fallback {
+    margin-block-end: var(--s-6);
+    padding: var(--s-3) var(--s-4);
+    border: 1px solid var(--rule);
+    border-inline-start: 2px solid var(--horn);
+    border-radius: var(--r-2);
+    background-color: var(--paper-3);
+    color: var(--ink-2);
+    font-size: var(--t-meta);
+  }
+
+  .art__related {
+    margin-block-start: var(--s-7);
+    padding: var(--s-4) var(--s-5);
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-3);
+    background-color: var(--paper-2);
+    background-image: var(--sheen);
+  }
+
+  .art__related ul {
+    list-style: none;
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+    font-size: var(--t-meta);
+  }
+
+  .art__related a {
+    color: var(--ink);
+    text-decoration-color: var(--horn-deep);
+  }
+
+  .art__updated {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    margin-block-start: var(--s-6);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+</style>

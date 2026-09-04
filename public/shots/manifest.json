@@ -1,0 +1,551 @@
+[
+  {
+    "name": "accounts-list",
+    "width": 1440,
+    "height": 900,
+    "alt": "The accounts list, each row showing its progress ring, seven-day ribbon and follower sparkline.",
+    "label": "Accounts",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "activity-log",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Activity Log, with rows in several states and the review actions on a pending row.",
+    "label": "Activity Log",
+    "section": "manage",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "carousel-sources",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Article Carousel page with its three source tabs: URL, File and Prompt.",
+    "label": "Article Carousel",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "characters-list",
+    "width": 1440,
+    "height": 900,
+    "alt": "The characters page: the ten writers, each with the tag that describes how it writes.",
+    "label": "Characters",
+    "section": "library",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "create-menu",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Create page: Post, D1 Studio, Reel, Story and RSS as five cards.",
+    "label": "Create",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "create-post-open",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Post card expanded, offering Article Carousel, Data Infographic and Single Post.",
+    "label": "Post",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "d1-advanced",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Advanced fold open: how long, whether you will be on camera, and what should be made.",
+    "label": "Advanced",
+    "section": "d1",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "d1-ask",
+    "width": 1440,
+    "height": 900,
+    "alt": "D1 Studio asking whether you have filmed it yet, with the two doors it opens.",
+    "label": "D1 Studio",
+    "section": "d1",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "d1-footage",
+    "width": 1440,
+    "height": 900,
+    "alt": "The footage door: the drop zone for clips and photos, with the questions D1 asks about them.",
+    "label": "Drop what you shot",
+    "section": "d1",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "d1-idea",
+    "width": 1440,
+    "height": 900,
+    "alt": "The idea door: a box for the subject with a microphone in it, a language, and a list of suggested topics.",
+    "label": "What is this one about?",
+    "section": "d1",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "data-infographic",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Data Infographic page, with the Standard and Freestyle modes and its two source tabs.",
+    "label": "Data Infographic",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "fonts-library",
+    "width": 1440,
+    "height": 900,
+    "alt": "The font library, where a typeface is uploaded and named.",
+    "label": "Fonts",
+    "section": "library",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-direction",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Direction card at the foot of Ideas: audience, promise, pillars, voice and the Never list.",
+    "label": "Your Direction",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-market",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Market tab, showing the peer benchmark line and where breakouts appear.",
+    "label": "Ideas · Market",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-sources",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Suggestions fold open, showing content mode, photo source, the content brief and the keyword list.",
+    "label": "More sources",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-talk",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Talk to me panel, with the microphone and the box for saying what has changed about the page.",
+    "label": "Talk to me",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-today",
+    "width": 1440,
+    "height": 900,
+    "alt": "Today's topics, each card showing its format, pillar, why-now line, hook and fact anchor.",
+    "label": "Ideas · Today",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-topic-card",
+    "width": 666,
+    "height": 176,
+    "alt": "A single topic card close up, with the Make, Keep and Not this buttons along its foot.",
+    "label": "One topic",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ideas-week",
+    "width": 1440,
+    "height": 900,
+    "alt": "The This week tab before a plan has been made, showing the Plan this week button.",
+    "label": "Ideas · This week",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "identity-designs",
+    "width": 658,
+    "height": 580,
+    "alt": "The Designs card, with one dropdown each for post, carousel, story, reel cover and reel frame.",
+    "label": "Designs",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "identity-reply",
+    "width": 658,
+    "height": 132,
+    "alt": "The comment auto-reply block, with the switch, the character who answers, and a reply preview.",
+    "label": "Comment auto-reply",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "identity-top",
+    "width": 1440,
+    "height": 900,
+    "alt": "The top of Account Identity: name, page name, handle, slogan and the default palette picker.",
+    "label": "Account Identity",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ig-card-connected",
+    "width": 700,
+    "height": 292,
+    "alt": "A connected Instagram card: a green Connected badge, the handle it posts as, and the granted permissions.",
+    "label": "Connected",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ig-card-not-connected",
+    "width": 700,
+    "height": 199,
+    "alt": "The Instagram connection card before an account is connected, showing the Connect Instagram button.",
+    "label": "Instagram connection",
+    "section": "accounts",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "music-library",
+    "width": 1440,
+    "height": 900,
+    "alt": "The music page, with the curated library and your own uploads on separate tabs.",
+    "label": "Music",
+    "section": "library",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "palettes-list",
+    "width": 1440,
+    "height": 900,
+    "alt": "The palettes page, listing the built-in palettes and any of your own.",
+    "label": "Palettes",
+    "section": "library",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-adjust",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Adjust panel of the photo editor, with its dials for exposure, contrast and colour.",
+    "label": "Adjust",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-crop",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Crop panel, with the ratio buttons and the rotate and flip controls.",
+    "label": "Crop",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-layers",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Layers panel, listing everything stacked on the picture in drawing order.",
+    "label": "Layers",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-open",
+    "width": 1440,
+    "height": 900,
+    "alt": "The photo editor with a picture open: the tool rail down the left, the canvas in the middle, the tool panel beside it.",
+    "label": "The photo editor",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-publish",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Publish panel, offering download, save to gallery and posting.",
+    "label": "Publish",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-removebg",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Remove background panel and the one button that runs it.",
+    "label": "Remove background",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "pe-text",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Text panel of the photo editor, where words are added to a picture and styled.",
+    "label": "Text",
+    "section": "editors",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "performance-hours",
+    "width": 1440,
+    "height": 900,
+    "alt": "The two When to post charts side by side — followers online by hour, and average reach by hour published.",
+    "label": "When to post",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "performance-report",
+    "width": 1440,
+    "height": 900,
+    "alt": "The weekly consultant report card, with the button that generates one.",
+    "label": "The consultant report",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "performance-top",
+    "width": 1440,
+    "height": 900,
+    "alt": "The top of Performance: the five standing figures and the growth chart beneath them.",
+    "label": "Performance",
+    "section": "page",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "reels-source",
+    "width": 1440,
+    "height": 900,
+    "alt": "Reels Studio at step one, choosing between an article and a prompt as the source.",
+    "label": "Reels Studio",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "rss-page",
+    "width": 1440,
+    "height": 900,
+    "alt": "The RSS page, where feeds, keywords and the posting schedule for an account are set.",
+    "label": "RSS Pipeline",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "rss-schedule",
+    "width": 1440,
+    "height": 900,
+    "alt": "The posting schedule: manual times or smart, and the checkbox that holds posts for review.",
+    "label": "Posting Schedule",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "settings-page",
+    "width": 1440,
+    "height": 900,
+    "alt": "Settings, with its Profile, Devices and Storage sections.",
+    "label": "Settings",
+    "section": "manage",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "stories-settings",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Stories page: the posting times, the candidate pool size, and the buttons that post one now.",
+    "label": "Stories",
+    "section": "create",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "subs-studio",
+    "width": 1440,
+    "height": 900,
+    "alt": "Subtitle Studio before a file is chosen, with the Whisper options underneath.",
+    "label": "Subtitle Studio",
+    "section": "subtitles",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "subs-whisper",
+    "width": 1440,
+    "height": 900,
+    "alt": "The Whisper options: the task, the language, a vocabulary hint and the two checkboxes.",
+    "label": "Whisper Options",
+    "section": "subtitles",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "templates-list",
+    "width": 1440,
+    "height": 900,
+    "alt": "The templates page, showing one card per design with the kind it belongs to.",
+    "label": "Templates",
+    "section": "library",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-add-row",
+    "width": 624,
+    "height": 532,
+    "alt": "The row of buttons under the timeline that add a blank, text, an effect, a sticker, a shape, a logo or a progress bar.",
+    "label": "Adding things",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-caption-style",
+    "width": 380,
+    "height": 893,
+    "alt": "The caption style panel: font, size, colours, outline, the random switches and the highlight modes.",
+    "label": "Caption Style",
+    "section": "subtitles",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-colour",
+    "width": 380,
+    "height": 893,
+    "alt": "The colour controls and the filter strip on a selected clip.",
+    "label": "Colour and filters",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-export",
+    "width": 1364,
+    "height": 177,
+    "alt": "The export sheet: size, frame rate, quality, and the button that starts the render.",
+    "label": "Export",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-full",
+    "width": 1680,
+    "height": 1050,
+    "alt": "The whole video editor: media pool on the left, the two monitors and the timeline in the middle, the Inspector on the right.",
+    "label": "The video editor",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-header",
+    "width": 1364,
+    "height": 38,
+    "alt": "The bar above the editor: the project name, the account, undo and redo, save, the frame size and the background mode.",
+    "label": "The project bar",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-inspector-audio",
+    "width": 380,
+    "height": 274,
+    "alt": "The Audio tab of the Inspector, with the audio track card that adds music and sound effects.",
+    "label": "Inspector · Audio",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-inspector-text",
+    "width": 380,
+    "height": 188,
+    "alt": "The Text tab of the Inspector: the style presets, the words, the background box, stroke and shadow.",
+    "label": "Inspector · Text",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-inspector-video",
+    "width": 380,
+    "height": 893,
+    "alt": "The Video tab of the Inspector with a clip selected: its in and out points, transform, colour and filter.",
+    "label": "Inspector · Video",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-junction",
+    "width": 624,
+    "height": 532,
+    "alt": "The timeline with the diamond between the first two clips selected.",
+    "label": "A cut, selected",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-monitors",
+    "width": 624,
+    "height": 380,
+    "alt": "The two monitors: Source on the left, and Program on the right showing the frame at the playhead.",
+    "label": "Source and Program",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-pool",
+    "width": 320,
+    "height": 561,
+    "alt": "The media pool holding three clips and a still, with the upload buttons and the link fields above them.",
+    "label": "Media Pool",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-subtitles-tab",
+    "width": 380,
+    "height": 893,
+    "alt": "The Subtitles tab of the Inspector, where a clip is transcribed and the captions are styled.",
+    "label": "Inspector · Subtitles",
+    "section": "subtitles",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-timeline",
+    "width": 624,
+    "height": 532,
+    "alt": "The timeline: the Text and Effects tracks, three clips on Video 1 with a junction between each pair, and the three audio lanes.",
+    "label": "The timeline",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-toolbar",
+    "width": 1364,
+    "height": 55,
+    "alt": "The toolbar, with the Select and Trim tools on the left and Shortcuts and Export on the right.",
+    "label": "Select and Trim",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-transitions",
+    "width": 380,
+    "height": 538,
+    "alt": "The Inspector showing the eleven transition types and the duration slider under them.",
+    "label": "Inspector · Effects",
+    "section": "studio",
+    "captured": "2026-09-04"
+  },
+  {
+    "name": "ve-trim-tool",
+    "width": 1364,
+    "height": 55,
+    "alt": "The toolbar with the Trim tool active instead of Select.",
+    "label": "Trim selected",
+    "section": "studio",
+    "captured": "2026-09-04"
+  }
+]

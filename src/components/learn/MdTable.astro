@@ -1,0 +1,14 @@
+---
+/**
+ * A markdown table, in a box that scrolls on its own.
+ *
+ * A wide table is the classic way a docs page ends up with a horizontal
+ * scrollbar on the whole document — which on a right-to-left page is worse
+ * still, because the page then starts scrolled. The overflow belongs to the
+ * table, not to the body.
+ */
+---
+
+<div class="table-scroll">
+  <table><slot /></table>
+</div>

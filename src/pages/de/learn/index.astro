@@ -1,0 +1,8 @@
+---
+import LearnHome from '../../../components/learn/LearnHome.astro';
+import { learnIndex } from '../../../lib/learn-paths';
+
+const { nav } = await learnIndex('de');
+---
+
+<LearnHome locale="de" nav={nav} />

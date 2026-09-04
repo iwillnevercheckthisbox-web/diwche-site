@@ -13,6 +13,14 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+
+  /*
+   * The nav is sticky, so without this every anchor jump lands *underneath*
+   * it — the heading you asked for is the one thing hidden. This was already
+   * true of the homepage's own `/#faq` and `/#product` links; the guide, which
+   * is nothing but anchors, is what made it worth fixing.
+   */
+  scroll-padding-block-start: calc(var(--nav-h) + var(--s-5));
 }
 
 /* `hidden` is a UA rule at the lowest possible specificity, so any class that

@@ -1,0 +1,99 @@
+---
+/**
+ * The two doors out of an article.
+ *
+ * Both are built from the spine's order and from what exists in *this*
+ * language, so pressing "next" in Persian never walks the reader into English.
+ */
+interface Link {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  prev: Link | null;
+  next: Link | null;
+  prevLabel: string;
+  nextLabel: string;
+}
+
+const { prev, next, prevLabel, nextLabel } = Astro.props;
+---
+
+{
+  (prev || next) && (
+    <nav class="pn">
+      {prev ? (
+        <a class="pn__card pn__card--prev" href={prev.href} rel="prev">
+          <span class="eyebrow">{prevLabel}</span>
+          <span class="pn__title">{prev.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+
+      {next && (
+        <a class="pn__card pn__card--next" href={next.href} rel="next">
+          <span class="eyebrow">{nextLabel}</span>
+          <span class="pn__title">{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+    margin-block-start: var(--s-8);
+  }
+
+  @media (max-width: 620px) {
+    .pn {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pn__card {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-3);
+    background-color: var(--paper-2);
+    background-image: var(--sheen); /* DNA §2: a raised surface without it is a grey box */
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform var(--dur) var(--ease-out),
+      border-color var(--dur) ease;
+  }
+
+  /* The next card aligns to the far edge, which is the reading direction's end —
+     logical, so it flips with the page rather than against it. */
+  .pn__card--next {
+    text-align: end;
+  }
+
+  .pn__card:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pn__card:hover {
+      transform: translateY(-2px);
+      border-color: var(--horn-deep);
+    }
+  }
+
+  .pn__title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+</style>

@@ -6,6 +6,29 @@
 -- layout instead of their empty states.
 BEGIN;
 
+-- ---- Re-runnable ------------------------------------------------------------
+-- The stack is disposable but not always freshly created — a second run during a
+-- writing session is normal, and an INSERT that appends instead of replacing
+-- gives you twelve topics for today and two directions. Everything this file
+-- owns is cleared first.
+DELETE FROM account_daily_insights WHERE account_id IN (1, 2);
+DELETE FROM posted_articles        WHERE account_id IN (1, 2);
+DELETE FROM brain_topics           WHERE account_id IN (1, 2);
+DELETE FROM account_directions     WHERE account_id IN (1, 2);
+
+-- The demo account itself, so the file stands alone rather than assuming someone
+-- created one through the UI first. Invented, and obviously so.
+-- `page_name_fa` is the column behind the field the UI labels "Page Name"; the
+-- `_fa` is left over from when this product only spoke Persian.
+INSERT INTO accounts (id, name, page_name_fa, slogan, instagram_username, active, language,
+                      instagram_token_status, bumper_start_clip_enabled,
+                      bumper_start_clip_insert_sec, bumper_end_clip_enabled)
+VALUES (1, 'Frame & Pigment', 'Frame & Pigment', 'How to look at a painting',
+        'frame.and.pigment', true, 'en', 'NEVER_CONNECTED', true, 10.0, true)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, page_name_fa = EXCLUDED.page_name_fa, slogan = EXCLUDED.slogan,
+  instagram_username = EXCLUDED.instagram_username, active = true;
+
 -- The demo account speaks English.
 --
 -- Not cosmetic: with no language set, the app treats content as Persian (see
@@ -13,6 +36,43 @@ BEGIN;
 -- audience) and right-aligns every English topic, punctuation and all. The
 -- capture then shows a real screen with a real bug in it.
 UPDATE accounts SET language = 'en' WHERE id = 1;
+
+-- ---- Account 1: a healthy Instagram connection -----------------------------
+-- The guide's connection article documents a card with six possible badges, and
+-- five of them are invisible on an account that was never connected. This is
+-- what a real Instagram Login connection leaves behind, written directly rather
+-- than obtained — no capture run ever calls Meta.
+--
+-- The token is the literal word "demo". It is never sent anywhere: `shoot.mjs`
+-- refuses to run against anything but localhost, and the stack it runs against
+-- is thrown away afterwards.
+UPDATE accounts SET
+  instagram_auth_flow             = 'INSTAGRAM',
+  instagram_user_token            = 'demo-not-a-real-token',
+  instagram_user_id               = '17841400000000001',
+  instagram_token_status          = 'CONNECTED',
+  instagram_granted_scopes        = 'instagram_business_basic,instagram_business_content_publish,'
+                                 || 'instagram_business_manage_comments,instagram_business_manage_insights',
+  instagram_connected_at          = now() - interval '38 days',
+  instagram_token_checked_at      = now() - interval '6 hours',
+  instagram_data_access_expires_at= now() + interval '52 days',
+  webhook_subscribed_at           = now() - interval '38 days',
+  instagram_followers_count       = 9420,
+  instagram_follows_count         = 312,
+  instagram_media_count           = 148,
+  instagram_display_name          = 'Frame & Pigment',
+  instagram_biography             = 'One thing a week about a picture you have already seen.'
+WHERE id = 1;
+
+-- ---- Account 2: never connected --------------------------------------------
+-- So the "before you connect" capture is a real screen rather than the same card
+-- with its badge edited. Deliberately bare: this is what a brand-new account
+-- looks like ten seconds after it is created.
+INSERT INTO accounts (id, name, active, language, instagram_token_status,
+                      bumper_start_clip_enabled, bumper_start_clip_insert_sec,
+                      bumper_end_clip_enabled)
+VALUES (2, 'Second Page', true, 'en', 'NEVER_CONNECTED', true, 10.0, true)
+ON CONFLICT (id) DO NOTHING;
 
 -- ---- The account's direction ----------------------------------------------
 -- Without one the Ideas page shows its "tell Diwche about the page first"
@@ -70,5 +130,10 @@ SELECT 1,
        640 + ((90 - d) * 6)::int + (sin(d / 7.0) * 200)::int,
        now()
 FROM generate_series(0, 89) AS d;
+
+-- Explicit ids above leave the identity sequence behind them, so the next account
+-- created through the UI would collide. Push it past what this file inserted.
+SELECT setval(pg_get_serial_sequence('accounts', 'id'),
+              GREATEST((SELECT MAX(id) FROM accounts), 2));
 
 COMMIT;

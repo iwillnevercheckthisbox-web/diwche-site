@@ -1,0 +1,47 @@
+---
+title: Add a sticker, shape, logo or progress bar
+description: Put an emoji, a box, an arrow, your logo or a progress bar over the video.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['sticker', 'emoji', 'shape', 'rectangle', 'arrow', 'logo', 'progress bar', 'overlay', 'watermark']
+related: ['studio/add-text-on-screen', 'studio/work-the-tracks']
+shots: ['ve-add-row']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Four buttons under the timeline, all landing on the **Overlays** lane.
+
+<Shot name="ve-add-row" callouts={[
+  { x: 47, y: 93, text: 'Sticker, shape, logo, progress bar' },
+]} />
+
+## Add one
+
+Put the playhead where it should appear, then press one of:
+
+- **+ Sticker** — an emoji. A quick-pick strip offers 🔥 ❤️ ⭐ ✅ 👉 💡 📢 🎉 ⚡
+  🏆 😂 👀, or type any emoji you like.
+- **+ Shape** — **Rectangle**, **Ellipse**, **Line** or **Arrow**, with a corner
+  radius, an outline-only option and a border width.
+- **+ Logo** — your own logo, or any image URL. **📁 Pick image…** browses.
+- **+ Progress bar** — a bar along the bottom that fills as the video plays.
+  Good on anything long enough that a viewer wonders how much is left.
+
+## Place it
+
+**Drag it on the Program monitor.** The **Width**, **Height**, **X**, **Y**,
+**Rotation**, **Opacity** and **Colour** fields in the Inspector are for
+precision, not for placing it the first time.
+
+Drag the block's ends on the Overlays lane to change when it is on screen.
+
+## Before you export
+
+Overlays are drawn in your browser. Export from the editor and they are in the
+file; render on the server and they are not. The Inspector says so above the
+controls. If an overlay matters, export from here.
+
+## What next
+
+- [Export the video](/learn/studio/export-the-video/)

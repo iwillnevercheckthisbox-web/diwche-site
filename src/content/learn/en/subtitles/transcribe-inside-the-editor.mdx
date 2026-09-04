@@ -1,0 +1,57 @@
+---
+title: Transcribe a clip inside the video editor
+description: Caption one clip or one voice-over from the timeline, without leaving the edit.
+updated: 2026-09-04
+appPath: /visual-studio
+keywords: ['subtitle', 'caption', 'transcribe', 'video editor', 'timeline', 'whisper', 'clip']
+related: ['subtitles/fix-the-words', 'studio/work-the-tracks']
+shots: ['ve-subtitles-tab']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+The video editor has the whole of Subtitle Studio inside it, on the **💬
+Subtitles** tab of the Inspector. Captions made here land on the Subtitles lane
+and follow the clip they came from.
+
+## Do it
+
+1. **Select a clip on Video 1, or an audio item.** This is the step people miss —
+   the button is greyed out until something is selected, because it needs to know
+   what to listen to.
+2. Open **💬 Subtitles** in the Inspector.
+3. Set the Whisper options if you need to.
+4. Press **🎙 Transcribe selected clip with Whisper** — or **selected audio**, if
+   you picked an audio item.
+
+<Shot name="ve-subtitles-tab" callouts={[
+  { x: 44, y: 12, text: 'The Subtitles tab' },
+]} />
+
+A **Subtitles** lane appears on the timeline with one block per cue.
+
+## Why it is per clip
+
+Cues are tied to the clip they were transcribed from. Move that clip, and its
+captions move with it. Trim it, and they trim. That is why you transcribe a
+clip rather than the whole timeline — the captions survive re-editing.
+
+## Add one by hand
+
+**+ Cue at playhead** makes an empty cue where the playhead is. Useful for a
+line nobody said out loud.
+
+## Start again
+
+**✕ Clear subtitle track** removes every cue. The clips are untouched.
+
+## No separate burn-in here
+
+In Subtitle Studio there is a **Burn In** button. In the editor there is not,
+and does not need to be: the captions are part of the timeline, so they come out
+of the normal **▶ Export**.
+
+## What next
+
+- [Fix the words](/learn/subtitles/fix-the-words/)
+- [Export the video](/learn/studio/export-the-video/)

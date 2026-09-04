@@ -1,0 +1,50 @@
+---
+title: My post failed
+description: Read the reason on the failed row, and get the post out.
+updated: 2026-09-04
+appPath: /activity
+keywords: ['failed', 'error', 'retry', 'not posted', 'publish failed', 'activity log']
+related: ['fix/instagram-says-disconnected', 'manage/work-the-activity-log']
+shots: ['activity-log']
+---
+
+import Shot from '../../../../components/learn/Shot.astro';
+
+Everything you need is on the row.
+
+## Look at the row
+
+In the **Activity Log**, filter Status to **Failed**. The row shows **⚠** and the
+reason, and underneath it what the automatic retry is doing:
+
+- *Auto-retry soon (attempt 2)* — it is going to try again by itself.
+- *Auto-retry in ~12m (attempt 3)* — same, later.
+- *Auto-retry stopped after N attempts — retry manually below* — it has given up.
+
+<Shot name="activity-log" label="Activity Log" />
+
+## Then
+
+1. **Check the connection first.** Go to the account and look at the Instagram
+   badge. A failed post is a disconnected account far more often than anything
+   else — see
+   [Instagram says it is disconnected](/learn/fix/instagram-says-disconnected/).
+2. **↻ Retry** on the row.
+3. If it fails again with the same message, read the message. It is Instagram's
+   own, and it usually names the problem.
+
+## Common reasons
+
+| What it says | What it means |
+| --- | --- |
+| Anything about permissions | Reconnect and accept all of them |
+| Anything about the media | The file did not meet Instagram's requirements — usually a video's length or shape |
+| Anything about the token | Reconnect |
+
+## Give up on one
+
+**✕ Remove** throws the record away and stops the retries.
+
+## What next
+
+- [Work the Activity Log](/learn/manage/work-the-activity-log/)

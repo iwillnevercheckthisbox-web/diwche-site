@@ -1,0 +1,82 @@
+---
+/**
+ * The front door: every section, with what is in it.
+ */
+import Learn from '../../layouts/Learn.astro';
+import ArticleCard from './ArticleCard.astro';
+import { LEARN_UI } from '../../content/learn/ui';
+import { learnHome, type NavSection } from '../../lib/learn';
+import { DEFAULT_LOCALE, type Locale } from '../../lib/direction';
+
+interface Props {
+  locale: Locale;
+  nav: NavSection[];
+}
+
+const { locale, nav } = Astro.props;
+const ui = LEARN_UI[locale];
+const allHref = locale === DEFAULT_LOCALE ? '/learn/all/' : `/${locale}/learn/all/`;
+const total = nav.reduce((n, s) => n + s.articles.length, 0);
+---
+
+<Learn title={`${ui.landingTitle} — Diwche`} description={ui.landingLead} locale={locale} nav={nav}>
+  <header class="lhome__head">
+    <p class="eyebrow">{ui.name}</p>
+    <h1 class="lhome__title">{ui.landingTitle}</h1>
+    <p class="lhome__lead">{ui.landingLead}</p>
+    <p class="lhome__all"><a href={allHref}>{ui.everything}</a></p>
+  </header>
+
+  {
+    total === 0 ? (
+      <p class="lhome__empty">{ui.nothingHereYet}</p>
+    ) : (
+      <div class="lhome__grid">
+        {nav.map((s) => (
+          <ArticleCard
+            title={s.title}
+            description={s.blurb}
+            href={s.href}
+            eyebrow={`${s.articles.length}`}
+          />
+        ))}
+      </div>
+    )
+  }
+</Learn>
+
+<style>
+  .lhome__head {
+    display: grid;
+    gap: var(--s-3);
+    margin-block: var(--s-4) var(--s-7);
+  }
+
+  .lhome__title {
+    font-size: var(--t-section);
+  }
+
+  .lhome__lead {
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 54ch;
+  }
+
+  .lhome__all a {
+    font-size: var(--t-meta);
+    color: var(--horn);
+    text-decoration-color: var(--horn-deep);
+    text-underline-offset: 0.22em;
+  }
+
+  .lhome__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: var(--s-4);
+  }
+
+  .lhome__empty {
+    color: var(--ink-2);
+  }
+</style>

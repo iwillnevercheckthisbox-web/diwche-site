@@ -1,0 +1,65 @@
+---
+/**
+ * Learn › Section › Article.
+ *
+ * The separator is drawn by CSS rather than typed into the markup, because it
+ * has a direction: `›` points the wrong way in a right-to-left page, and a
+ * hard-coded one would quietly be wrong on a third of the site.
+ */
+import { dirFor, type Locale } from '../../lib/direction';
+
+interface Props {
+  locale: Locale;
+  label: string;
+  trail: { title: string; href?: string }[];
+}
+
+const { locale, label, trail } = Astro.props;
+const sep = dirFor(locale) === 'rtl' ? '‹' : '›';
+---
+
+<nav class="crumbs" aria-label={label} style={`--sep: "${sep}"`}>
+  <ol>
+    {
+      trail.map((c) => (
+        <li>{c.href ? <a href={c.href}>{c.title}</a> : <span aria-current="page">{c.title}</span>}</li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+  }
+
+  .crumbs li + li::before {
+    content: var(--sep);
+    margin-inline-end: var(--s-2);
+    color: var(--ink-3);
+  }
+
+  .crumbs a {
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color var(--dur) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .crumbs a:hover {
+      color: var(--ink-2);
+    }
+  }
+
+  .crumbs [aria-current='page'] {
+    color: var(--ink-2);
+  }
+</style>

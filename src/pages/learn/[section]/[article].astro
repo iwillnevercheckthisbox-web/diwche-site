@@ -1,0 +1,17 @@
+---
+import LearnArticle from '../../../components/learn/LearnArticle.astro';
+import { articlePaths } from '../../../lib/learn-paths';
+
+export const getStaticPaths = articlePaths('en');
+const { entry, locale, nav, slug, prev, next, available } = Astro.props;
+---
+
+<LearnArticle
+  entry={entry}
+  locale={locale}
+  nav={nav}
+  slug={slug}
+  prev={prev}
+  next={next}
+  available={available}
+/>

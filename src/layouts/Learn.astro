@@ -1,0 +1,199 @@
+---
+/**
+ * The guide's shell: rail, prose, contents.
+ *
+ * It **wraps** `Base.astro` rather than forking it. A fork would mean a second
+ * copy of the pre-paint theme script, and the moment those two drift the guide
+ * gets the theme flash back — which is exactly the bug that script exists to
+ * prevent. Everything a docs page needs on top of a marketing page is additive:
+ * two new props on Base, and a body that is a grid instead of a column.
+ */
+import Base from './Base.astro';
+import '../styles/learn.css';
+import LearnSidebar from '../components/learn/LearnSidebar.astro';
+import SearchDialog from '../components/learn/SearchDialog.astro';
+import { HOME_DE, HOME_EN, HOME_FA, type HomeCopy } from '../content/home';
+import { LEARN_UI } from '../content/learn/ui';
+import { learnHome, type NavSection } from '../lib/learn';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '../lib/direction';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  nav: NavSection[];
+  /** `start/what-diwche-does`, or a bare section, or '' on the landing page. */
+  current?: string;
+  /** The locales this exact page exists in. Omit where it exists in all of them. */
+  available?: readonly Locale[];
+  image?: string;
+}
+
+const HOME: Record<Locale, HomeCopy> = { en: HOME_EN, fa: HOME_FA, de: HOME_DE };
+
+const { title, description, locale, nav, current = '', available = LOCALES, image } = Astro.props;
+
+const ui = LEARN_UI[locale];
+
+/**
+ * Alternates for the languages this page is actually written in.
+ *
+ * `Astro.url.pathname` is this page's own path; the same article in another
+ * language is the same path with the prefix swapped, which `pathIn()` already
+ * knows how to do — but only for pages that exist. Anything not in `available`
+ * is left out rather than pointed at a 404.
+ */
+const bare = Astro.url.pathname.replace(/^\/(fa|de)(?=\/|$)/, '') || '/';
+const alternates = LOCALES.filter((l) => available.includes(l)).map((l) => ({
+  locale: l,
+  href: l === DEFAULT_LOCALE ? bare : `/${l}${bare}`,
+}));
+
+const currentSection = current.split('/')[0];
+const here = nav.find((s) => s.section === currentSection);
+---
+
+<Base
+  title={title}
+  description={description}
+  locale={locale}
+  copy={HOME[locale]}
+  alternates={alternates}
+  image={image}
+>
+  <!--
+    The mobile section switcher.
+
+    Deliberately *not* the site's hamburger with seventy more links poured into
+    it — that is two different trees in one sheet. On a phone a reader is inside
+    one section almost all the time, and the thing they want next is the next
+    article in it, so this opens to that first and puts everything else one level
+    down. It is `<details>` for the same reason the rail is.
+  -->
+  <details class="lswitch">
+    <summary class="lswitch__bar" aria-label={ui.sectionMenu}>
+      <span class="lswitch__where">{here ? here.title : ui.name}</span>
+      <svg class="lswitch__caret" viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m6 9 6 6 6-6" /></svg
+      >
+    </summary>
+    <div class="lswitch__panel">
+      <a class="lswitch__home" href={learnHome(locale)}>{ui.landingTitle}</a>
+      <LearnSidebar nav={nav} locale={locale} current={current} label={ui.rail} englishOnly={ui.englishOnly} />
+    </div>
+  </details>
+
+  <div class="learn">
+    <div class="learn__rail">
+      <a class="learn__home" href={learnHome(locale)}>{ui.landingTitle}</a>
+      <SearchDialog locale={locale} />
+      <LearnSidebar nav={nav} locale={locale} current={current} label={ui.rail} englishOnly={ui.englishOnly} />
+    </div>
+
+    <div class="learn__body">
+      <slot />
+    </div>
+
+    <div class="learn__toc">
+      <slot name="toc" />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .learn__home,
+  .lswitch__home {
+    display: block;
+    margin-block-end: var(--s-4);
+    padding-inline: var(--s-3);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .learn__home:hover,
+    .lswitch__home:hover {
+      color: var(--horn);
+    }
+  }
+
+  /* ---- The mobile switcher ------------------------------------------------ */
+
+  .lswitch {
+    display: none;
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 20;
+    border-block-end: 1px solid var(--rule-soft);
+    background-color: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  @media (max-width: 900px) {
+    .lswitch {
+      display: block;
+    }
+  }
+
+  .lswitch__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-5);
+    color: var(--ink);
+    font-size: var(--t-meta);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .lswitch__bar::-webkit-details-marker {
+    display: none;
+  }
+
+  .lswitch__caret {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .lswitch[open] .lswitch__caret {
+    transform: rotate(180deg);
+  }
+
+  .lswitch__panel {
+    max-height: 70vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--s-2) var(--s-4) var(--s-5);
+    border-block-start: 1px solid var(--rule-soft);
+    background-color: var(--paper);
+  }
+</style>
+
+<script>
+  /*
+   * Close the switcher when a link inside it is followed.
+   *
+   * Astro serves real page loads, so the sheet would be closed on arrival
+   * anyway — except when the link is an in-page anchor, where nothing navigates
+   * and an open sheet covers the heading the reader just asked for.
+   *
+   * Progressive: without this the switcher still opens, still closes, and still
+   * works from the keyboard.
+   */
+  const sw = document.querySelector<HTMLDetailsElement>('.lswitch');
+  sw?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) sw.open = false;
+  });
+</script>
