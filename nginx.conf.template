@@ -60,6 +60,56 @@ server {
 
     include conf.d/security-headers.conf;
 
+    # The public page an account hands out, and its images.
+    #
+    # A longer prefix than /api/public/ below, so nginx picks this one for it whatever the order
+    # in this file. It needs its own block for one reason: the read's limiter is six a minute,
+    # and one visit to a bio page is a dozen requests — the page, an avatar and nine thumbnails.
+    # Under the read's zone the first visitor would be refused halfway down their own page.
+    #
+    # The read's costs are not here either. Nothing under this prefix calls a model, scrapes
+    # anything, or spends a cap; it reads rows this account already owns and proxies images we
+    # already have the address of. The watch zone is the right size for it.
+    location /api/public/reports/ {
+        limit_req zone=publicwatch burst=20 nodelay;
+        limit_req_status 429;
+
+        proxy_pass http://192.168.1.100:5556;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Origin "";
+        proxy_set_header X-Diwche-Read "${READ_GATE}";
+        proxy_read_timeout 30s;
+
+        include conf.d/security-headers.conf;
+    }
+
+    location /api/public/bio/ {
+        limit_req zone=publicwatch burst=40 nodelay;
+        limit_req_status 429;
+
+        proxy_pass http://192.168.1.100:5556;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # Same reasoning as the block below: the request is same-origin, but the backend sees a
+        # proxied host and would classify a browser's Origin header as cross-origin.
+        proxy_set_header Origin "";
+        proxy_set_header X-Diwche-Read "${READ_GATE}";
+
+        # The link redirect must never be cached by anything in between: the count is taken on
+        # the way through, and a cached 302 is a click nobody sees.
+        proxy_read_timeout 30s;
+        proxy_send_timeout 30s;
+
+        include conf.d/security-headers.conf;
+    }
+
     # The one path on this site that is not a static file.
     #
     # Proxying it here is what keeps the browser tokenless: the call is
@@ -117,6 +167,33 @@ server {
         proxy_read_timeout 300s;
         proxy_send_timeout 300s;
 
+        include conf.d/security-headers.conf;
+    }
+
+    # The page an account hands out: diwche.com/@handle.
+    #
+    # One built file serves every handle. The site is static (no adapter, on purpose), so a page
+    # whose content depends on the handle cannot be prerendered — this maps the address onto the
+    # shell and the shell's own script reads the handle back out of the path. The regex is the
+    # same character class the backend validates a slug against, so an address that could never
+    # exist 404s here rather than loading a shell that will only fail.
+    # Quoted, because nginx reads an unquoted { as the start of a block and refuses to start at
+    # all with "unknown directive" — a regex with a repetition count has to be a string.
+    location ~ "^/@[a-z0-9._]{2,30}/?$" {
+        try_files /bio/index.html =404;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        include conf.d/security-headers.conf;
+    }
+
+    # A shared report: diwche.com/r/{token}.
+    #
+    # Same shape as the /@handle rule below it — one built shell for every token, because the
+    # site is static and the token is only known at request time. The character class is the
+    # URL-safe base64 the backend mints, so a link that could never exist 404s here.
+    # Quoted for the same reason as the /@handle rule below: an unquoted { is a block to nginx.
+    location ~ "^/r/[A-Za-z0-9_-]{8,64}/?$" {
+        try_files /r/index.html =404;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
         include conf.d/security-headers.conf;
     }
 

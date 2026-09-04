@@ -1,0 +1,228 @@
+---
+/**
+ * The page an account hands out: diwche.com/@handle.
+ *
+ * A shell, not a route. This site builds static (astro.config.mjs has no adapter on purpose —
+ * "the build must drop into any file server"), so a page whose content depends on the handle in
+ * the URL cannot be prerendered. nginx maps /@slug onto this one file and the script below reads
+ * the handle out of location.pathname and asks the backend for it. Every other approach here
+ * meant adding an SSR adapter, which is a bigger change to the deployment than the feature is.
+ *
+ * Direction follows the account's own content language, taken from the payload — not from the
+ * site locale, and never hardcoded. A Persian page reads right to left inside an English site.
+ */
+import Bare from '../../layouts/Bare.astro';
+---
+
+<Bare title="Diwche" description="Everything from this page, in one place.">
+  <main class="bio" id="bio" hidden>
+    <header class="bio-head">
+      <img class="bio-avatar" id="bio-avatar" alt="" hidden />
+      <h1 class="bio-name" id="bio-name"></h1>
+      <p class="bio-handle" id="bio-handle"></p>
+      <p class="bio-headline" id="bio-headline" hidden></p>
+      <p class="bio-about" id="bio-about" hidden></p>
+    </header>
+
+    <nav class="bio-links" id="bio-links" aria-label="Links"></nav>
+
+    <section class="bio-posts" id="bio-posts" hidden aria-label="Latest posts"></section>
+
+    <footer class="bio-foot">
+      <a href="/">Made with Diwche</a>
+    </footer>
+  </main>
+
+  <div class="bio-state" id="bio-loading">
+    <span class="bio-spinner" aria-hidden="true"></span>
+  </div>
+
+  <div class="bio-state" id="bio-missing" hidden>
+    <h1>Nothing here</h1>
+    <p>This page does not exist, or its owner has turned it off.</p>
+    <a class="bio-home" href="/">Go to diwche.com</a>
+  </div>
+</Bare>
+
+<style>
+  /* The funnel layout hides overflow on the body; a bio page is a document and scrolls. */
+  :global(body.bare:has(.bio)) {
+    overflow: auto;
+    height: auto;
+  }
+
+  .bio {
+    width: min(100%, 34rem);
+    margin: 0 auto;
+    padding: var(--s-7) var(--s-4) var(--s-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6);
+  }
+
+  .bio-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    text-align: center;
+  }
+
+  .bio-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--horn-deep);
+    background: var(--paper-3);
+  }
+
+  .bio-name {
+    font-family: var(--font-display);
+    font-size: var(--t-subhead);
+    margin: var(--s-2) 0 0;
+    line-height: 1.15;
+  }
+
+  .bio-handle {
+    color: var(--ink-3);
+    margin: 0;
+    font-size: 0.9rem;
+    /* A handle is a Latin string inside a possibly right-to-left page; without this the @ jumps
+       to the wrong end of it. */
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  .bio-headline {
+    color: var(--horn-soft);
+    margin: var(--s-2) 0 0;
+  }
+
+  .bio-about {
+    color: var(--ink-2);
+    margin: 0;
+    white-space: pre-line;
+    font-size: 0.95rem;
+  }
+
+  .bio-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+
+  .bio-link {
+    display: block;
+    padding: var(--s-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    background: var(--paper-2);
+    color: var(--ink);
+    text-decoration: none;
+    text-align: center;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  }
+
+  .bio-link:hover,
+  .bio-link:focus-visible {
+    border-color: var(--horn);
+    background: var(--paper-4);
+    transform: translateY(-1px);
+  }
+
+  .bio-link strong {
+    display: block;
+    font-weight: 500;
+  }
+
+  .bio-link span {
+    display: block;
+    margin-top: var(--s-1);
+    color: var(--ink-3);
+    font-size: 0.85rem;
+  }
+
+  .bio-posts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-2);
+  }
+
+  .bio-post {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: var(--r-2);
+    overflow: hidden;
+    background: var(--paper-3);
+  }
+
+  .bio-post img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .bio-foot {
+    text-align: center;
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .bio-foot a {
+    color: var(--ink-3);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+
+  .bio-state {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-3);
+    text-align: center;
+    padding: var(--s-5);
+  }
+
+  .bio-state h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-subhead);
+    margin: 0;
+  }
+
+  .bio-state p {
+    color: var(--ink-2);
+    margin: 0;
+  }
+
+  .bio-home {
+    color: var(--horn);
+    margin-top: var(--s-3);
+  }
+
+  .bio-spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--rule);
+    border-top-color: var(--horn);
+    animation: bio-spin 0.8s linear infinite;
+  }
+
+  @keyframes bio-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bio-spinner { animation: none; }
+    .bio-link { transition: none; }
+  }
+</style>
+
+<script>
+  import { loadBioPage } from '../../scripts/bioPage';
+  loadBioPage();
+</script>

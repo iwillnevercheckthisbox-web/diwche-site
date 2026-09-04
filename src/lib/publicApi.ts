@@ -298,6 +298,29 @@ export interface Proof {
   sentBy?: string;
 }
 
+/**
+ * The public page an account hands out at diwche.com/@slug.
+ *
+ * Everything in it is a string the backend already decided is public — never an Account, which
+ * holds tokens. `href` and `thumbUrl` are same-origin paths on this API, not Instagram links:
+ * Instagram's CDN links expire within days, and the site's CSP allows no external image hosts.
+ */
+export interface BioPage {
+  slug: string;
+  name: string | null;
+  handle: string | null;
+  headline: string | null;
+  biography: string | null;
+  website: string | null;
+  avatarUrl: string | null;
+  /** The account's own content language — the page's direction follows it, not the site's. */
+  language: string | null;
+  dir: 'rtl' | 'ltr' | null;
+  theme: string | null;
+  links: { id: number; title: string; subtitle: string | null; href: string }[];
+  posts: { id: string; permalink: string; thumbUrl: string; caption: string | null }[];
+}
+
 const BASE = '/api/public';
 
 /**
@@ -598,4 +621,28 @@ export function watchAudit(
       cleanup();
     },
   };
+}
+
+/**
+ * One page, by its address. Null when nobody claims it or the owner switched it off — which is
+ * not an error the visitor did anything to cause, so it is not thrown.
+ */
+export async function fetchBioPage(slug: string): Promise<BioPage | null> {
+  const res = await fetch(`${BASE}/bio/${encodeURIComponent(slug)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`bio page failed: ${res.status}`);
+  return (await res.json()) as BioPage;
+}
+
+/**
+ * A shared report, as one finished HTML document.
+ *
+ * Null when the link was revoked or never existed — not an error the reader caused, so it is not
+ * thrown. The report is served as text/html, so this reads the body rather than parsing JSON.
+ */
+export async function fetchSharedReport(token: string): Promise<string | null> {
+  const res = await fetch(`${BASE}/reports/${encodeURIComponent(token)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`report failed: ${res.status}`);
+  return await res.text();
 }

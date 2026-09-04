@@ -1,0 +1,79 @@
+---
+/**
+ * A shared report: diwche.com/r/{token}.
+ *
+ * The same shell trick as the bio page — this site builds static, so one file serves every
+ * token and the script below reads the token out of the path. The report itself arrives as a
+ * finished HTML document from the backend (rendered from the figures as they were computed, not
+ * recomputed), so this page's only job is to fetch it and put it on screen.
+ *
+ * Rendered into an iframe with a sandbox rather than into this document. The report is our own
+ * HTML, but it carries text a client typed into their own Instagram captions, and an iframe is
+ * the difference between "we escape carefully" and "it cannot touch this page at all".
+ */
+import Bare from '../../layouts/Bare.astro';
+---
+
+<Bare title="Report" description="A report from Diwche.">
+  <div class="report-state" id="report-loading">
+    <span class="report-spinner" aria-hidden="true"></span>
+  </div>
+
+  <div class="report-state" id="report-missing" hidden>
+    <h1>This link has expired</h1>
+    <p>Whoever sent it can share it again.</p>
+    <a class="report-home" href="/">Go to diwche.com</a>
+  </div>
+
+  <iframe id="report-frame" class="report-frame" title="Report" sandbox="allow-same-origin" hidden></iframe>
+</Bare>
+
+<style>
+  :global(body.bare:has(.report-frame:not([hidden]))) {
+    overflow: hidden;
+  }
+
+  .report-frame {
+    border: 0;
+    width: 100%;
+    height: 100dvh;
+    background: #fff;
+  }
+
+  .report-state {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-3);
+    text-align: center;
+    padding: var(--s-5);
+  }
+
+  .report-state h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-subhead);
+    margin: 0;
+  }
+
+  .report-state p { color: var(--ink-2); margin: 0; }
+  .report-home { color: var(--horn); margin-top: var(--s-3); }
+
+  .report-spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--rule);
+    border-top-color: var(--horn);
+    animation: report-spin 0.8s linear infinite;
+  }
+
+  @keyframes report-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .report-spinner { animation: none; } }
+</style>
+
+<script>
+  import { loadSharedReport } from '../../scripts/sharedReport';
+  loadSharedReport();
+</script>
