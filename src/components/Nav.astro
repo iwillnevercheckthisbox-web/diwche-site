@@ -397,10 +397,47 @@ const path = Astro.url.pathname;
     });
   }
 
-  // Hairline appears only after the page scrolls. rAF-throttled so the scroll
-  // listener never does layout work per event.
+  /*
+   * `--nav-h`, measured rather than declared.
+   *
+   * The token exists so that anything which has to clear the sticky bar — an
+   * anchor jump's `scroll-padding`, a sticky sidebar — can say so instead of
+   * guessing. It was guessing. The value was a constant with media-query
+   * overrides at the widths where the bar wraps to two rows, and that cannot be
+   * written down, because where it wraps depends on how long the words are:
+   * measured on this build, the bar comes back to one row at 849px in English,
+   * 946px in Persian and 1052px in German. Any single breakpoint is therefore
+   * wrong for two of the three languages, and wrong in the direction that hides
+   * a heading behind the bar rather than the one that leaves a gap.
+   *
+   * So it is read off the element. The CSS keeps a deliberately generous
+   * fallback for the no-JS case — see tokens.css — and this replaces it with the
+   * truth as soon as the script runs, and again whenever the bar changes height.
+   */
   const nav = document.querySelector<HTMLElement>('.nav');
 
+  if (nav) {
+    const publishHeight = () => {
+      const h = Math.round(nav.getBoundingClientRect().height);
+      // A zero would come from a bar that is display:none — a print stylesheet,
+      // a page that hides it — and writing that would let every anchor jump
+      // land flush against the top of the window.
+      if (h > 0) document.documentElement.style.setProperty('--nav-h', h + 'px');
+    };
+
+    publishHeight();
+    // The bar changes height by wrapping, which is a resize of the element
+    // itself rather than of the window — a window listener would miss a wrap
+    // caused by a font finishing loading, which is exactly when it happens.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(publishHeight).observe(nav);
+    } else {
+      addEventListener('resize', publishHeight, { passive: true });
+    }
+  }
+
+  // Hairline appears only after the page scrolls. rAF-throttled so the scroll
+  // listener never does layout work per event.
   if (nav) {
     let ticking = false;
 
