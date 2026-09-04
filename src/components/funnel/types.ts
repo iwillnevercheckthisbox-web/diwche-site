@@ -116,6 +116,20 @@ export type Screen =
       cta: string;
       skip: string;
     })
+  | (Base & {
+      /**
+       * The address, asked for at the end of the questionnaire rather than after the read.
+       *
+       * It used to sit on the result screen, holding back four findings until somebody paid for
+       * them with an email — which only works if there is something behind the blur worth
+       * paying for. There is: the whole report is shown. So the trade was never a trade, and a
+       * form between a reader and a report they can already see is a toll booth on an open road.
+       *
+       * Here it is the last thing in the walk instead, before the read runs, where it reads as
+       * the ordinary end of filling something in. The report that follows is shown whole.
+       */
+      kind: 'email';
+    })
   | (Base & { kind: 'verify' | 'analyzing' | 'result' | 'plan' | 'error' });
 
 /** One of the things he also does, shown while the read runs. */
@@ -129,7 +143,18 @@ export interface FunnelCopy {
   locale: string;
   meta: { title: string; description: string };
   preview: string;
-  bar: { back: string };
+  bar: {
+    /** The back arrow's own name, read aloud and printed beside it. */
+    back: string;
+    /**
+     * The way out, on every screen.
+     *
+     * A walk that can only be finished or abandoned is a walk people abandon by closing the
+     * tab. One link, always in the same place, is the difference between leaving and leaving
+     * for good.
+     */
+    home: string;
+  };
   screens: Screen[];
 
   /**
@@ -165,7 +190,35 @@ export interface FunnelCopy {
     again: string;
     change: string;
   };
-  analyzing: { line: string; lead: string; shot: Shot };
+  /**
+   * The address screen, between the questionnaire and the read.
+   *
+   * No skip, and no bargain. Nothing is held back behind it any more, so it does not have to
+   * be sold — it is asked for once, plainly, with what it is for said out loud.
+   */
+  email: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    label: string;
+    placeholder: string;
+    consent: string;
+    cta: string;
+    /** Under the button: what actually arrives, so the address is not given blind. */
+    note: string;
+  };
+
+  analyzing: {
+    line: string;
+    lead: string;
+    shot: Shot;
+    /**
+     * The read is allowed to take its time now, so the wait needs something to say while it
+     * does. One line per card as it arrives, rather than six cards landing at once and the
+     * reader having finished them in four seconds.
+     */
+    cardsLead: string;
+  };
 
   result: {
     eyebrow: string;
@@ -244,6 +297,23 @@ export interface FunnelCopy {
     peersTitle: string;
     peersNamed: string;
     peersFound: string;
+
+    /**
+     * Under a bar: what the mark on it means. `{label}` is the backend's own name for the
+     * benchmark, translated with the rest of the read.
+     *
+     * It was a template literal in the script for its whole life, which is how a Persian report
+     * came to have one English sentence under every meter in it.
+     */
+    meterLegend: string;
+
+    /**
+     * The way on to the plan, for a reader who has already left an address.
+     *
+     * The address form used to be this button. Now the report is whole when it arrives and the
+     * only thing left is to go on, so it says so.
+     */
+    onward: string;
   };
   plan: {
     eyebrow: string;
@@ -303,5 +373,19 @@ export interface FunnelCopy {
     errorEyebrow: string;
     waitingTitle: string;
     waitingCta: string;
+    /**
+     * The day's reads are spent.
+     *
+     * Said by the page rather than carried back from the server, because it is the one refusal
+     * that can arrive as a bare status with no body at all — and an English sentence appearing
+     * on a Persian screen at the exact moment something goes wrong is the worst place for it.
+     */
+    limit: string;
+    /**
+     * What the wait says once the read is done and the walk is still showing the rest of the
+     * product. The read is finished; nothing is being hidden, and pretending otherwise would be
+     * the one dishonest line on the page.
+     */
+    ready: string;
   };
 }

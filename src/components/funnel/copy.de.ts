@@ -29,7 +29,7 @@ export const DE: FunnelCopy = {
   preview:
     'Vorschau — er ist noch nicht mit Instagram verbunden, die Analyse am Ende läuft also nicht. Alles davor ist echt.',
 
-  bar: { back: 'Einen Schritt zurück' },
+  bar: { back: 'Zurück', home: 'Zurück zu diwche.com' },
 
   screens: [
     {
@@ -210,6 +210,7 @@ export const DE: FunnelCopy = {
       cta: 'Mit diesen vergleichen',
       skip: 'Überspringen',
     },
+    { id: 'email', kind: 'email' },
     { id: 'verify', kind: 'verify' },
     { id: 'analyzing', kind: 'analyzing' },
     { id: 'result', kind: 'result' },
@@ -250,6 +251,17 @@ export const DE: FunnelCopy = {
     },
   },
 
+  email: {
+    eyebrow: 'Das Letzte',
+    title: 'Wohin soll er sie schicken?',
+    lead: 'Die Analyse siehst du so oder so auf dem nächsten Bildschirm — vollständig, nichts zurückgehalten. Die Adresse ist dafür da, dass sie nicht verschwindet, wenn du den Tab schließt, und dass er dir das Angebot schicken kann, das aus dem Gefundenen entsteht.',
+    label: 'Deine E-Mail-Adresse',
+    placeholder: 'deine.adresse@hier.de',
+    consent: 'Diwche darf mir diese Analyse schicken. Niemand sonst bekommt diese Adresse.',
+    cta: 'Meine Seite lesen',
+    note: 'Eine Analyse, und ein Angebot, das daraus entsteht. Abmelden mit einem Klick, ab der ersten E-Mail.',
+  },
+
   verify: {
     eyebrow: 'Eins vorweg',
     title: 'Zeig ihm, dass die Seite deine ist.',
@@ -278,15 +290,16 @@ export const DE: FunnelCopy = {
       label: 'Aktivität',
       alt: 'Das Aktivitätsprotokoll mit dem, was veröffentlicht wurde.',
     },
+    cardsLead: 'Während er liest — der Rest von dem, was er macht.',
   },
 
   result: {
     eyebrow: 'Was er gefunden hat',
-    teaser: 'Wir haben deinen Bericht fertig — die besten Stellen aber unscharf gelassen. Fairer Handel, oder?',
+    teaser: 'Das ist die ganze Analyse. Nichts zurückgehalten.',
     emailLabel: 'Deine E-Mail-Adresse',
     placeholder: 'deine.adresse@hier.de',
     consent: 'Diwche darf mir diese Analyse schicken. Niemand sonst bekommt diese Adresse.',
-    cta: 'Bericht scharf stellen',
+    cta: 'Schick mir diese Analyse',
     starterEyebrow: 'Wo er anfangen würde',
     starterTeaser:
       'Er hat deine Idee gelesen. Lass eine Adresse da, und er schickt dir die Richtung, die er einschlagen würde — samt erstem Beitrag.',
@@ -345,6 +358,8 @@ export const DE: FunnelCopy = {
     peersTitle: 'Verglichen mit',
     peersNamed: 'von dir genannt',
     peersFound: 'von ihm gefunden',
+    meterLegend: 'Die Marke ist der {label} für Seiten in deiner Größe.',
+    onward: 'Was er dagegen tun würde',
   },
 
   plan: {
@@ -394,5 +409,7 @@ export const DE: FunnelCopy = {
     errorEyebrow: 'Er hat aufgehört',
     waitingTitle: 'Lass eine Adresse da, und er schickt die Analyse, sobald er kann.',
     waitingCta: 'Schick sie, sobald es geht',
+    limit: 'Er hat heute alles gelesen, was er kann.',
+    ready: 'Deine Analyse ist fertig. Einen Moment noch, er schreibt sie gerade auf.',
   },
 };

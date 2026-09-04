@@ -300,6 +300,39 @@ export interface Proof {
 
 const BASE = '/api/public';
 
+/**
+ * The page's own language, and the one sentence this module has to say for itself.
+ *
+ * Everything else a visitor is shown comes back from the backend already written in their
+ * language. Two things cannot: the refusal behind a bare 429, which arrives as a status with no
+ * usable body at all, and the fallback for a response that is not JSON — a proxy answering
+ * instead of the app. Both used to be English literals in `unwrap`, which is how an English
+ * sentence appeared on a Persian screen at the exact moment something went wrong.
+ *
+ * Set once by the funnel out of the copy already on the page. The English defaults stand for
+ * any other caller.
+ */
+let SAY = {
+  limit: 'He has read all he can today.',
+  generic: 'Something went wrong on our side.',
+};
+
+export function setApiMessages(said: Partial<typeof SAY>) {
+  SAY = { ...SAY, ...said };
+}
+
+/**
+ * The locale of the page making the call.
+ *
+ * Sent in the body of everything that posts, because the backend writes several sentences a
+ * visitor reads — refusals, progress lines, the read itself — and the page they are looking at
+ * is the only thing that actually knows which language that is. `Accept-Language` is the
+ * browser's preference, which is a different question.
+ */
+function here(): string {
+  return document.documentElement.lang || 'en';
+}
+
 class ApiError extends Error {
   kind: AuditErrorKind;
   constructor(kind: AuditErrorKind, message: string) {
@@ -329,11 +362,11 @@ async function unwrap<T>(res: Response): Promise<T> {
   // 429 is the rate limiter or the daily cap. Both are the same story to a
   // visitor: not today, but leave an email and it still reaches you.
   if (res.status === 429) {
-    throw new ApiError('limit', 'The Diw has read all he can today.');
+    throw new ApiError('limit', SAY.limit);
   }
 
   let kind: AuditErrorKind = 'error';
-  let message = 'Something went wrong on our side.';
+  let message = SAY.generic;
   try {
     const body = (await res.json()) as Partial<AuditFailure>;
     if (body.kind) kind = body.kind;
@@ -371,7 +404,7 @@ export async function startProof(handle: string, turnstile: string | null): Prom
   const res = await fetch(BASE + '/proof', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ handle, turnstile }),
+    body: JSON.stringify({ handle, turnstile, locale: here() }),
   });
   if (res.status === 503) return null;
   return unwrap<Proof>(res);
@@ -390,7 +423,7 @@ export function getProof(id: string) {
  * the topic call can hang off, and the walk picks up at the topics.
  */
 export function startIdea(idea: string, turnstile: string | null) {
-  return post<{ id: string }>('/idea', { idea, turnstile });
+  return post<{ id: string }>('/idea', { idea, turnstile, locale: here() });
 }
 
 // Nothing is measured on this branch. What it returns is the field around the
@@ -432,7 +465,13 @@ export function saveLead(
   answers: Answers = {},
   turnstile: string | null = null,
 ) {
-  return post<LeadResult>(`/audit/${id}/lead`, { email, consent, answers, turnstile });
+  return post<LeadResult>(`/audit/${id}/lead`, {
+    email,
+    consent,
+    answers,
+    turnstile,
+    locale: here(),
+  });
 }
 
 /**
@@ -449,7 +488,14 @@ export function saveWaitingLead(
   answers: Answers = {},
   turnstile: string | null = null
 ) {
-  return post<{ ok: true }>('/lead', { handle, email, consent, answers, turnstile });
+  return post<{ ok: true }>('/lead', {
+    handle,
+    email,
+    consent,
+    answers,
+    turnstile,
+    locale: here(),
+  });
 }
 
 /**

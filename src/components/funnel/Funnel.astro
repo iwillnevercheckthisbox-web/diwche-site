@@ -73,12 +73,24 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
   <!-- ================================================================== BAR -->
   <header class="bar">
+    {/* Named, not just drawn. A bare chevron in the corner of a stepper is a
+        control people do not find: the reported complaint was that there was no
+        way back between questions, and there was — it was 20px of outline with
+        nothing beside it. The word rides along on anything wider than a phone,
+        and the arrow keeps its own accessible name either way. */}
     <button class="bar__back" type="button" data-back aria-label={copy.bar.back}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19l-7-7 7-7" /></svg>
+      <span class="bar__back-word">{copy.bar.back}</span>
     </button>
     <div class="bar__track" role="presentation"><i data-progress></i></div>
     <p class="bar__count" dir="ltr"><b data-step-now>1</b> / <b data-step-total>{alwaysShown}</b></p>
-    <LangSwitch locale={here} path={Astro.url.pathname} label={copy.ui.language} compact />
+    {/* The door, on every screen of the walk. Nobody should have to finish this
+        to leave it, and closing the tab is what people do instead. */}
+    <a class="bar__home" href={here === 'en' ? '/' : `/${here}/`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" /></svg>
+      <span class="bar__home-word">{copy.bar.home}</span>
+    </a>
+    <div class="bar__lang"><LangSwitch locale={here} path={Astro.url.pathname} label={copy.ui.language} compact /></div>
   </header>
 
   <!-- ============================================================== SCREENS -->
@@ -254,6 +266,40 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
             </div>
           )}
 
+          {screen.kind === 'email' && (
+            <div class="screen__inner">
+              <p class="screen__eyebrow">{copy.email.eyebrow}</p>
+              <h1 class="screen__title">{copy.email.title}</h1>
+              <p class="screen__lead">{copy.email.lead}</p>
+
+              {/* The same form the result screen used to carry, moved to where it
+                  belongs. Nothing is held back behind it any more, so it is asked
+                  once, plainly, and the read that follows is shown whole. */}
+              <form class="lead" data-email-form novalidate>
+                <label class="sr" for="walk-email">{copy.email.label}</label>
+                <input
+                  class="start__input start__input--boxed"
+                  id="walk-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  placeholder={copy.email.placeholder}
+                  required
+                />
+                <label class="lead__consent">
+                  <input type="checkbox" data-email-consent />
+                  <span>{copy.email.consent}</span>
+                </label>
+                <p class="field__error" data-email-error hidden />
+                <button class="btn btn--wide" type="submit" data-email-submit>
+                  {copy.email.cta}
+                </button>
+                <p class="lead__note">{copy.email.note}</p>
+              </form>
+            </div>
+          )}
+
           {screen.kind === 'verify' && (
             <div class="screen__inner">
               <p class="screen__eyebrow">{copy.verify.eyebrow}</p>
@@ -302,10 +348,21 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
                 {copy.analyzing.line}
               </h1>
               <p class="screen__tip">{copy.analyzing.lead}</p>
+              {/* Said once the work is finished but the wait is not. The read is
+                  done and nothing is being hidden; pretending otherwise would be
+                  the one dishonest line on the page. */}
+              <p class="screen__tip screen__tip--ready" data-analyzing-ready hidden>
+                {copy.runtime.ready}
+              </p>
 
               {/* Whatever they did not pick, plus the two nobody is asked about.
                   The wait is the only place left to say these, and it is long
-                  enough now that the handle is asked at the end. */}
+                  enough now that the handle is asked at the end.
+
+                  They arrive one at a time rather than all at once: six cards
+                  dealt in a single frame are six cards a reader has finished
+                  with in four seconds, and the wait is thirty. */}
+              <p class="rest__lead">{copy.analyzing.cardsLead}</p>
               <div class="rest" data-rest />
 
               <div class="screen__shot screen__shot--quiet">
@@ -367,7 +424,13 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
               <p class="waiting" data-waiting hidden />
               <p class="rewards" data-rewards hidden />
 
-              <form class="lead" data-lead-form novalidate>
+              {/* The way on, for a reader who left an address at the end of the
+                  questionnaire — which is everybody who got here the ordinary
+                  way. The form below is what is left when that did not happen. */}
+              <p class="lead__title lead__title--open" data-result-teaser hidden>{copy.result.teaser}</p>
+              <button class="btn btn--wide" type="button" data-onward hidden>{copy.result.onward}</button>
+
+              <form class="lead" data-lead-form novalidate hidden>
                 <p class="lead__title">{copy.result.teaser}</p>
                 <label class="sr" for="email">{copy.result.emailLabel}</label>
                 <input
@@ -667,25 +730,45 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     letter-spacing: 0;
   }
 
+  /* Five things across a phone is four too many, so the bar is a two-row grid
+     that collapses to one the moment there is room. The progress track spans
+     the full width on its own row rather than being squeezed between controls —
+     a 40px-wide bar tells nobody anything. */
   .bar {
     flex: none;
     display: grid;
-    grid-template-columns: 2.5rem 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      'back count home lang'
+      'track track track track';
     align-items: center;
-    gap: var(--s-4);
-    padding: var(--s-4) var(--s-5);
-    padding-top: max(var(--s-4), env(safe-area-inset-top));
+    gap: var(--s-2) var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    padding-top: max(var(--s-3), env(safe-area-inset-top));
     border-bottom: 1px solid var(--rule-soft);
     background: var(--paper);
   }
 
+  @media (min-width: 40rem) {
+    .bar {
+      grid-template-columns: auto 1fr auto auto auto;
+      grid-template-areas: 'back track count home lang';
+      gap: var(--s-4);
+      padding: var(--s-4) var(--s-5);
+      padding-top: max(var(--s-4), env(safe-area-inset-top));
+    }
+  }
+
   .bar__back {
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    grid-area: back;
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    min-height: 2.5rem;
+    padding-inline: var(--s-2);
     border-radius: var(--r-3);
     color: var(--ink-2);
+    font-size: 13px;
     transition:
       transform var(--dur-fast) var(--ease-out),
       color var(--dur) ease,
@@ -695,6 +778,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   .bar__back svg {
     width: 20px;
     height: 20px;
+    flex: none;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.75;
@@ -702,8 +786,66 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     stroke-linejoin: round;
   }
 
+  /* Mirrored rather than re-drawn: back is towards the start edge in both
+     directions, and the start edge is on the right in Persian. */
+  :global([dir='rtl']) .bar__back svg,
+  :global([dir='rtl']) .bar__home svg {
+    transform: scaleX(-1);
+  }
+
+  :global([dir='rtl']) .bar__home svg {
+    transform: none;
+  }
+
   .bar__back:active {
     transform: scale(0.98);
+  }
+
+  /* The way out. Quiet — it is an exit, not an action — but never absent, and
+     never behind a menu: on a phone it keeps the house and drops the words. */
+  .bar__home {
+    grid-area: home;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 2.5rem;
+    padding-inline: var(--s-2);
+    border-radius: var(--r-3);
+    color: var(--ink-3);
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--dur) ease;
+  }
+
+  .bar__home svg {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .bar__home:hover {
+      color: var(--ink-2);
+    }
+  }
+
+  /* The words go first when the bar runs out of room; the icon and the count
+     both keep meaning something on their own. */
+  @media (max-width: 30rem) {
+    .bar__back-word,
+    .bar__home-word {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
   /* Kept in the layout rather than removed, so the bar never reflows when the
@@ -714,6 +856,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
   }
 
   .bar__track {
+    grid-area: track;
     height: 3px;
     background: var(--rule-soft);
     border-radius: 3px;
@@ -732,6 +875,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
 
   .bar__count {
+    grid-area: count;
     font-size: 12px;
     color: var(--ink-3);
     text-align: end;
@@ -745,6 +889,13 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
 
   .bar__count[data-off] {
     opacity: 0;
+  }
+
+  .bar__lang {
+    grid-area: lang;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
   }
 
   /* ---- The stage ---------------------------------------------------------- */
@@ -967,9 +1118,24 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     height: auto;
   }
 
+  .rest__lead {
+    margin-top: var(--s-6);
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  :global([lang='fa']) .rest__lead {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+  }
+
   /* The cards shown while the read runs — everything he also does. */
   .rest {
-    margin-top: var(--s-5);
+    margin-top: var(--s-4);
     display: grid;
     /* Two across on anything wide enough. The card count varies from two to six
        depending on what was picked, and two columns is the only width that
@@ -979,12 +1145,31 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     text-align: start;
   }
 
+  /* Each one arrives on its own, seconds apart, rather than six landing in a
+     single frame — the wait is thirty seconds now and a wall of cards is read
+     in four. `data-in` is set by the script as each is dealt. */
   .rest__card {
     padding: var(--s-4);
     background: var(--paper-2);
     background-image: var(--sheen);
     border: 1px solid var(--rule);
     border-radius: var(--r-3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out);
+  }
+
+  .rest__card[data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rest__card {
+      transform: none;
+    }
   }
 
   .rest__label {
@@ -1417,6 +1602,12 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     opacity: 0;
   }
 
+  /* Said once the read has finished and the wait has not. Champagne, because it
+     is good news, and small, because it is not the point of the screen. */
+  .screen__tip--ready {
+    color: var(--horn);
+  }
+
   /* ---- Findings ------------------------------------------------------------ */
 
   /* The page he read, at the top of what he found. */
@@ -1482,6 +1673,7 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     align-items: baseline;
     justify-content: space-between;
     gap: var(--s-2);
+    flex-wrap: wrap;
     border-block-end: 1px solid var(--rule);
     padding-block-end: var(--s-2);
   }
@@ -1897,6 +2089,19 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     line-height: 1.2;
   }
 
+  /* On the result screen the teaser is no longer a bargain, so it sits on its
+     own rather than at the top of a form. */
+  .lead__title--open {
+    margin-top: var(--s-5);
+  }
+
+  .lead__note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-3);
+    text-align: center;
+  }
+
   .lead__consent {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -2147,14 +2352,8 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     margin-top: var(--s-3);
   }
 
-  @media (max-width: 520px) {
-    .bar__amount {
-      font-size: 22px;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .bar__fill {
+    .gain__fill {
       transition: none;
     }
   }
@@ -2210,14 +2409,192 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     }
   }
 
+  /*
+   * The phone, treated as its own layout rather than as a narrow desktop.
+   *
+   * Everything below is a measured overflow or a squeeze, at 390×844 and
+   * 360×740 — the two widths this actually gets opened at. The rule of the
+   * block: horizontal padding drops by one step, anything set in a fixed pixel
+   * display size drops with it, and nothing that carries a number is allowed to
+   * be the thing that makes the page scroll sideways.
+   */
   @media (max-width: 30rem) {
     .screen {
       padding-inline: var(--s-4);
+      padding-block: var(--s-5) var(--s-6);
     }
 
     .option {
       padding: var(--s-3);
       gap: var(--s-3);
     }
+
+    .option__icon {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .option__icon svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    /* Two lines of sub-label under every option is most of a phone screen. The
+       label carries the answer; the sub is the elaboration. */
+    .option__sub {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    /* A card is a card because of its edges, not because of its padding. */
+    .lead,
+    .proj {
+      padding: var(--s-4);
+    }
+
+    .rest__card,
+    .fact,
+    .topic {
+      padding: var(--s-3) var(--s-4);
+    }
+
+    /* The projection's two figures are the widest run of characters in the
+       walk, and at 30px they were pushing the card past the viewport. */
+    .gain {
+      gap: var(--s-4);
+    }
+
+    .gain__amount {
+      font-size: 22px;
+    }
+
+    .gain__track {
+      height: 64px;
+    }
+
+    .fact__value {
+      font-size: 1.5rem;
+    }
+
+    .proj__headline {
+      margin-bottom: var(--s-3);
+    }
+
+    /* A ring that takes half the fold leaves no room for the thing the wait was
+       lengthened to show. */
+    .ring {
+      width: 7.5rem;
+      height: 7.5rem;
+    }
+
+    .ring__pct {
+      font-size: 1.4rem;
+    }
+
+    /* The proof code is set in a monospace face at 2rem with 0.18em tracking —
+       six characters of that plus its padding is wider than a 360px phone. */
+    .proof__digits {
+      font-size: 1.75rem;
+      letter-spacing: 0.12em;
+      padding-inline: var(--s-3);
+    }
+
+    .proof__code {
+      gap: var(--s-2);
+    }
+
+    .proof__steps {
+      font-size: 1rem;
+    }
+
+    /* Four stats in two columns inside a card inside a phone. One column reads;
+       two truncate. */
+    .page__stats {
+      grid-template-columns: 1fr;
+    }
+
+    .who {
+      gap: var(--s-3);
+      padding: var(--s-3);
+    }
+
+    .who__face {
+      width: 44px;
+      height: 44px;
+    }
+
+    .who__handle {
+      font-size: 17px;
+    }
+
+    /* The chart is evidence, and evidence that is 90px tall is a smudge. */
+    .chart {
+      padding: var(--s-3);
+    }
+
+    .chart__plot svg {
+      height: 120px;
+    }
+
+    /* The two exits at the end of the walk, stacked rather than crammed onto
+       one line with a middot between them. */
+    .ways {
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+
+    .ways__sep {
+      display: none;
+    }
+  }
+
+  /*
+   * Persian, on a phone.
+   *
+   * Vazirmatn sets a good deal larger than Geist at the same nominal size, and
+   * its ascenders and descenders need more room between lines — a Persian
+   * option label that fits in two lines in English takes three, and the four
+   * options then run past the fold. Nothing here is a translation problem; it
+   * is a typeface with different metrics being given the same box.
+   */
+  @media (max-width: 30rem) {
+    :global([lang='fa']) .option__label {
+      font-size: 1rem;
+    }
+
+    :global([lang='fa']) .option__sub {
+      font-size: 11.5px;
+      line-height: 1.55;
+    }
+
+    :global([lang='fa']) .screen__title {
+      line-height: 1.35;
+    }
+
+    :global([lang='fa']) .screen__lead,
+    :global([lang='fa']) .screen__hook,
+    :global([lang='fa']) .screen__quote {
+      line-height: 1.75;
+    }
+  }
+
+  /*
+   * Persian everywhere else.
+   *
+   * `max-width` in `ch` is a Latin measure: `ch` is the width of a zero, and a
+   * Persian line of the same character count is markedly wider, so a 22ch title
+   * that breaks in three lines in English breaks in one long one here. Given in
+   * ems instead, which tracks the actual set width.
+   */
+  :global([lang='fa']) .screen__title {
+    max-width: 16em;
+    line-height: 1.3;
+  }
+
+  :global([lang='fa']) .screen__lead,
+  :global([lang='fa']) .screen__hook,
+  :global([lang='fa']) .screen__quote {
+    max-width: 40em;
+    line-height: 1.8;
   }
 </style>

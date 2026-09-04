@@ -20,7 +20,7 @@ export const EN: FunnelCopy = {
   preview:
     'Preview — he is not connected to Instagram yet, so the read at the end will not run. Everything before it is real.',
 
-  bar: { back: 'Back a step' },
+  bar: { back: 'Back', home: 'Back to diwche.com' },
 
   screens: [
     // ---- Q1 · who is asking ------------------------------------------------
@@ -205,6 +205,7 @@ export const EN: FunnelCopy = {
       cta: 'Compare me to these',
       skip: 'Skip this',
     },
+    { id: 'email', kind: 'email' },
     { id: 'verify', kind: 'verify' },
     { id: 'analyzing', kind: 'analyzing' },
     { id: 'result', kind: 'result' },
@@ -246,6 +247,17 @@ export const EN: FunnelCopy = {
     },
   },
 
+  email: {
+    eyebrow: 'Last thing',
+    title: 'Where should he send it?',
+    lead: 'The read appears on the next screen either way — all of it, nothing held back. This is so it does not vanish when you close the tab, and so he can send the offer built for what he finds.',
+    label: 'Your email address',
+    placeholder: 'enter.your.email@here.com',
+    consent: 'Diwche may email me this read. No one else gets this address.',
+    cta: 'Read my page',
+    note: 'One read, and an offer built from it. Unsubscribe in one click, from the first email.',
+  },
+
   verify: {
     eyebrow: 'One thing first',
     title: 'Show him the page is yours.',
@@ -274,15 +286,16 @@ export const EN: FunnelCopy = {
       label: 'Activity',
       alt: 'The activity log, a list of what he has published.',
     },
+    cardsLead: 'While he reads — the rest of what he does.',
   },
 
   result: {
     eyebrow: 'What he found',
-    teaser: 'We mapped out your report, but kept the best parts blurry. Fair trade, right?',
+    teaser: 'That is the whole read. Nothing held back.',
     emailLabel: 'Your email address',
     placeholder: 'enter.your.email@here.com',
     consent: 'Diwche may email me this read. No one else gets this address.',
-    cta: 'Unblur my results',
+    cta: 'Send me this read',
     starterEyebrow: 'Where he would start',
     starterTeaser:
       'He has read your idea. Leave an address and he will send the direction he would take it in — and the first post he would make from it.',
@@ -341,6 +354,8 @@ export const EN: FunnelCopy = {
     peersTitle: 'Measured against',
     peersNamed: 'you named',
     peersFound: 'he found',
+    meterLegend: 'The mark is the {label} for pages your size.',
+    onward: 'What he would do about it',
   },
 
   plan: {
@@ -390,5 +405,7 @@ export const EN: FunnelCopy = {
     errorEyebrow: 'He stopped',
     waitingTitle: 'Leave an address and he will send the read when he can.',
     waitingCta: 'Send it when he can',
+    limit: 'He has read all he can today.',
+    ready: 'Your read is ready. One more moment while he finishes writing it down.',
   },
 };

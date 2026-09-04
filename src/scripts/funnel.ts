@@ -42,6 +42,7 @@ import {
   type Verdict,
   startProof,
   getProof,
+  setApiMessages,
   type Proof,
 } from '../lib/publicApi';
 import { turnstileToken } from './turnstile';
@@ -57,15 +58,41 @@ const STORE = 'diwche-funnel';
  * walk resolves to a different screen, and an over-large one is clamped straight
  * onto the last one. State that does not match this version is dropped.
  */
-const SAVE_VERSION = 4;
+const SAVE_VERSION = 5;
 /**
- * The wait, which is now doing real work rather than covering for it.
+ * How long the wait lasts, whatever the read costs.
  *
- * The handle is asked on the screen immediately before this one, so unlike the
- * old walk there is no head start — this is the whole budget for the read. The
- * cards shown underneath are written for exactly this length.
+ * This was 3.4 seconds, which is roughly what a cached read actually takes — so
+ * the screen built to show the rest of the product appeared and left before
+ * anybody could read a single card of it, and the ring got to about five per
+ * cent before the report replaced it. That is not a fast product; that is a
+ * screen nobody sees.
+ *
+ * Thirty seconds is the length the cards were written for. It is deliberately
+ * not "however long the read takes": the read is usually finished in three
+ * seconds and occasionally takes twenty, and a wait whose length is decided by
+ * our cache hit rate is a different experience for every visitor.
+ *
+ * The read is still awaited first. A failure does not sit here for half a
+ * minute before saying so — only a success waits, and it says so while it does.
  */
-const MIN_ANALYZING = 3400;
+const MIN_ANALYZING = 30000;
+/**
+ * The ceiling the ring holds at while the read is still running.
+ *
+ * The ring is paced by the clock rather than by the work, because the work
+ * finishes long before the screen does. But it must never sit at 100% with the
+ * read unfinished, so a read that outlasts the wait parks the ring here until
+ * it lands.
+ */
+const RING_HOLD = 0.94;
+/**
+ * When each card of "the rest of what he does" arrives.
+ *
+ * Six cards dealt in one frame is six cards a reader has finished with in four
+ * seconds. Spread across the wait, each one is a reason to still be looking.
+ */
+const CARD_EVERY_MIN = 1200;
 /** The circumference the ring's stroke-dasharray is cut to. */
 const RING = 327;
 /** Screen order for the four blockers, and so the order of the cards. */
@@ -118,6 +145,23 @@ interface Saved {
   token: string | null;
   /** Pages the visitor named to be measured against, so a reload does not lose them. */
   rivals: string[];
+  /**
+   * The address, left at the end of the questionnaire rather than after the read.
+   *
+   * Kept so a reload does not ask for it twice, and so the read that finishes afterwards can be
+   * attached to it without another screen. It is the visitor's own; nothing else on this page
+   * carries it.
+   */
+  email: string;
+  consent: boolean;
+  /**
+   * Whether the server is asking anybody to prove a page is theirs today.
+   *
+   * A deployment with the proof step switched off answers the first request with a 503, and the
+   * verify screen then has nothing to show — so it leaves the walk entirely rather than being
+   * landed on with no code. Remembered because a reload must not put it back.
+   */
+  proofOff: boolean;
 }
 
 /**
@@ -156,6 +200,10 @@ function run(root: HTMLElement) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const say = readCopy(root);
+  // The two sentences the API module has to say for itself — a bare 429, and a response that
+  // was not JSON — handed to it out of this page's own copy. Without this they were English
+  // literals shown on a Persian screen at the worst possible moment.
+  setApiMessages({ limit: say.runtime.limit, generic: say.runtime.generic });
 
   let index = 0;
   let answers: Answers = {};
@@ -165,6 +213,17 @@ function run(root: HTMLElement) {
   let branch: 'page' | 'idea' = 'page';
   let token: string | null = null;
   let rivals: string[] = [];
+  let email = '';
+  let consent = false;
+  let proofOff = false;
+  /**
+   * Set when the address was taken but could not be attached to the read.
+   *
+   * The address is asked for before the read runs, so by the time it can be stored there is no
+   * form on screen to complain to. Rather than lose it silently, the result screen puts its own
+   * form back — which is what that form is for now, and the only time it is seen.
+   */
+  let addressUnsaved = false;
 
   /**
    * The screens actually in the walk, recomputed whenever an answer changes.
@@ -188,8 +247,11 @@ function run(root: HTMLElement) {
    */
   function isActive(screen: HTMLElement): boolean {
     if (screen.dataset.kind === 'error') return false;
-    // Only a page can be proven. The idea branch has nothing to send a code from.
-    if (screen.dataset.kind === 'verify') return branch === 'page';
+    // Only a page can be proven. The idea branch has nothing to send a code from, and a
+    // deployment with the step switched off has no code to show — that used to be handled by
+    // jumping over the screen, which stopped working the moment there was another screen
+    // between the handle and the read. It leaves the walk instead.
+    if (screen.dataset.kind === 'verify') return branch === 'page' && !proofOff;
     const when = screen.dataset.when;
     if (!when) return true;
     const at = when.indexOf(':');
@@ -238,6 +300,9 @@ function run(root: HTMLElement) {
         branch,
         token,
         rivals,
+        email,
+        consent,
+        proofOff,
       };
       sessionStorage.setItem(STORE, JSON.stringify(state));
     } catch {
@@ -546,6 +611,7 @@ function run(root: HTMLElement) {
         return;
       }
 
+
       handle = value.replace(/^@/, '');
       answers.handle = handle;
       recomputeSteps();
@@ -555,8 +621,14 @@ function run(root: HTMLElement) {
       try {
         const proof = await startProof(handle, human.token);
         if (!proof) {
+          // The proof step is switched off on this server. The read goes ahead on the token
+          // instead — but the walk carries on through the screens after this one rather than
+          // leaping to the wait, because one of them is where the address is asked for.
+          proofOff = true;
           beginRead(handle, human.token, null);
-          go(steps.findIndex((s) => s.dataset.kind === 'analyzing'));
+          recomputeSteps();
+          save();
+          next();
           return;
         }
         proofId = proof.id;
@@ -587,6 +659,82 @@ function run(root: HTMLElement) {
     save();
     next();
   });
+
+  // ---- The address, asked before the read rather than after it ------------------
+
+  /**
+   * The last screen of the questionnaire.
+   *
+   * It used to sit on the result screen, holding four findings behind a blur until somebody
+   * paid for them with an email. That only works if there is something behind the blur worth
+   * paying for, and there is not — the whole report is shown either way, which made the trade a
+   * toll booth rather than a bargain. Here it is the ordinary end of filling something in, and
+   * the report that follows arrives whole.
+   *
+   * Nothing is sent from here. There is no read to attach an address to yet — that is the whole
+   * point of asking now — so it is held and posted the moment the read lands, in `openWith`.
+   */
+  const emailForm = root.querySelector<HTMLFormElement>('[data-email-form]');
+  emailForm?.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const input = emailForm.querySelector<HTMLInputElement>('#walk-email')!;
+    const ticked = emailForm.querySelector<HTMLInputElement>('[data-email-consent]')!.checked;
+    const error = emailForm.querySelector<HTMLElement>('[data-email-error]');
+
+    const complaint = check(input.value.trim(), ticked);
+    if (complaint) {
+      if (error) {
+        error.textContent = complaint;
+        error.hidden = false;
+      }
+      return;
+    }
+    if (error) error.hidden = true;
+
+    email = input.value.trim();
+    consent = ticked;
+    addressUnsaved = false;
+    save();
+    next();
+  });
+
+  /**
+   * The read, with the address already given attached to it.
+   *
+   * Returns whatever should be shown: the unlocked view when the address went through, and the
+   * read exactly as it arrived when it did not. Nothing here can lose the report — the worst
+   * outcome is that the result screen puts its own address form back, which is what that form
+   * is for now.
+   */
+  async function openWith(value: AuditResult | IdeaResult): Promise<AuditResult | IdeaResult> {
+    if (!email || !auditId || token) return value;
+    try {
+      return await attach(null);
+    } catch (err) {
+      // One retry, and only for the one failure a retry can fix. The walk passed the human
+      // check when the read began, minutes ago, and the backend's own grace covers that — so
+      // this is rare, and asking the widget again is the only thing left to try.
+      if (kindFor(err) === 'human') {
+        try {
+          const human = await turnstileToken();
+          return await attach(human.token);
+        } catch {
+          /* Falls through to the form below, with the read intact. */
+        }
+      }
+      addressUnsaved = true;
+      return value;
+    }
+  }
+
+  async function attach(human: string | null): Promise<AuditResult | IdeaResult> {
+    const opened = await saveLead(auditId!, email, consent, answers, human);
+    if (typeof opened.token === 'string') {
+      token = opened.token;
+      save();
+    }
+    return opened;
+  }
 
   function track(id: string) {
     auditId = id;
@@ -623,7 +771,21 @@ function run(root: HTMLElement) {
       save();
       readProgress = 0.55;
       readLine = say.runtime.thinking;
-      const answer = await getTopics(started.id, 'idea', idea, locale, token);
+
+      // An empty answer is a legitimate answer on this branch, and it always has been: nothing
+      // was measured, so nothing is claimed, and the screen it leads to is written to hold a
+      // page with no angles on it. What was not legitimate was killing the whole walk when the
+      // call itself failed — a poll allowance spent by a dropped stream, a model over quota —
+      // which is what put a Persian visitor on the error screen with "he stopped" over it and
+      // made a transient refusal look like a broken feature.
+      let answer: IdeaResult;
+      try {
+        answer = await getTopics(started.id, 'idea', idea, locale, token);
+      } catch (err) {
+        if (kindFor(err) === 'human') throw err;
+        console.warn('The angles could not be fetched; showing the branch without them.', err);
+        answer = { unlocked: false, topics: [], field: null, waiting: null };
+      }
       readProgress = 1;
       return answer;
     })().catch((err) => {
@@ -742,7 +904,10 @@ function run(root: HTMLElement) {
       const human = await turnstileToken(button);
       const proof = await startProof(handle, human.token);
       if (!proof) {
+        proofOff = true;
         beginRead(handle, human.token, null);
+        recomputeSteps();
+        save();
         go(steps.findIndex((s) => s.dataset.kind === 'analyzing'));
         return;
       }
@@ -777,31 +942,59 @@ function run(root: HTMLElement) {
     const ring = screen?.querySelector<SVGCircleElement>('[data-ring]');
     const pct = screen?.querySelector<HTMLElement>('[data-pct]');
     const line = screen?.querySelector<HTMLElement>('[data-analyzing-line]');
-    // The ring never shows the raw figure. A read that is already finished
-    // would snap to full the moment this screen opened, which looks like a bug
-    // rather than like speed, so it is eased towards wherever the work is.
+    const ready = screen?.querySelector<HTMLElement>('[data-analyzing-ready]');
+
+    /**
+     * The ring is paced by the clock, not by the work.
+     *
+     * It used to follow `readProgress`, which is the backend's own figure — and a cached read
+     * reports nothing at all before it reports being finished, so the ring sat at the five per
+     * cent floor for its whole life and then the screen changed. That is the reported bug, and
+     * the figure was not wrong: there was simply no work left to describe.
+     *
+     * So the number on screen is how far through the wait the visitor is, which is the thing
+     * the wait is actually about. The work still has a veto: until the read has landed the ring
+     * holds below the end, so it can never claim to be finished before it is.
+     */
+    const startedAt = Date.now();
+    let settled = false;
     let shown = 0;
     const paintRing = () => {
-      const target = Math.max(readProgress, 0.05);
-      shown += (target - shown) * 0.08;
+      const elapsed = (Date.now() - startedAt) / MIN_ANALYZING;
+      const target = Math.min(settled ? 1 : RING_HOLD, Math.max(elapsed, 0.02));
+      shown += (target - shown) * 0.12;
       const clamped = Math.max(0, Math.min(1, shown));
       if (ring) ring.style.strokeDashoffset = String(RING - RING * clamped);
       if (pct) pct.textContent = String(Math.round(clamped * 100));
       if (line && readLine) line.textContent = readLine;
     };
+    paintRing();
     const ticker = setInterval(paintRing, 60);
+    const dealing = dealCards(screen);
 
     const settle = new Promise((r) => setTimeout(r, MIN_ANALYZING));
 
     try {
-      const [value] = await Promise.all([read ?? Promise.reject(new Error('no read')), settle]);
+      // Awaited before the wait, not alongside it. A read that failed says so at once rather
+      // than holding somebody on a progress ring for half a minute to tell them bad news.
+      const got = await (read ?? Promise.reject(new Error('no read')));
+      // The address was taken at the end of the questionnaire, so this is where it becomes a
+      // stored lead and an unlocked report — inside the wait, where it costs nothing.
+      const value = await openWith(got);
+      settled = true;
       readProgress = 1;
+      // Said out loud rather than hidden: the read is done, the wait is not, and pretending
+      // otherwise would be the one dishonest line on the page.
+      if (ready) ready.hidden = false;
+      await settle;
       // Let the ring visibly reach the end before the screen changes.
       await new Promise((r) => setTimeout(r, reduced ? 0 : 700));
       clearInterval(ticker);
+      clearInterval(dealing);
       showResult(value);
     } catch (err) {
       clearInterval(ticker);
+      clearInterval(dealing);
       const e = readFailed ?? err;
       if (kindFor(e) === 'human') {
         // The read never started: the backend could not tell they were a
@@ -814,6 +1007,28 @@ function run(root: HTMLElement) {
     } finally {
       analyzing = false;
     }
+  }
+
+  /**
+   * The cards, dealt one at a time across the wait.
+   *
+   * `renderRest` has already put them all in the DOM; this only decides when each becomes
+   * visible. Spread across the wait rather than staggered by a fixed delay, so two cards and
+   * six cards both fill the same thirty seconds — the number of them depends on what the
+   * visitor admitted to on Q2, and a fixed stagger would leave four of the six unseen.
+   */
+  function dealCards(screen: HTMLElement | undefined): ReturnType<typeof setInterval> {
+    const cards = Array.from(screen?.querySelectorAll<HTMLElement>('.rest__card') ?? []);
+    if (!cards.length) return setInterval(() => {}, 1 << 30);
+    let at = 0;
+    const deal = () => {
+      const card = cards[at++];
+      if (card) card.setAttribute('data-in', '');
+    };
+    deal();
+    // Two thirds of the wait, so the last card is not still arriving as the screen leaves.
+    const every = Math.max(CARD_EVERY_MIN, (MIN_ANALYZING * 0.66) / cards.length);
+    return setInterval(deal, every);
   }
 
   function backToStart(message: string) {
@@ -883,7 +1098,27 @@ function run(root: HTMLElement) {
       renderSize(value.size);
     }
 
+    showTheWayOn(screen);
     go(steps.findIndex((s) => s.dataset.kind === 'result'));
+  }
+
+  /**
+   * What sits under the report: a button, or the form that used to be there.
+   *
+   * The address is asked for at the end of the questionnaire now, so by the time anybody sees
+   * this it has almost always been given and attached — and a form asking again for something
+   * already handed over, under a report that is already whole, is the toll booth this change
+   * exists to remove. The form survives for the one case that still needs it: an address that
+   * was taken and could not be stored.
+   */
+  function showTheWayOn(screen: HTMLElement | undefined) {
+    const teaser = screen?.querySelector<HTMLElement>('[data-result-teaser]');
+    const onward = screen?.querySelector<HTMLElement>('[data-onward]');
+    const form = screen?.querySelector<HTMLElement>('[data-lead-form]');
+    const asked = Boolean(email) && !addressUnsaved;
+    if (teaser) teaser.hidden = !asked;
+    if (onward) onward.hidden = !asked;
+    if (form) form.hidden = asked;
   }
 
   /**
@@ -1105,9 +1340,11 @@ function run(root: HTMLElement) {
     if (fact.meter && meter && !locked) {
       meter.hidden = false;
       const width = Math.max(0, Math.min(100, (fact.meter.value / fact.meter.max) * 100));
-      const fill = field(el, 'meter-fill');
+      // Named `bar`, not `fill`: `fill()` is the placeholder substitution used two lines
+      // below, and a local of that name shadows it.
+      const bar = field(el, 'meter-fill');
       requestAnimationFrame(() => {
-        if (fill) fill.style.width = `${width}%`;
+        if (bar) bar.style.width = `${width}%`;
       });
       const mark = field(el, 'meter-mark');
       if (mark && typeof fact.meter.benchmark === 'number') {
@@ -1117,8 +1354,11 @@ function run(root: HTMLElement) {
       }
       const legend = field(el, 'meter-legend');
       if (legend) {
+        // The one English sentence that survived the move to a copy file, because it was a
+        // template literal rather than a lookup — so a Persian report carried it under every
+        // bar in it. The label inside is the backend's own, translated with the read.
         legend.textContent = fact.meter.benchmarkLabel
-          ? `The mark is the ${fact.meter.benchmarkLabel} for pages your size.`
+          ? fill(say.result.meterLegend ?? '', { label: fact.meter.benchmarkLabel })
           : '';
       }
     }
@@ -1279,15 +1519,27 @@ function run(root: HTMLElement) {
 
   // ---- The address, and the offer -------------------------------------------------
 
+  root.querySelector<HTMLElement>('[data-onward]')?.addEventListener('click', () => {
+    void toPlan();
+  });
+
+  /**
+   * The result screen's own address form.
+   *
+   * The fallback, not the road. Everybody who walked the funnel gave an address on the screen
+   * before the read, and this stays hidden for them — it is here for the one case that is left:
+   * an address that was taken and could not be stored, where the report is already on screen
+   * and there is nowhere else to ask.
+   */
   const leadForm = root.querySelector<HTMLFormElement>('[data-lead-form]');
   leadForm?.addEventListener('submit', async (ev) => {
     ev.preventDefault();
-    const email = leadForm.querySelector<HTMLInputElement>('#email')!.value.trim();
-    const consent = leadForm.querySelector<HTMLInputElement>('[data-consent]')!.checked;
+    const typed = leadForm.querySelector<HTMLInputElement>('#email')!.value.trim();
+    const ticked = leadForm.querySelector<HTMLInputElement>('[data-consent]')!.checked;
     const error = leadForm.querySelector<HTMLElement>('[data-lead-error]');
     const submit = leadForm.querySelector<HTMLButtonElement>('[data-lead-submit]')!;
 
-    const complaint = check(email, consent);
+    const complaint = check(typed, ticked);
     if (complaint) {
       if (error) {
         error.textContent = complaint;
@@ -1298,6 +1550,8 @@ function run(root: HTMLElement) {
     if (error) error.hidden = true;
     submit.disabled = true;
     submit.textContent = say.ui.working;
+    email = typed;
+    consent = ticked;
 
     const giveBack = (message: string) => {
       if (error) {
@@ -1308,18 +1562,28 @@ function run(root: HTMLElement) {
       submit.textContent = say.result.cta;
     };
 
-    const human = await turnstileToken(submit);
-      // Never refused here. Whether a missing token matters is the backend's decision
-      // and only the backend knows the answer: it may have the check switched off, it
-      // may be unconfigured, or it may refuse — and if it refuses it says so in words
-      // this page then shows. Deciding locally is how a page went on blocking people
-      // for an hour after the server had started letting everybody through.
-
+    // No proof-of-human here on the first attempt.
+    //
+    // The walk passed the check when the read began, minutes ago, from this address, and the
+    // backend keeps that for half an hour precisely so this screen does not have to ask again.
+    // Asking anyway is what put a Cloudflare widget in front of people two and three times in
+    // one walk — and the second answer once failed for a day while the first still stood. If
+    // the backend does want one it says so, and the retry below mints it then.
     try {
       if (auditId) {
         // The answer is the same view, unlocked. Nothing is flipped here: what
         // the backend chose to open is what gets drawn.
-        const opened = await saveLead(auditId, email, consent, answers, human.token);
+        let opened: AuditResult | IdeaResult;
+        try {
+          opened = await attach(null);
+        } catch (err) {
+          // The one failure a retry can fix. Everything else is the backend's word, shown.
+          if (kindFor(err) !== 'human') throw err;
+          const human = await turnstileToken(submit);
+          opened = await attach(human.token);
+        }
+        addressUnsaved = false;
+        save();
         if (isIdea(opened)) {
           idea = opened;
           renderStarter(opened);
@@ -1328,12 +1592,6 @@ function run(root: HTMLElement) {
           renderReport(opened);
           renderProjection(opened);
           renderSize(opened.size);
-        }
-        // The receipt is what keeps this read open on a reload, and what stops the next
-        // visitor to the same cached handle inheriting the unlock.
-        if (typeof opened.token === 'string') {
-          token = opened.token;
-          save();
         }
       }
       await toPlan();
@@ -1440,6 +1698,9 @@ function run(root: HTMLElement) {
     branch = saved.branch ?? 'page';
     token = saved.token ?? null;
     rivals = Array.isArray(saved.rivals) ? saved.rivals : [];
+    email = typeof saved.email === 'string' ? saved.email : '';
+    consent = saved.consent === true;
+    proofOff = saved.proofOff === true;
     if (typeof answers.stage === 'string') applyStage(answers.stage);
     recomputeSteps();
     restoreChoices();
@@ -1482,6 +1743,13 @@ function run(root: HTMLElement) {
     }
     const handleInput = root.querySelector<HTMLInputElement>('#handle');
     if (handleInput && handle) handleInput.value = handle;
+
+    // The address, put back into the screen that asked for it. A reload half-way through the
+    // walk must not ask twice for something already typed.
+    const emailInput = root.querySelector<HTMLInputElement>('#walk-email');
+    if (emailInput && email) emailInput.value = email;
+    const consentBox = root.querySelector<HTMLInputElement>('[data-email-consent]');
+    if (consentBox) consentBox.checked = consent;
   }
 }
 

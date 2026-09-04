@@ -37,6 +37,23 @@ const path = Astro.url.pathname;
       }
     </nav>
 
+    {/* The same links, for the width they were previously deleted at. Rendered
+        rather than cloned, so a phone gets real anchors with no script between
+        the reader and the page. */}
+    <button
+      class="nav__burger"
+      type="button"
+      aria-label={copy.nav.menu}
+      aria-expanded="false"
+      aria-controls="nav-menu"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path class="nav__burger-top" d="M4 7h16" />
+        <path class="nav__burger-mid" d="M4 12h16" />
+        <path class="nav__burger-bot" d="M4 17h16" />
+      </svg>
+    </button>
+
     <LangSwitch locale={locale} path={path} label={copy.nav.language} compact />
 
     <button class="nav__theme" type="button" aria-label={copy.nav.theme}>
@@ -54,6 +71,16 @@ const path = Astro.url.pathname;
 
     <a class="btn nav__cta" href={locale === 'en' ? '/read' : `/${locale}/read`}>{copy.nav.cta}</a>
   </div>
+
+  <nav class="nav__menu" id="nav-menu" aria-label={copy.nav.menu} hidden>
+    {
+      links.map((l) => (
+        <a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
 </header>
 
 <style>
@@ -133,6 +160,11 @@ const path = Astro.url.pathname;
   /* The one pill on the site (DNA §4). `.btn` itself is 10px everywhere else. */
   .nav__cta {
     border-radius: var(--r-pill);
+    /* A pill is a shape that only works on one line. Wrapped, it becomes a
+       lozenge nearly as tall as it is wide — which is what "خوانش رایگان" did
+       to it on a phone, where the label is twelve characters and the space
+       beside the wordmark is not. */
+    white-space: nowrap;
   }
 
   .nav__brand {
@@ -177,8 +209,116 @@ const path = Astro.url.pathname;
     }
   }
 
+  /* ---- The phone ---------------------------------------------------------- */
+
+  /* Shown only where the row of links is not. It is a control that exists to
+     replace something, so it appears exactly where that something goes. */
+  .nav__burger {
+    display: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: var(--r-2);
+    color: var(--ink-2);
+    transition: color var(--dur) ease;
+  }
+
+  .nav__burger svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+  }
+
+  .nav__burger path {
+    transition:
+      transform var(--dur) var(--ease-out),
+      opacity var(--dur-fast) ease;
+    transform-origin: center;
+  }
+
+  .nav__burger[aria-expanded='true'] .nav__burger-top {
+    transform: translateY(5px) rotate(45deg);
+  }
+
+  .nav__burger[aria-expanded='true'] .nav__burger-mid {
+    opacity: 0;
+  }
+
+  .nav__burger[aria-expanded='true'] .nav__burger-bot {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+
+  /* A panel under the bar rather than a full-screen takeover: there are five
+     links, and covering the page to show five links is a gesture, not a menu.
+     Hidden with the `hidden` attribute so it is genuinely gone for a reader
+     using a screen reader, not merely invisible. */
+  .nav__menu {
+    display: grid;
+    padding: var(--s-2) var(--s-5) var(--s-4);
+    border-top: 1px solid var(--rule-soft);
+    background: var(--paper);
+  }
+
+  .nav__menu a {
+    padding-block: var(--s-3);
+    font-size: 1.0625rem;
+    color: var(--ink-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .nav__menu a:last-child {
+    border-bottom: 0;
+  }
+
+  .nav__menu a[aria-current='page'] {
+    color: var(--ink);
+  }
+
   @media (max-width: 760px) {
     .nav__links {
+      display: none;
+    }
+
+    .nav__burger {
+      display: grid;
+    }
+
+    /* The bar was five items wide with a --s-6 gap between each, which is what
+       pushed it onto a second and then a third row and left --nav-h chasing it
+       from tokens.css. Four items and a tighter gap fit on one line down to
+       320px, brand included. */
+    .nav__inner {
+      gap: var(--s-3);
+      padding-inline: var(--s-4);
+    }
+
+    .nav__brand {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Below this the pill and the wordmark cannot both be full size. The CTA is
+     the reason the bar exists, so the wordmark gives way. */
+  @media (max-width: 420px) {
+    .nav__brand {
+      font-size: 1.125rem;
+    }
+
+    .nav__cta {
+      padding-inline: var(--s-4);
+      font-size: var(--t-meta);
+    }
+  }
+
+  /* The panel is a phone thing. Above 760px the links are in the bar and this
+     must never appear, whatever state the button was left in. */
+  @media (min-width: 761px) {
+    .nav__menu {
       display: none;
     }
   }
@@ -219,6 +359,41 @@ const path = Astro.url.pathname;
       meta.name = 'theme-color';
       meta.content = GROUND[next];
       document.head.appendChild(meta);
+    });
+  }
+
+  // The phone menu. Nothing here creates the links — they are in the document
+  // already — so this only decides whether they are shown, and says so on the
+  // button for anyone who cannot see it.
+  const burger = document.querySelector<HTMLButtonElement>('.nav__burger');
+  const menu = document.querySelector<HTMLElement>('#nav-menu');
+
+  if (burger && menu) {
+    const show = (open: boolean) => {
+      burger.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    };
+
+    burger.addEventListener('click', () => show(burger.getAttribute('aria-expanded') !== 'true'));
+
+    // Following a link is the whole point of the menu, so it closes behind you —
+    // including for an in-page anchor, where nothing navigates and the panel
+    // would otherwise sit over the section it just scrolled to.
+    for (const link of menu.querySelectorAll('a')) {
+      link.addEventListener('click', () => show(false));
+    }
+
+    addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && !menu.hidden) {
+        show(false);
+        burger.focus();
+      }
+    });
+
+    // Widening past the breakpoint puts the links back in the bar, and a panel
+    // left open below it would then be the same five links twice.
+    matchMedia('(min-width: 761px)').addEventListener('change', (ev) => {
+      if (ev.matches) show(false);
     });
   }
 

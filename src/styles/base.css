@@ -173,6 +173,33 @@ button {
   max-width: 46ch;
 }
 
+/*
+ * The phone.
+ *
+ * `.wrap` is the site's only horizontal gutter, and at 1.5rem a side it left a
+ * 360px screen 312px of content — a hero headline at 44px then broke every two
+ * or three words. One step down is 32px more line, which is the difference
+ * between three lines and five.
+ */
+@media (max-width: 30rem) {
+  .wrap {
+    padding-inline: var(--s-4);
+  }
+
+  /* Touch targets, not text links. A button that is 36px tall is a button that
+     gets missed, and every one of these is the end of a section. */
+  .btn {
+    padding: 0.8rem 1.25rem;
+  }
+
+  /* A measure given in `ch` is a Latin measure — `ch` is the width of a zero —
+     so a 46ch lead is markedly wider in Persian than the same number in
+     English. On a phone it is the viewport that decides anyway. */
+  .lead {
+    max-width: none;
+  }
+}
+
 /* Buttons: ink on paper. --horn is a highlight, never a button fill. */
 .btn {
   display: inline-flex;

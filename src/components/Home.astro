@@ -413,4 +413,92 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
       gap: var(--s-5);
     }
   }
+
+  /*
+   * The phone.
+   *
+   * The hero was the whole complaint: a 44px headline, a 21px lead at 56ch, a
+   * 4rem gap and then a 460px drawing, which together is two and a half screens
+   * before the button. Nothing here changes the design — the drawing still
+   * anchors the fold and the headline is still the largest thing on the page —
+   * it changes the amount of a phone each of them is allowed to take.
+   */
+  @media (max-width: 30rem) {
+    .hero {
+      padding-block: clamp(2rem, 1rem + 5vw, 3rem) var(--s-6);
+    }
+
+    .hero__title {
+      font-size: clamp(2.125rem, 1.4rem + 4.5vw, 2.75rem);
+      max-width: 14ch;
+    }
+
+    .hero__lead {
+      margin-top: var(--s-4);
+      font-size: 1.0625rem;
+    }
+
+    .hero__actions {
+      margin-top: var(--s-5);
+    }
+
+    /* The button is the point of the hero and it is below the drawing, so the
+       drawing gives up the space rather than the button falling further. */
+    .hero__art {
+      max-width: 260px;
+      margin-top: var(--s-6);
+    }
+
+    .pilot__art {
+      max-width: 220px;
+      margin-top: var(--s-5);
+    }
+
+    .pilot__paths {
+      margin-top: var(--s-6);
+      gap: var(--s-4);
+    }
+
+    .pillar__visual :global(.art) {
+      max-width: 240px;
+    }
+
+    .path__title,
+    .trust__title {
+      font-size: 1.1875rem;
+    }
+
+    .cap__name {
+      font-size: 1.125rem;
+    }
+
+    .grid-3 {
+      margin-top: var(--s-6);
+      gap: var(--s-4);
+    }
+  }
+
+  /*
+   * Persian, on a phone.
+   *
+   * Vazirmatn sets larger than Geist at the same nominal size and needs more
+   * leading, so the same headline in Persian is a line taller before anything
+   * is changed. The `ch` measures go with it: `ch` is the width of a Latin
+   * zero, which makes an 18ch title much wider in Persian than in English.
+   */
+  :global([lang='fa']) .hero__title {
+    max-width: 13em;
+    line-height: 1.25;
+  }
+
+  @media (max-width: 30rem) {
+    :global([lang='fa']) .hero__title {
+      font-size: clamp(1.875rem, 1.2rem + 4vw, 2.5rem);
+      max-width: 11em;
+    }
+
+    :global([lang='fa']) .hero__lead {
+      line-height: 1.85;
+    }
+  }
 </style>

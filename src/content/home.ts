@@ -22,6 +22,14 @@ export interface HomeCopy {
     theme: string;
     /** The word on the closed language control. */
     language: string;
+    /**
+     * The name of the control that opens the links on a phone.
+     *
+     * There was no such control. Under 760px the nav simply hid its links, so Features, the
+     * free read, Reliability, the FAQ and the guides were unreachable on the device most
+     * visitors arrive on — the site had a navigation bar with nothing in it.
+     */
+    menu: string;
   };
 
   hero: {
@@ -99,9 +107,12 @@ export const HOME_EN: HomeCopy = {
       { href: '/#reliability', label: 'Reliability' },
       { href: '/#faq', label: 'FAQ' },
     ],
-    cta: 'Let him look',
+    // Short enough to sit in a nav bar, and it says what happens rather than
+    // asking permission for it. "Let him look" was neither.
+    cta: 'Free read',
     theme: 'Switch to the light theme',
     language: 'Language',
+    menu: 'Menu',
   },
 
   hero: {
@@ -109,8 +120,17 @@ export const HOME_EN: HomeCopy = {
     titleAccent: 'Diw',
     titleAfter: '.',
     lead: 'He reads what you have made and what your audience answered. He remembers. Each morning he brings topics that are yours, not everyone’s — then writes, shoots, captions and schedules, while you keep every word and frame.',
-    cta: 'Let him read your page',
-    ctaOff: 'See what he would do for your page',
+    /*
+     * The button, in the reader's words rather than ours.
+     *
+     * "Let him read your page" is five words asking to be allowed to do
+     * something, set in a button the width of the sentence — which on a phone
+     * wrapped to two lines under a headline that had already said who he is.
+     * The Diw is the narrator everywhere else on this page; the button is the
+     * one place the reader speaks.
+     */
+    cta: 'Read my page',
+    ctaOff: 'See what he would do',
   },
 
   trustBar: {
@@ -254,9 +274,10 @@ export const HOME_FA: HomeCopy = {
       { href: '/fa/#reliability', label: 'قابل‌اتکا بودن' },
       { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
     ],
-    cta: 'بذار یه نگاهی بندازه',
+    cta: 'خوانش رایگان',
     theme: 'رفتن به تم روشن',
     language: 'زبان',
+    menu: 'منو',
   },
 
   hero: {
@@ -264,8 +285,8 @@ export const HOME_FA: HomeCopy = {
     titleAccent: 'دیو',
     titleAfter: ' دارن.',
     lead: 'می‌خونه چی ساختی و مخاطبت به چی جواب داده، و یادش می‌مونه. هر صبح سوژه‌هایی می‌آره که مالِ خودتن، نه مالِ همه — بعد می‌نویسه، می‌سازه، کپشن می‌ذاره و زمان‌بندی می‌کنه؛ در حالی که هر کلمه و هر فریم دست خودت می‌مونه.',
-    cta: 'بذار پیجم رو بخونه',
-    ctaOff: 'ببین با پیجت چه می‌کنه',
+    cta: 'پیجم رو بخون',
+    ctaOff: 'ببین چه می‌کنه',
   },
 
   trustBar: {
@@ -416,9 +437,10 @@ export const HOME_DE: HomeCopy = {
       { href: '/de/#reliability', label: 'Verlässlichkeit' },
       { href: '/de/#faq', label: 'Fragen' },
     ],
-    cta: 'Lass ihn nachsehen',
+    cta: 'Kostenlose Analyse',
     theme: 'Zum hellen Design wechseln',
     language: 'Sprache',
+    menu: 'Menü',
   },
 
   hero: {
@@ -426,8 +448,8 @@ export const HOME_DE: HomeCopy = {
     titleAccent: 'Diw',
     titleAfter: '.',
     lead: 'Er liest, was du gemacht hast, und worauf dein Publikum reagiert hat. Er merkt es sich. Jeden Morgen bringt er Themen, die zu dir gehören und nicht zu allen — dann schreibt, dreht, betextet und plant er, während jedes Wort und jedes Bild deins bleibt.',
-    cta: 'Lass ihn deine Seite lesen',
-    ctaOff: 'Sieh, was er aus deiner Seite machen würde',
+    cta: 'Meine Seite lesen',
+    ctaOff: 'Sieh, was er tun würde',
   },
 
   trustBar: {
