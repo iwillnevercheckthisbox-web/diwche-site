@@ -72,6 +72,7 @@ const dir = dirFor(locale);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     {
       alternates.map((a) => (
         <link rel="alternate" hreflang={a.locale} href={new URL(a.href, Astro.site)} />

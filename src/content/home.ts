@@ -101,12 +101,15 @@ export const HOME_EN: HomeCopy = {
   nav: {
     // Pricing is deliberately absent: no number has been decided, and a tier
     // list of placeholders is worse than none because a reader cannot tell.
+    //
+    // The guide (/learn) is deliberately not here either. It stays published
+    // and in the sitemap for search, and the footer still links to it; it just
+    // is no longer a headline destination.
     links: [
       { href: '/#product', label: 'Features' },
       { href: '/#pilot', label: 'The free read' },
       { href: '/#reliability', label: 'Reliability' },
       { href: '/#faq', label: 'FAQ' },
-      { href: '/learn', label: 'Learn' },
     ],
     // Short enough to sit in a nav bar, and it says what happens rather than
     // asking permission for it. "Let him look" was neither.
@@ -274,7 +277,6 @@ export const HOME_FA: HomeCopy = {
       { href: '/fa/#pilot', label: 'خوانش رایگان' },
       { href: '/fa/#reliability', label: 'قابل‌اتکا بودن' },
       { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
-      { href: '/fa/learn', label: 'راهنماها' },
     ],
     cta: 'خوانش رایگان',
     theme: 'رفتن به تم روشن',
@@ -438,7 +440,6 @@ export const HOME_DE: HomeCopy = {
       { href: '/de/#pilot', label: 'Die kostenlose Analyse' },
       { href: '/de/#reliability', label: 'Verlässlichkeit' },
       { href: '/de/#faq', label: 'Fragen' },
-      { href: '/de/learn', label: 'Anleitungen' },
     ],
     cta: 'Kostenlose Analyse',
     theme: 'Zum hellen Design wechseln',

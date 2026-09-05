@@ -1,12 +1,34 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 
 // Static output only — the build must drop into any file server.
 // No adapter, no SSR, no external asset hosts (fonts are self-hosted from node_modules).
 export default defineConfig({
   site: 'https://diwche.com',
-  integrations: [mdx()],
+  integrations: [
+    mdx(),
+    /*
+     * The guide (/learn) is not in the nav any more; the sitemap is how search
+     * engines keep finding its pages.
+     *
+     * Kept out: the pages that already say noindex (/read, /bio, /r, in every
+     * language), the two post-action pages (/confirm, /consent) nobody should
+     * land on from a search, and the DE/FA learn trees, which have no articles
+     * yet and would only advertise empty section shells. No `i18n` option on
+     * purpose: it would emit a blanket alternate per locale, which is exactly
+     * what Base.astro's per-page hreflang avoids (see its `alternates` note).
+     */
+    sitemap({
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        if (/^\/(?:(?:de|fa)\/)?(?:read|bio|r|confirm|consent)(?:\/|$)/.test(path)) return false;
+        if (/^\/(?:de|fa)\/learn(?:\/|$)/.test(path)) return false;
+        return true;
+      },
+    }),
+  ],
   build: { format: 'directory' },
 
   markdown: {

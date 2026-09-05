@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /read
+Sitemap: https://diwche.com/sitemap-index.xml
