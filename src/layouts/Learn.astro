@@ -16,6 +16,7 @@ import { HOME_DE, HOME_EN, HOME_FA, type HomeCopy } from '../content/home';
 import { LEARN_UI } from '../content/learn/ui';
 import { learnHome, type NavSection } from '../lib/learn';
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '../lib/direction';
+import { breadcrumbs, techArticle } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -51,6 +52,41 @@ const alternates = LOCALES.filter((l) => available.includes(l)).map((l) => ({
 
 const currentSection = current.split('/')[0];
 const here = nav.find((s) => s.section === currentSection);
+
+/*
+ * The trail, and the article.
+ *
+ * Built from the same `nav` and `current` the rail is drawn from, so the crumbs
+ * Google is handed and the crumbs the reader can see cannot drift apart — which
+ * is the one thing that turns breadcrumb markup from an asset into a penalty.
+ * Stops wherever the page stops: the guide landing page gets two crumbs, a
+ * section index three, an article four.
+ *
+ * `TechArticle` is emitted only for a real article. A section index is a list of
+ * links, and calling a list of links an article is the kind of small lie that
+ * costs the whole graph its credibility.
+ */
+const home = locale === DEFAULT_LOCALE ? '/' : `/${locale}/`;
+const trail = [
+  { name: HOME[locale].meta.title.split(' — ')[0], url: home },
+  { name: ui.landingTitle, url: learnHome(locale) },
+  ...(here ? [{ name: here.title, url: here.href }] : []),
+  ...(current.includes('/') ? [{ name: title.split(' — ')[0], url: Astro.url.pathname }] : []),
+];
+
+const schema = [
+  breadcrumbs(trail),
+  ...(current.includes('/')
+    ? [
+        techArticle(locale, {
+          url: Astro.url.pathname,
+          title: title.split(' — ')[0],
+          description,
+          section: here?.title,
+        }),
+      ]
+    : []),
+];
 ---
 
 <Base
@@ -60,6 +96,7 @@ const here = nav.find((s) => s.section === currentSection);
   copy={HOME[locale]}
   alternates={alternates}
   image={image}
+  schema={schema}
 >
   <!--
     The mobile section switcher.

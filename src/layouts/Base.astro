@@ -8,7 +8,8 @@ import '../styles/tokens.css';
 import '../styles/base.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
+import { DEFAULT_LOCALE, LOCALES, dirFor, type Locale } from '../lib/direction';
+import { OG_LOCALE, graph, ogImageFor } from '../lib/seo';
 import { HOME_EN, type HomeCopy } from '../content/home';
 
 interface Props {
@@ -40,10 +41,26 @@ interface Props {
   /**
    * The social card image, as an absolute path.
    *
-   * The site has declared `summary_large_image` since it launched and never set
-   * one, so every share has been a bare text card.
+   * The site declared `summary_large_image` since it launched and never set one,
+   * so every share was a bare text card. A page still names its own where it has
+   * a better picture than the brand card — the default is a floor, not a ceiling.
    */
   image?: string;
+  /**
+   * Keep this page out of search results.
+   *
+   * For pages that only mean something walked into: the funnel says this in
+   * Bare.astro, and the two post-action pages say it here. Being absent from the
+   * sitemap is not the same claim — a sitemap says "here is what to crawl", not
+   * "do not crawl the rest", so anything linked from anywhere was still eligible.
+   */
+  noindex?: boolean;
+  /**
+   * Structured data this page adds on top of the site-wide Organization and
+   * WebSite nodes, which every page emits. See src/lib/seo.ts for the rule about
+   * only claiming what the page says out loud.
+   */
+  schema?: Record<string, unknown>[];
 }
 
 const {
@@ -54,6 +71,8 @@ const {
   turnstile = false,
   alternates = [],
   image,
+  noindex = false,
+  schema = [],
 } = Astro.props;
 
 // Nothing third-party is loaded without a key, so an unconfigured build is the page
@@ -62,6 +81,9 @@ const turnstileKey = turnstile ? (import.meta.env.PUBLIC_TURNSTILE_KEY ?? '') : 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Direction follows the content language, resolved in one place.
 const dir = dirFor(locale);
+// A page's own picture wins; otherwise the brand card in this page's language.
+const card = new URL(image ?? ogImageFor(locale), Astro.site);
+const jsonLd = graph(locale, schema);
 ---
 
 <!doctype html>
@@ -73,6 +95,7 @@ const dir = dirFor(locale);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     {
       alternates.map((a) => (
         <link rel="alternate" hreflang={a.locale} href={new URL(a.href, Astro.site)} />
@@ -108,8 +131,29 @@ const dir = dirFor(locale);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <!-- Underscored tags, which is what Open Graph wants — not the BCP-47 ones
+         `lang` carries. The alternates are the languages this page is actually
+         written in, so they stay in step with the hreflang links above. -->
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    {
+      LOCALES.filter((l) => l !== locale && alternates.some((a) => a.locale === l)).map((l) => (
+        <meta property="og:locale:alternate" content={OG_LOCALE[l]} />
+      ))
+    }
     <meta name="twitter:card" content="summary_large_image" />
-    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    <!-- Unconditional. It used to be `{image && …}` with nothing ever passing
+         `image`, which is how a `summary_large_image` card shipped for a year
+         with no image in it. The dimensions let a platform reserve the space
+         before the file arrives. -->
+    <meta property="og:image" content={card} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:image" content={card} />
+
+    <!-- One graph rather than a tag per node: `@id` references only resolve
+         inside one, and it is the shape Google's own docs ask for. -->
+    <script type="application/ld+json" is:inline set:html={jsonLd} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <!-- The drawn horns, for the places that will not take an SVG. -->

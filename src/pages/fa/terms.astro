@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { allLocaleAlternates, metaDescription } from '../../lib/seo';
 import LegalDoc from '../../components/LegalDoc.astro';
 import { TERMS } from '../../content/legal';
 import { HOME_FA } from '../../content/home';
@@ -12,10 +13,11 @@ const doc = TERMS['fa'];
 ---
 
 <Base
+  alternates={allLocaleAlternates(Astro.url.pathname)}
   locale="fa"
   copy={HOME_FA}
   title={`${doc.title} — Diwche`}
-  description={doc.lead}
+  description={metaDescription(doc.lead)}
 >
   <LegalDoc doc={doc} />
 </Base>

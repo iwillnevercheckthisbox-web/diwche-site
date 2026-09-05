@@ -1,4 +1,14 @@
+# Nothing here is blocked from crawling on purpose.
+#
+# /read, /bio and /r are meant to stay out of search results, and they say so
+# themselves with `noindex` in their own markup. That is the directive that
+# actually removes a page. A Disallow does the opposite of what it looks like:
+# it stops the crawler fetching the page, so the crawler never reads the
+# noindex, and a URL that picks up a single inbound link can still be listed —
+# without a description, because nothing was allowed to read it.
+#
+# So the rule is: noindex to remove a page, Disallow only to spare the server.
 User-agent: *
 Allow: /
-Disallow: /read
+
 Sitemap: https://diwche.com/sitemap-index.xml

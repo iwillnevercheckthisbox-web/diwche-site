@@ -2,6 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import Home from '../../components/Home.astro';
 import { HOME_FA } from '../../content/home';
+import { allLocaleAlternates, softwareApplication } from '../../lib/seo';
+
+const schema = [softwareApplication('fa', HOME_FA.meta.title, HOME_FA.meta.description)];
 ---
 
 <Base
@@ -9,6 +12,8 @@ import { HOME_FA } from '../../content/home';
   copy={HOME_FA}
   title={HOME_FA.meta.title}
   description={HOME_FA.meta.description}
+  alternates={allLocaleAlternates(Astro.url.pathname)}
+  schema={schema}
 >
   <Home copy={HOME_FA} locale="fa" />
 </Base>

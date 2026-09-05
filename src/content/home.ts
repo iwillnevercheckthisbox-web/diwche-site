@@ -95,7 +95,7 @@ export const HOME_EN: HomeCopy = {
   meta: {
     title: 'Diwche — a manager for one Instagram account. Yours.',
     description:
-      'Diwche runs one Instagram account at a time — reading your feeds, writing and designing the post, and putting it up on schedule, tuned to what has worked on accounts like yours.',
+      'Diwche runs one Instagram account: reads your feeds, writes and designs the post, and publishes it on schedule — tuned to what works on accounts like yours.',
   },
 
   nav: {
@@ -268,7 +268,7 @@ export const HOME_FA: HomeCopy = {
   meta: {
     title: 'دیوچه — یک مدیر برای پیج اینستاگرامت.',
     description:
-      'دیوچه پیج اینستاگرامت را می‌گرداند: منابعت را می‌خواند، پست را می‌نویسد و طراحی می‌کند و سر ساعت منتشرش می‌کند — بر اساس چیزی که روی پیج‌هایی مثل مالِ تو جواب داده.',
+      'دیوچه پیج اینستاگرامت را می‌گرداند: منابعت را می‌خواند، پست را می‌نویسد و طراحی می‌کند و سر ساعت منتشر می‌کند — بر اساس آنچه روی پیج‌های مشابه جواب داده.',
   },
 
   nav: {
@@ -431,7 +431,7 @@ export const HOME_DE: HomeCopy = {
   meta: {
     title: 'Diwche — ein Manager für einen Instagram-Account. Deinen.',
     description:
-      'Diwche führt einen Instagram-Account nach dem anderen — liest deine Quellen, schreibt und gestaltet den Beitrag und veröffentlicht ihn pünktlich, ausgerichtet an dem, was bei Profilen wie deinem funktioniert hat.',
+      'Diwche führt einen Instagram-Account: liest deine Quellen, schreibt und gestaltet den Beitrag, veröffentlicht ihn pünktlich — orientiert an Profilen wie deinem.',
   },
 
   nav: {

@@ -10,6 +10,7 @@
     "preview": "astro preview",
     "mascot:build": "python3 scripts/build-mascot.py",
     "art:build": "python3 scripts/build-art.py",
+    "og:build": "node scripts/build-og.mjs",
     "mascot:sync": "node scripts/sync-mascot.mjs && node scripts/render-poster.mjs",
     "shoot": "node scripts/shoot.mjs",
     "dev:site": "astro dev",
