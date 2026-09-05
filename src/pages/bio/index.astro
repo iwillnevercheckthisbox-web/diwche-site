@@ -112,7 +112,13 @@ import Bare from '../../layouts/Bare.astro';
     gap: var(--s-3);
   }
 
-  .bio-link {
+  /* :global on every rule below that targets a link or a post tile — those elements are built at
+     runtime by scripts/bioPage.ts, so they never carry the data-astro-cid attribute Astro stamps
+     on template markup, and a scoped selector simply never matched them. The page rendered its
+     links as bare underlined text with no card, no padding and no hover, which is what
+     diwche.com/@diwche.app looked like in production. The containers (.bio-links, .bio-posts) ARE
+     in the template and stay scoped; only their runtime children need this. */
+  :global(.bio-link) {
     display: block;
     padding: var(--s-4);
     border: 1px solid var(--rule);
@@ -124,19 +130,19 @@ import Bare from '../../layouts/Bare.astro';
     transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
   }
 
-  .bio-link:hover,
-  .bio-link:focus-visible {
+  :global(.bio-link:hover),
+  :global(.bio-link:focus-visible) {
     border-color: var(--horn);
     background: var(--paper-4);
     transform: translateY(-1px);
   }
 
-  .bio-link strong {
+  :global(.bio-link strong) {
     display: block;
     font-weight: 500;
   }
 
-  .bio-link span {
+  :global(.bio-link span) {
     display: block;
     margin-top: var(--s-1);
     color: var(--ink-3);
@@ -149,7 +155,7 @@ import Bare from '../../layouts/Bare.astro';
     gap: var(--s-2);
   }
 
-  .bio-post {
+  :global(.bio-post) {
     display: block;
     aspect-ratio: 1;
     border-radius: var(--r-2);
@@ -157,7 +163,7 @@ import Bare from '../../layouts/Bare.astro';
     background: var(--paper-3);
   }
 
-  .bio-post img {
+  :global(.bio-post img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -218,7 +224,7 @@ import Bare from '../../layouts/Bare.astro';
 
   @media (prefers-reduced-motion: reduce) {
     .bio-spinner { animation: none; }
-    .bio-link { transition: none; }
+    :global(.bio-link) { transition: none; }
   }
 </style>
 

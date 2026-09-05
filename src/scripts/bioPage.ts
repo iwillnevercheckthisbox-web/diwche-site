@@ -52,9 +52,17 @@ function render(page: BioPage) {
 
   const avatar = document.getElementById('bio-avatar') as HTMLImageElement | null;
   if (avatar && page.avatarUrl) {
-    avatar.src = page.avatarUrl;
+    // Shown only once it has actually loaded. Revealing it first and hoping meant that an account
+    // whose picture could not be fetched displayed a broken-image glyph with the owner's name as
+    // alt text where their face should be — worse than no picture at all, and exactly what
+    // production showed. A page with no picture simply starts at the name.
     avatar.alt = page.name ?? '';
-    avatar.removeAttribute('hidden');
+    avatar.addEventListener('load', () => avatar.removeAttribute('hidden'), { once: true });
+    avatar.addEventListener('error', () => avatar.setAttribute('hidden', ''), { once: true });
+    avatar.src = page.avatarUrl;
+    // A cached image can finish before the listener is attached; complete + a real width says it
+    // is already there and no load event is coming.
+    if (avatar.complete && avatar.naturalWidth > 0) avatar.removeAttribute('hidden');
   }
 
   text('bio-name', page.name);
