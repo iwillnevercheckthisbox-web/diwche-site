@@ -140,7 +140,7 @@ export const HOME_EN: HomeCopy = {
   trustBar: {
     label: 'You sign in through',
     note: 'Your account connects through Meta’s own login — no password is ever typed here, and nothing is posted until you connect it.',
-    promise: 'We cannot read your direct messages — we never ask for that permission. And we do not store your comments.',
+    promise: 'He answers your comments and messages in your voice, then forgets them — we never store a word your audience writes to you.',
   },
 
   pilot: {
@@ -296,7 +296,7 @@ export const HOME_FA: HomeCopy = {
   trustBar: {
     label: 'ورودت از طریق',
     note: 'اتصال اکانتت از راهِ خودِ لاگین متا انجام می‌شه — هیچ رمزی اینجا تایپ نمی‌شه، و تا وصلش نکنی چیزی منتشر نمی‌شه.',
-    promise: 'ما نمی‌تونیم دایرکت‌هات رو بخونیم — اصلاً این دسترسی رو نمی‌خوایم. کامنت‌هات رو هم ذخیره نمی‌کنیم.',
+    promise: 'کامنت‌ها و دایرکت‌هات رو با لحن خودت جواب می‌ده و بعد فراموششون می‌کنه — یک کلمه از چیزی که مخاطبت برات نوشته رو ذخیره نمی‌کنیم.',
   },
 
   pilot: {
@@ -459,7 +459,7 @@ export const HOME_DE: HomeCopy = {
   trustBar: {
     label: 'Du meldest dich an über',
     note: 'Dein Konto wird über Metas eigenen Login verbunden — hier wird nie ein Passwort eingegeben, und nichts wird veröffentlicht, bevor du verbindest.',
-    promise: 'Wir können deine Direktnachrichten nicht lesen — wir fragen nie nach dieser Berechtigung. Und wir speichern deine Kommentare nicht.',
+    promise: 'Er beantwortet deine Kommentare und Nachrichten in deiner Stimme und vergisst sie danach — wir speichern kein Wort von dem, was dein Publikum dir schreibt.',
   },
 
   pilot: {

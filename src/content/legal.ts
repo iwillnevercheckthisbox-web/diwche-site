@@ -39,9 +39,9 @@ export interface LegalDoc {
 }
 
 /** Bumped whenever the text changes, and shown at the top of the page. */
-export const PRIVACY_UPDATED = '2026-09-02';
+export const PRIVACY_UPDATED = '2026-09-06';
 /** The terms have their own date; they change on a different rhythm. */
-export const TERMS_UPDATED = '2026-09-02';
+export const TERMS_UPDATED = '2026-09-06';
 
 const CONTACT = 'support@diwche.com';
 
@@ -86,10 +86,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'What we never ask Instagram for',
+        title: 'What we ask Instagram for, and nothing more',
         body: [
-          'When you connect an account, the permission screen lists exactly three things: reading your profile and posts, publishing on your behalf, and replying to comments. We do not request access to your direct messages — not now, not later — so we cannot read them even if we wanted to.',
-          'Comments are not stored. When someone comments on your post and you have turned auto-reply on, Meta notifies us, we answer, and we keep only the comment’s ID so that the same comment is never answered twice. The text itself is not written anywhere.',
+          'When you connect an account, the permission screen lists exactly what we use: reading your profile and posts, publishing on your behalf, and replying to comments and direct messages. We ask for nothing beyond that, and Meta shows you the full list before you agree.',
+          'Comments and messages are not stored. When someone comments on your post or writes to you and you have turned auto-reply on, Meta notifies us, we answer, and we keep only the comment’s or message’s ID so that the same one is never answered twice. The text itself is not written anywhere.',
         ],
       },
       {
@@ -172,10 +172,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'چیزهایی که هرگز از اینستاگرام نمی‌خواهیم',
+        title: 'چیزهایی که از اینستاگرام می‌خواهیم، و نه بیشتر',
         body: [
-          'وقتی اکانتت را وصل می‌کنی، صفحه‌ی مجوزها دقیقاً سه چیز را نشان می‌دهد: خواندن پروفایل و پست‌هایت، انتشار از طرف تو، و پاسخ به کامنت‌ها. دسترسی به دایرکت‌هایت را نمی‌خواهیم — نه حالا و نه بعداً — پس حتی اگر بخواهیم هم نمی‌توانیم بخوانیمشان.',
-          'کامنت‌ها ذخیره نمی‌شوند. وقتی کسی زیر پستت کامنت می‌گذارد و تو پاسخ خودکار را روشن کرده باشی، متا به ما خبر می‌دهد، ما جواب می‌دهیم، و فقط شناسه‌ی کامنت را نگه می‌داریم تا یک کامنت دو بار جواب نگیرد. خودِ متن هیچ‌جا نوشته نمی‌شود.',
+          'وقتی اکانتت را وصل می‌کنی، صفحه‌ی مجوزها دقیقاً همان چیزهایی را نشان می‌دهد که استفاده می‌کنیم: خواندن پروفایل و پست‌هایت، انتشار از طرف تو، و پاسخ به کامنت‌ها و دایرکت‌ها. چیزی فراتر از این نمی‌خواهیم و متا فهرست کامل را پیش از تأیید به تو نشان می‌دهد.',
+          'کامنت‌ها و دایرکت‌ها ذخیره نمی‌شوند. وقتی کسی زیر پستت کامنت می‌گذارد یا برایت پیام می‌فرستد و تو پاسخ خودکار را روشن کرده باشی، متا به ما خبر می‌دهد، ما جواب می‌دهیم، و فقط شناسه‌ی کامنت یا پیام را نگه می‌داریم تا یکی دو بار جواب نگیرد. خودِ متن هیچ‌جا نوشته نمی‌شود.',
         ],
       },
       {
@@ -258,10 +258,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'Worum wir Instagram nie bitten',
+        title: 'Worum wir Instagram bitten – und um nichts mehr',
         body: [
-          'Wenn du ein Konto verbindest, zeigt der Berechtigungsbildschirm genau drei Dinge: dein Profil und deine Beiträge lesen, in deinem Namen veröffentlichen, auf Kommentare antworten. Zugriff auf deine Direktnachrichten fordern wir nicht an — weder jetzt noch später —, wir könnten sie also nicht einmal lesen, wenn wir wollten.',
-          'Kommentare werden nicht gespeichert. Kommentiert jemand deinen Beitrag und du hast die automatische Antwort eingeschaltet, benachrichtigt uns Meta, wir antworten und behalten nur die ID des Kommentars, damit derselbe Kommentar nie zweimal beantwortet wird. Der Text selbst wird nirgends abgelegt.',
+          'Wenn du ein Konto verbindest, zeigt der Berechtigungsbildschirm genau das, was wir nutzen: dein Profil und deine Beiträge lesen, in deinem Namen veröffentlichen, auf Kommentare und Direktnachrichten antworten. Mehr fordern wir nicht an, und Meta zeigt dir die vollständige Liste, bevor du zustimmst.',
+          'Kommentare und Nachrichten werden nicht gespeichert. Kommentiert jemand deinen Beitrag oder schreibt dir und du hast die automatische Antwort eingeschaltet, benachrichtigt uns Meta, wir antworten und behalten nur die ID des Kommentars oder der Nachricht, damit nichts zweimal beantwortet wird. Der Text selbst wird nirgends abgelegt.',
         ],
       },
       {
@@ -331,7 +331,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'What we will not do',
         body: [
-          'We do not ask for or store your Instagram password. We do not request access to your direct messages, and we do not store comments. We do not post anything outside the schedule and rules you set, and we do not use your account for anyone else.',
+          'We do not ask for or store your Instagram password. We do not store your comments or direct messages; we answer them and keep only an ID so nothing is answered twice. We do not post anything outside the schedule and rules you set, and we do not use your account for anyone else.',
         ],
       },
       {
@@ -383,7 +383,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'کارهایی که نمی‌کنیم',
         body: [
-          'رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم. دسترسی به دایرکت‌هایت را نمی‌خواهیم و کامنت‌ها را ذخیره نمی‌کنیم. خارج از زمان‌بندی و قواعدی که تعیین کرده‌ای چیزی منتشر نمی‌کنیم و از اکانتت برای کس دیگری استفاده نمی‌کنیم.',
+          'رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم. کامنت‌ها و دایرکت‌هایت را ذخیره نمی‌کنیم؛ جوابشان را می‌دهیم و فقط یک شناسه نگه می‌داریم تا چیزی دو بار جواب نگیرد. خارج از زمان‌بندی و قواعدی که تعیین کرده‌ای چیزی منتشر نمی‌کنیم و از اکانتت برای کس دیگری استفاده نمی‌کنیم.',
         ],
       },
       {
@@ -435,7 +435,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'Was wir nicht tun',
         body: [
-          'Wir fragen nicht nach deinem Instagram-Passwort und speichern es nicht. Wir fordern keinen Zugriff auf deine Direktnachrichten an und speichern keine Kommentare. Wir veröffentlichen nichts außerhalb des Zeitplans und der Regeln, die du gesetzt hast, und nutzen dein Konto für niemanden sonst.',
+          'Wir fragen nicht nach deinem Instagram-Passwort und speichern es nicht. Wir speichern weder deine Kommentare noch deine Direktnachrichten; wir beantworten sie und behalten nur eine ID, damit nichts zweimal beantwortet wird. Wir veröffentlichen nichts außerhalb des Zeitplans und der Regeln, die du gesetzt hast, und nutzen dein Konto für niemanden sonst.',
         ],
       },
       {
