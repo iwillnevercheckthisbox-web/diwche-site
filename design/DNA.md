@@ -214,16 +214,24 @@ They live in `art/source/`, are built to WebP by `npm run art:build`, and are pl
 untouched and still the canon build for the four animated scenes — the homepage simply no
 longer uses it. Every rule in this section still applies to both sets.
 
+**2026-09-07 — the set moved down one row, and a fourth drawing joined it.** The homepage
+rewrite (see §7) renamed every row, so the drawings were re-cast to match what each row now
+says. The crowd of small creators is retired: it illustrated a ten-creator pilot that the page
+no longer offers. `analytics-robot` is new.
+
 | Placement | Drawing | Treatment |
 |---|---|---|
 | Hero | `hero-camera` | cut out, ≤460px, eager |
-| Ten-creator pilot | `pilot-crowd` | cut out, ≤340px |
-| Discover your next big topic | `topics-thinking` | cut out, ≤360px |
-| Create it your way | `create-writing` | cut out, ≤360px |
-| Publish and schedule | `publish-mailbox` | cut out, ≤360px |
+| The free read | `pilot-thinking` | cut out, ≤300px |
+| 01 — D1 Studio | `studio-writing` | cut out, ≤360px |
+| 02 — Context-aware engagement | `replies-mailbox` | cut out, ≤360px |
+| 03 — Actionable analytics | `analytics-robot` | cut out, ≤360px |
 
-The horns from the same set are the nav mark and the touch icon (`public/brand/horns.png`).
-The favicon stays the drawn SVG — it has to hold at 16px, which a painting does not.
+The horns from the same set are the nav mark (`public/brand/horns.png`) and, since 2026-09-07,
+the tab and home-screen icon as well: `build-art.py` cuts `icon-32/180/512.png` from the same
+drawing, on the dark ground. The hand-drawn `favicon.svg` that used to hold that job is gone —
+it was a second, thinner pair of horns, and at 16px it read as a pair of goggles rather than
+as the mark on every other surface. One drawing, one icon.
 
 ---
 
@@ -249,6 +257,23 @@ names, and the AI-positioning section were rewritten to follow the rules above: 
 no hype adjectives, mechanism over adjective, product named as Diwche. The two remaining
 untouched pillar rows and the reliability/pricing sections were already in voice and did not
 need changing.
+
+**2026-09-07 — the product speaks, and the numbers came with it.** The homepage copy was
+replaced from the top: hero, the band under it, all three product rows, the AI-positioning
+section, reliability and the whole FAQ. Two rules above bend, on this page only, and it is a
+decision rather than drift:
+
+1. **The hero carries figures** — "10x speed, with 100% control" — against §7's "no counts in
+   marketing copy". They are a claim about the change in pace, not a configured quantity that
+   moves when a setting does, which is what that rule was written to stop.
+2. **The Diw narrates less of it.** The replaced sections say "Diwche" and "it" rather than
+   "he". The creature is still the identity — the drawings, the footer note and the CTA are
+   his — but the rows that describe what the product does now describe a product.
+
+What did not bend: sentence case in headlines (the copy arrived in Title Case and was set
+down in sentence case, because the display serif on this page is not a Title Case face), no
+exclamation marks, mechanism over adjective. "Effortlessly", "seamlessly" and "powerful" were
+in the supplied text and were taken back out.
 
 **2026-08-30 — the narrator, and two rules that came with him.** The homepage now speaks about
 **the Diw** in the third person — "he reads what you have made", "he remembers" — rather than

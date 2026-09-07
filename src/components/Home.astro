@@ -8,10 +8,9 @@
  * error rather than an English paragraph on a German page.
  */
 import Art from './Art.astro';
-import TrustBar from './TrustBar.astro';
+import PersonaBand from './PersonaBand.astro';
 import SectionHeader from './SectionHeader.astro';
 import Card from './Card.astro';
-import QuoteCard from './QuoteCard.astro';
 import Accordion from './Accordion.astro';
 import type { HomeCopy } from '../content/home';
 import type { Locale } from '../lib/direction';
@@ -32,7 +31,7 @@ const { copy, locale } = Astro.props;
  */
 const readEnabled = import.meta.env.PUBLIC_READ === 'on';
 const readHref = locale === 'en' ? '/read' : `/${locale}/read`;
-const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
+const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
 ---
 
 <!-- ================================================================== HERO -->
@@ -56,8 +55,8 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
   </div>
 </section>
 
-<!-- ============================================================ META BAND -->
-<TrustBar copy={copy} />
+<!-- ========================================================= PERSONA BAND -->
+<PersonaBand copy={copy} />
 
 <!-- ================================================================= PILOT -->
 <section class="section pilot" id="pilot">
@@ -67,7 +66,7 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     </div>
 
     <div class="pilot__art reveal" style="--reveal-delay: 60ms">
-      <Art name="pilot-crowd" />
+      <Art name="pilot-thinking" />
     </div>
 
     <ul class="pilot__paths reveal" style="--reveal-delay: 100ms">
@@ -99,18 +98,14 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
         </div>
       </div>
 
-      {
-        i === 0 && (
-          <ul class="wrap pillar__list">
-            {copy.capabilities.map((c, n) => (
-              <li class="cap reveal" style={`--reveal-delay: ${n * 50}ms`}>
-                <h3 class="cap__name">{c.name}</h3>
-                <p class="cap__text">{c.text}</p>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+      <ul class:list={['wrap', 'pillar__list', pillar.items.length === 3 && 'pillar__list--three']}>
+        {pillar.items.map((c, n) => (
+          <li class="cap reveal" style={`--reveal-delay: ${n * 50}ms`}>
+            <h3 class="cap__name">{c.name}</h3>
+            <p class="cap__text">{c.text}</p>
+          </li>
+        ))}
+      </ul>
     </section>
   ))
 }
@@ -126,11 +121,6 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     />
   </div>
 </section>
-
-<!-- ================================================================= QUOTE -->
-<div class="wrap quote-slot reveal">
-  <QuoteCard text={copy.quote} />
-</div>
 
 <!-- =========================================================== RELIABILITY -->
 <section class="section" id="reliability">
@@ -199,7 +189,9 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     font-size: var(--t-hero);
     line-height: 1.06;
     letter-spacing: -0.035em;
-    max-width: 18ch;
+    /* The headline is a full sentence now rather than four words, so it needs
+       the measure of one. Under 18ch it broke into five lines on a laptop. */
+    max-width: 22ch;
   }
 
   /* The second line carries the one accent in the hero. Periwinkle rather than
@@ -239,11 +231,11 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     text-align: center;
   }
 
-  /* The drawing is a crowd, so it needs less width than a single figure would to
-     read at the same scale. */
+  /* A single standing figure, taller than it is wide — so it takes less width
+     than the pillar drawings to read at the same scale. */
   .pilot__art {
     width: 100%;
-    max-width: 340px;
+    max-width: 300px;
     margin-top: var(--s-7);
   }
 
@@ -316,6 +308,10 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     gap: var(--s-6);
   }
 
+  .pillar__list--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .cap {
     padding-top: var(--s-4);
     border-top: 1px solid var(--rule);
@@ -331,13 +327,6 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     font-size: var(--t-meta);
     line-height: 1.6;
     color: var(--ink-2);
-  }
-
-  /* ---- Quote ------------------------------------------------------------- */
-
-  .quote-slot {
-    max-width: 46rem;
-    margin-block: calc(var(--section-y) / 2);
   }
 
   /* ---- Three-up rows (reliability) --------------------------------------- */
@@ -398,7 +387,8 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
       order: 0;
     }
 
-    .pillar__list {
+    .pillar__list,
+    .pillar__list--three {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -408,7 +398,8 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
   }
 
   @media (max-width: 520px) {
-    .pillar__list {
+    .pillar__list,
+    .pillar__list--three {
       grid-template-columns: 1fr;
       gap: var(--s-5);
     }
@@ -429,8 +420,8 @@ const artOf = ['topics-thinking', 'create-writing', 'publish-mailbox'] as const;
     }
 
     .hero__title {
-      font-size: clamp(2.125rem, 1.4rem + 4.5vw, 2.75rem);
-      max-width: 14ch;
+      font-size: clamp(2rem, 1.35rem + 4.2vw, 2.5rem);
+      max-width: 17ch;
     }
 
     .hero__lead {

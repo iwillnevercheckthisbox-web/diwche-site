@@ -6,27 +6,27 @@
     "alt": "Diwche at his desk, one eye behind a camera and a quill in the other hand, a clockwork owl on his shoulder."
   },
   {
-    "slug": "pilot-crowd",
-    "width": 572,
-    "height": 694,
-    "alt": "Diwche standing still while a dozen small people climb over him, measuring and mending as they go."
-  },
-  {
-    "slug": "topics-thinking",
+    "slug": "pilot-thinking",
     "width": 630,
     "height": 840,
-    "alt": "Diwche with a finger to his temple, deciding whether a topic is worth the day."
+    "alt": "Diwche standing with a finger to his temple, weighing whether a page is worth his morning."
   },
   {
-    "slug": "create-writing",
+    "slug": "studio-writing",
     "width": 840,
-    "height": 794,
+    "height": 805,
     "alt": "Diwche hunched over a ledger under a lamp, writing by quill among charts and maps."
   },
   {
-    "slug": "publish-mailbox",
+    "slug": "replies-mailbox",
     "width": 721,
     "height": 840,
-    "alt": "Diwche posting a wax-sealed parcel into a mailbox, glyphs curling out of the slot."
+    "alt": "Diwche posting a wax-sealed parcel into a mailbox, letters waiting at his feet."
+  },
+  {
+    "slug": "analytics-robot",
+    "width": 840,
+    "height": 836,
+    "alt": "Diwche in a tinkered-together instrument vest, a colander on his head and dials on his chest, reading his own numbers."
   }
 ]

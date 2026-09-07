@@ -4,8 +4,8 @@ Turn the landing-page illustrations into web-sized WebP.
 
 Input:  art/source/*.png        (hand-drawn, already cut out, transparent)
 Output: public/art/<slug>.webp  + public/art/manifest.json
-        public/brand/horns.png  (the mark, trimmed — needs to stay PNG so it can
-                                 also serve as the touch icon)
+        public/brand/horns.png  (the mark, trimmed — the nav and the OG cards)
+        public/brand/icon-*.png (the tab and home-screen icon, cut from the mark)
 
 This is the sibling of build-mascot.py and deliberately much smaller. That script
 exists because the four mascot scenes arrive as JPEGs on a flat background and
@@ -19,7 +19,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = ROOT / "art" / "source"
@@ -43,27 +43,60 @@ ART = [
         "a clockwork owl on his shoulder.",
     ),
     (
-        "pilot-crowd",
-        "Diwche standing still while a dozen small people climb over him, measuring "
-        "and mending as they go.",
+        "pilot-thinking",
+        "Diwche standing with a finger to his temple, weighing whether a page is worth "
+        "his morning.",
     ),
     (
-        "topics-thinking",
-        "Diwche with a finger to his temple, deciding whether a topic is worth the day.",
-    ),
-    (
-        "create-writing",
+        "studio-writing",
         "Diwche hunched over a ledger under a lamp, writing by quill among charts and maps.",
     ),
     (
-        "publish-mailbox",
-        "Diwche posting a wax-sealed parcel into a mailbox, glyphs curling out of the slot.",
+        "replies-mailbox",
+        "Diwche posting a wax-sealed parcel into a mailbox, letters waiting at his feet.",
+    ),
+    (
+        "analytics-robot",
+        "Diwche in a tinkered-together instrument vest, a colander on his head and dials "
+        "on his chest, reading his own numbers.",
     ),
 ]
 
 # The mark. Trimmed to the horns themselves — the source has about a third of its
 # height in empty margin, which would render as a mysteriously small logo.
 MARK_EDGE = 256
+
+# The tab icon.
+#
+# It used to be a hand-drawn `favicon.svg`: two thin open curls that were meant to
+# be the horns and at 16px read as a pair of goggles, which is not the mark on any
+# other surface. So the icon is now cut from the mark itself — same drawing as the
+# nav, on the dark ground the site defaults to — and there is no second artwork
+# that can drift away from the first.
+#
+# 32 is the tab, 180 is the iOS home screen, 512 is everything that wants a big one.
+ICON_SIZES = (32, 180, 512)
+ICON_GROUND = (5, 7, 12, 255)  # --paper in the dark theme
+ICON_RADIUS = 7 / 32  # the corner of an app tile, as a fraction of the edge
+ICON_PAD = 0.13
+# Drawn large and reduced once: composing at the final 32px loses the taper.
+ICON_SUPERSAMPLE = 8
+
+
+def icon(mark: Image.Image, size: int) -> Image.Image:
+    """The mark on a rounded ground, at one edge length."""
+    big = size * ICON_SUPERSAMPLE
+    tile = Image.new("RGBA", (big, big), (0, 0, 0, 0))
+    ImageDraw.Draw(tile).rounded_rectangle(
+        [0, 0, big - 1, big - 1], radius=round(big * ICON_RADIUS), fill=ICON_GROUND
+    )
+
+    inner = big - 2 * round(big * ICON_PAD)
+    scale = min(inner / mark.width, inner / mark.height)
+    horns = mark.resize((round(mark.width * scale), round(mark.height * scale)), Image.LANCZOS)
+    tile.alpha_composite(horns, ((big - horns.width) // 2, (big - horns.height) // 2))
+
+    return tile.resize((size, size), Image.LANCZOS)
 
 
 def encode(png: Path, webp: Path) -> None:
@@ -122,6 +155,10 @@ def main() -> None:
     mark = fit(Image.open(SRC_DIR / "horns.png").convert("RGBA"), MARK_EDGE)
     mark.save(BRAND_DIR / "horns.png")
     print(f"horns.png  {mark.width}x{mark.height}")
+
+    for size in ICON_SIZES:
+        icon(mark, size).save(BRAND_DIR / f"icon-{size}.png")
+        print(f"icon-{size}.png")
 
 
 if __name__ == "__main__":

@@ -155,9 +155,12 @@ const jsonLd = graph(locale, schema);
          inside one, and it is the shape Google's own docs ask for. -->
     <script type="application/ld+json" is:inline set:html={jsonLd} />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- The drawn horns, for the places that will not take an SVG. -->
-    <link rel="apple-touch-icon" href="/brand/horns.png" />
+    <!-- Cut from the mark itself by `npm run art:build`. The hand-drawn SVG that
+         used to sit here was a second, thinner pair of horns that read as goggles
+         in a 16px tab — one drawing, one icon, no drift. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/icon-32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/brand/icon-512.png" />
+    <link rel="apple-touch-icon" href="/brand/icon-180.png" />
 
     <!-- `.js` gates the scroll-reveal styles, so content is never hidden when
          scripts fail. Resolving the theme has to happen here too — before first

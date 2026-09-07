@@ -1,15 +1,15 @@
 /**
- * The homepage, in both languages.
+ * The homepage, in three languages.
  *
  * Same reason as the funnel's `copy.en.ts` / `copy.fa.ts`: the page had its
  * English inline, which is fine until there is a second language. `HomeCopy` is
  * the contract, so a missing Persian string is a compile error rather than an
  * English sentence on a Persian page.
  *
- * The Persian is authored rather than translated. The Diw (دیو) is a Persian
- * figure to begin with, so the voice lands more naturally there than it does in
- * English — but "sentence case, never Title Case" (DNA §7) has no Persian
- * analogue, and what carries across is the register, not the rule.
+ * English and Persian are both authored — the Diw (دیو) is a Persian figure to
+ * begin with, so the voice lands there without being translated into it. The
+ * German is derived from the English and follows it sentence for sentence;
+ * when the English changes, this is the one that has to be redone with it.
  */
 
 export interface HomeCopy {
@@ -33,7 +33,7 @@ export interface HomeCopy {
   };
 
   hero: {
-    /** Split so the accent word can be marked without putting markup in a string. */
+    /** Split so the accent phrase can be marked without putting markup in a string. */
     titleBefore: string;
     titleAccent: string;
     titleAfter: string;
@@ -44,15 +44,15 @@ export interface HomeCopy {
   };
 
   /**
-   * The Meta band.
+   * The band under the hero.
    *
-   * It used to say "Trusted by", which claims an endorsement nobody has given:
-   * the app has not been through Meta's App Review. What is true, and is the
-   * thing worth saying anyway, is that connecting an account goes through
-   * Meta's own login and no password is ever typed here.
+   * It used to be the Meta band: a "You sign in through [Meta]" label with the
+   * wordmark inlined next to it. That has gone. It read as a login option on a
+   * page that has no login, and it put someone else's logo in the second screen
+   * of our own. The band now says the thing a visitor actually weighs at that
+   * point — that the account's voice is defined once and then held.
    */
-  /** `promise` is the loud line: what Diwche cannot do, stated where a visitor decides. */
-  trustBar: { label: string; note: string; promise: string };
+  persona: { title: string; text: string };
 
   pilot: {
     eyebrow: string;
@@ -61,11 +61,16 @@ export interface HomeCopy {
     paths: { title: string; text: string }[];
   };
 
-  pillars: { eyebrow: string; title: string; lead: string }[];
-  capabilities: { name: string; text: string }[];
+  /**
+   * The three product rows.
+   *
+   * `items` used to be a single top-level `capabilities` list that only the
+   * first row rendered. Every row names what is inside it now, so the list
+   * belongs to the row rather than to the page.
+   */
+  pillars: { eyebrow: string; title: string; lead: string; items: { name: string; text: string }[] }[];
 
   approach: { eyebrow: string; title: string; lead: string };
-  quote: string;
 
   reliability: {
     eyebrow: string;
@@ -120,94 +125,98 @@ export const HOME_EN: HomeCopy = {
   },
 
   hero: {
-    titleBefore: 'Some pages have a ',
-    titleAccent: 'Diw',
-    titleAfter: '.',
-    lead: 'He reads what you have made and what your audience answered. He remembers. Each morning he brings topics that are yours, not everyone’s — then writes, shoots, captions and schedules, while you keep every word and frame.',
+    titleBefore: 'From raw idea to published post — at ',
+    titleAccent: '10x speed',
+    titleAfter: ', with 100% control.',
+    lead: 'Diwche is your end-to-end content operations unit. It uncovers winning topics, edits your visuals in a full editing suite, schedules your queue, and translates performance data into your next big move.',
     /*
      * The button, in the reader's words rather than ours.
      *
      * "Let him read your page" is five words asking to be allowed to do
      * something, set in a button the width of the sentence — which on a phone
      * wrapped to two lines under a headline that had already said who he is.
-     * The Diw is the narrator everywhere else on this page; the button is the
-     * one place the reader speaks.
      */
     cta: 'Read my page',
     ctaOff: 'See what he would do',
   },
 
-  trustBar: {
-    label: 'You sign in through',
-    note: 'Your account connects through Meta’s own login — no password is ever typed here, and nothing is posted until you connect it.',
-    promise: 'He answers your comments and messages in your voice, then forgets them — we never store a word your audience writes to you.',
+  persona: {
+    title: 'Define who you are once — Diwche takes care of the rest.',
+    text: 'From tone of voice and writing style to visual aesthetics, Diwche learns your account’s exact persona. Every caption, reel and idea is made to sound and look unmistakably like you, so the account stays consistent without being told again each time.',
   },
 
   pilot: {
-    eyebrow: 'What it costs to find out',
-    title: 'He reads your page before you pay him anything.',
-    lead: 'Give him a handle. He reads what is public, tells you what he found, and offers a free trial if you want him to act on it. Two ways in.',
+    eyebrow: 'The free read',
+    title: 'See how it works before you commit.',
+    lead: 'Whether you manage an active Instagram account or are launching a new concept from scratch, Diwche gives you a starting point. Two ways in.',
     paths: [
       {
         title: 'Already posting',
-        text: 'He reads the account first and tells you what he found. If you want him on it after that, the trial is free and nothing is connected until you say so.',
+        text: 'Diwche reads your existing public profile and shows you the patterns behind what has worked. Bring across the identity, tone and settings you already use, and run the account from one place after that.',
       },
       {
         title: 'Not started yet',
-        text: 'You have a subject and no page. He works out the angles worth building it on, and helps you build the account itself — identity, feeds, voice. Also free to start.',
+        text: 'You have a topic and no account. Diwche maps out the angles with the most in them and walks you through building the profile from the ground up — brand identity, visual style and tone of voice.',
       },
     ],
   },
 
   pillars: [
     {
-      eyebrow: '01 — Discover your next big topic',
-      title: 'Find ideas worth posting without spending hours researching.',
-      lead: 'Enter any niche or topic, and Diwche handles the heavy lifting. It scans your feed, tracks accounts you admire, and delivers tailored suggestions alongside clear rules on what to post — and what to avoid. If you don’t like the suggestions, you are never locked in: paste an article link you love, or steer the research in a new direction whenever you want.',
+      eyebrow: '01 — D1 Studio',
+      title: 'End-to-end content creation.',
+      lead: 'Finish a piece from start to end, whether you bring your own footage or start with nothing. D1 Studio holds the whole production in one workspace: no more moving between four applications to write, edit, caption and post.',
+      items: [
+        { name: 'Scripting', text: 'Hooks, outlines and whole scripts, matched to the voice and strategy of that account.' },
+        { name: 'Visual Studio', text: 'A timeline editor for video and stills. Every cut, frame, layout and layer stays yours to change.' },
+        { name: 'Subtitles', text: 'Subtitles written for you, in your own styles, animations and layout.' },
+        { name: 'Scheduling', text: 'Queue the finished piece for a peak hour without leaving the studio.' },
+      ],
     },
     {
-      eyebrow: '02 — Create it your way',
-      title: 'Turn any topic into a finished post, carousel or reel.',
-      lead: 'Take a topic Diwche found, pull in one of your tracked feeds, or start from scratch with your own prompt. Diwche writes and designs single posts, carousels, reels and stories, all matched to the voice and look you set for that account.',
+      eyebrow: '02 — Context-aware engagement',
+      title: 'Replies that read what was written, not which word it contains.',
+      lead: 'Diwche reads incoming comments and direct messages in full context and answers naturally, in the character and tone of voice of that account. You keep control and oversight the whole way.',
+      items: [
+        { name: 'It reads the intent', text: 'What your audience meant, rather than a template fired by a keyword it recognised.' },
+        { name: 'Answers in your character', text: 'Every comment and DM is answered in the voice and the guidelines you set for the account.' },
+        { name: 'Complete oversight', text: 'Look through the interactions, set rules, or step into a conversation yourself whenever you want it.' },
+      ],
     },
     {
-      eyebrow: '03 — Publish and schedule',
-      title: 'Connect your account once and let Diwche handle the timing.',
-      lead: 'Link your Instagram securely through Facebook, with no token to paste. Publish immediately, or schedule for peak engagement times; Diwche keeps the connection alive in the background, so your queue stays automated without dropping off.',
+      eyebrow: '03 — Actionable analytics',
+      title: 'Turn performance data into your next move.',
+      lead: 'Diwche watches what the account does and turns the numbers into plain language: what worked, what did not, and what to post next.',
+      items: [
+        { name: 'Metrics to meaning', text: 'Charts and figures come back as directions you can act on.' },
+        { name: 'Format and hour', text: 'Your strongest formats, your best hours, and what your audience turns up for.' },
+        { name: 'A roadmap', text: 'Clear rules on the angles worth doubling down on and the ones worth dropping.' },
+      ],
     },
-  ],
-
-  capabilities: [
-    { name: 'Ideas', text: 'Fresh topics every morning, each with a hook and a reason it matters today.' },
-    { name: 'Insights', text: 'What actually worked — by source, persona, format and hour.' },
-    { name: 'Story scan', text: 'Your feeds, filtered to the keywords you care about.' },
-    { name: 'Peer read', text: 'The accounts you admire, read once and never posted to.' },
   ],
 
   approach: {
     eyebrow: 'How it thinks',
-    title: 'AI does the labour. The judgment is borrowed from people who already do this.',
-    lead: 'Diwche does not write from nothing and hope. What it posts, how it says it and when it sends it are shaped by patterns pulled from real accounts that already grew this way. AI reads the feeds, writes the draft and cuts the reel — it does not decide your strategy alone.',
+    title: 'Assisted execution, human control.',
+    lead: 'Diwche does the heavy labour — reading the feeds, drafting the copy, cutting the footage, sharpening the wording. It never makes the last creative decision. Every draft, script and frame stays editable: it assists, rephrases and improves, and the final word is yours.',
   },
-
-  quote: 'It reads 40 feeds an hour and throws away the 38 stories that aren’t yours.',
 
   reliability: {
     eyebrow: 'Reliability',
-    title: 'Built to fail safely',
-    lead: 'Most of what Diwche does happens while nobody is watching. So the interesting question is what it does when something goes wrong.',
+    title: 'Built for stability.',
+    lead: 'Most of what Diwche does happens while nobody is watching, so it runs inside strict architectural guardrails — built to prevent errors, hold a problem where it started, and leave you in control of the accounts.',
     items: [
       {
-        title: 'Per-account isolation',
-        text: 'One account failing never touches the others. That is an architectural rule, not a setting.',
+        title: 'Account isolation',
+        text: 'Every connected account runs in its own environment. A problem on one never spills into another.',
       },
       {
-        title: 'It never posts twice',
-        text: 'Every article is checked against what that account has already published before anything is made.',
+        title: 'Duplicate prevention',
+        text: 'Every script, article and asset is checked against everything that account has already published, so nothing goes out twice.',
       },
       {
         title: 'Optional review gate',
-        text: 'Turn it on and nothing reaches Instagram until you have looked at it.',
+        text: 'Turn manual approval on and nothing reaches your live feed until you have read it and released it.',
       },
     ],
   },
@@ -218,24 +227,28 @@ export const HOME_EN: HomeCopy = {
     lead: 'Anything not here, ask at the demo.',
     items: [
       {
-        q: 'What counts as an account?',
-        a: 'One connected Instagram account, with its own feeds, keywords, voice and schedule. Accounts do not share anything.',
+        q: 'Will using Diwche put my Instagram account at risk?',
+        a: 'No. Diwche connects only through Meta’s official APIs and never asks for your password. Scheduling, publishing and replies all stay inside Meta’s rate limits and compliance rules.',
       },
       {
-        q: 'What do you need to read my page?',
-        a: 'The handle, and nothing else. Everything read at that stage is what any visitor to your profile can see. To prove the page is yours you send a short code to us on Instagram — there is no password anywhere in this, and nothing is connected until you choose to connect it.',
+        q: 'Do I need to upload my own video footage?',
+        a: 'Not necessarily. You can bring your own raw footage into D1 Studio, or let Diwche build posts and carousels out of text and graphics. Either way the timeline editor leaves every frame, layer and subtitle under your hand.',
       },
       {
-        q: 'What language does it post in?',
-        a: 'Whichever you set per account. Articles are translated before the caption is written, and the layout follows the direction of that language.',
+        q: 'Does Diwche post automatically, or can I review content first?',
+        a: 'That is yours to decide. Turn on the review gate and no reel, post or caption reaches your profile without you approving it.',
       },
       {
-        q: 'Is there a trial?',
-        a: 'Yes. The read itself is free and needs nothing from you but a handle. If you want Diwche to act on what it found, the trial that follows is free too — the length is set when you are invited.',
+        q: 'How does Diwche match my brand voice?',
+        a: 'You define the account’s persona, writing style and visual rules once, at setup. Diwche applies them to scripts, captions and replies, so everything it makes carries the same signature.',
       },
       {
-        q: 'What does "AI-driven" actually mean here?',
-        a: 'AI does the labour: it reads the feeds, writes the draft, cuts the reel. What it posts and how it says it is shaped by patterns from real accounts that already grew this way, not a model guessing alone.',
+        q: 'Are DM and comment replies just automated keyword bots?',
+        a: 'No. Diwche reads the meaning and the intent behind a message and answers in the character and tone of the account, rather than matching a word to a canned line.',
+      },
+      {
+        q: 'How does the free trial work?',
+        a: 'Enter your Instagram handle — no password. Diwche reads your public page for free and tells you what it found. If you want it to start making and editing content after that, the trial begins there, with nothing paid up front.',
       },
     ],
   },
@@ -285,85 +298,121 @@ export const HOME_FA: HomeCopy = {
   },
 
   hero: {
-    titleBefore: 'بعضی پیج‌ها یه ',
-    titleAccent: 'دیو',
-    titleAfter: ' دارن.',
-    lead: 'می‌خونه چی ساختی و مخاطبت به چی جواب داده، و یادش می‌مونه. هر صبح سوژه‌هایی می‌آره که مالِ خودتن، نه مالِ همه — بعد می‌نویسه، می‌سازه، کپشن می‌ذاره و زمان‌بندی می‌کنه؛ در حالی که هر کلمه و هر فریم دست خودت می‌مونه.',
+    titleBefore: 'از ایده‌ی خام تا انتشار نهایی؛ ',
+    titleAccent: '۱۰ برابر سریع‌تر',
+    titleAfter: '، با کنترل ۱۰۰٪ روی جزئیات.',
+    lead: 'دیوچه دستیار کامل جریان تولید محتوای شماست. ایده‌های پربازدید را پیدا می‌کند، ابزار ادیت کامل ویدیو و عکس را در اختیارتان می‌گذارد، انتشار را خودکار می‌سازد و آمار را به راهکارهای عملی تبدیل می‌کند.',
     cta: 'پیجم رو بخون',
     ctaOff: 'ببین چه می‌کنه',
   },
 
-  trustBar: {
-    label: 'ورودت از طریق',
-    note: 'اتصال اکانتت از راهِ خودِ لاگین متا انجام می‌شه — هیچ رمزی اینجا تایپ نمی‌شه، و تا وصلش نکنی چیزی منتشر نمی‌شه.',
-    promise: 'کامنت‌ها و دایرکت‌هات رو با لحن خودت جواب می‌ده و بعد فراموششون می‌کنه — یک کلمه از چیزی که مخاطبت برات نوشته رو ذخیره نمی‌کنیم.',
+  persona: {
+    title: 'هویت و لحن اختصاصی برندت را یک‌بار تعریف کن؛ بقیه‌اش با دیوچه.',
+    text: 'دیوچه با تحلیل و یادگیری استایل بصری، ادبیات نگارش و لحن حساب شما، تمامی ایده‌ها، کپشن‌ها و خروجی‌های تصویری را کاملاً منطبق با شخصیت برندتان تولید می‌کند؛ یکدست، حرفه‌ای و بدون نیاز به تکرار دستورالعمل‌ها.',
   },
 
   pilot: {
-    eyebrow: 'هزینه‌ی فهمیدنش',
-    title: 'قبل از این‌که چیزی بدی، پیجت رو می‌خونه.',
-    lead: 'آیدیت رو بده. چیزی که عمومیه رو می‌خونه، بهت می‌گه چی پیدا کرده، و اگر خواستی کاری هم بکنه، دوره‌ی آزمایشی رایگانه. دو راه برای شروع.',
+    eyebrow: 'خوانش رایگان',
+    title: 'دیوچه، نقطه‌ی شروع برای همه.',
+    lead: 'مهم نیست حساب فعال در اینستاگرام داشته باشی یا تازه در ابتدای راه ایده‌پردازی باشی؛ دیوچه در هر دو حالت ساختاری منسجم برای شروع دارد.',
     paths: [
       {
-        title: 'الان پست می‌ذارم',
-        text: 'اول پیج رو می‌خونه و می‌گه چی پیدا کرده. بعدش اگه خواستی کار رو دستش بدی، دوره‌ی آزمایشی رایگانه و تا خودت نگی هیچ‌چیز وصل نمی‌شه.',
+        title: 'حساب فعال داری',
+        text: 'دیوچه ابتدا حساب شما را تحلیل می‌کند. می‌توانید هویت، لحن و تنظیماتی را که تاکنون استفاده می‌کردید در دیوچه پیاده‌سازی کنید و فرایند تولید و مدیریت محتوا را از این نقطه به بعد یکپارچه سازید.',
       },
       {
-        title: 'هنوز شروع نکردم',
-        text: 'یه موضوع داری و پیجی نداری. زاویه‌هایی که ارزش ساختن دارن رو درمی‌آره و کمکت می‌کنه خودِ پیج رو بسازی — هویت، منابع، لحن. شروعش هم رایگانه.',
+        title: 'هنوز حساب نداری',
+        text: 'اگر فقط یک موضوع یا ایده‌ی اولیه داری، دیوچه زوایای جذاب و پربازدید آن را شناسایی می‌کند. سپس کمکت می‌کند هویت برند، لحن اختصاصی و ساختار حساب جدیدت را از پایه طراحی و راه‌اندازی کنی.',
       },
     ],
   },
 
   pillars: [
     {
-      eyebrow: '۰۱ — سوژه‌ی بعدیت رو پیدا کن',
-      title: 'بدون ساعت‌ها جست‌وجو، ایده‌هایی که ارزش پست شدن دارن.',
-      lead: 'هر حوزه یا موضوعی رو بنویس، بقیه‌اش با دیوچه. منابعت رو می‌گرده، پیج‌هایی که دنبالشون هستی رو زیر نظر می‌گیره، و پیشنهادهای متناسب با خودت می‌ده — همراه با قاعده‌های روشن درباره‌ی این‌که چی بذاری و چی نذاری. اگر پیشنهادها رو نپسندیدی هم هیچ‌جا گیر نمی‌افتی: لینک مقاله‌ای که دوست داشتی رو بچسبون، یا هر وقت خواستی مسیر تحقیق رو عوض کن.',
+      eyebrow: '۰۱ — دیوان استودیو (D1 Studio)',
+      title: 'استودیوی کامل تولید محتوا.',
+      lead: 'چه فوتیج و ویدیوهای شخصی خودتان را داشته باشید و چه بخواهید همه‌چیز را از صفر بسازید، دیوان استودیو تمام فرایند تولید محتوا را پوشش می‌دهد. دیگر نیازی نیست برای تولید یک پست بین چند برنامه‌ی مختلف جابه‌جا شوید؛ تمامی مراحل، از سناریونویسی تا ادیت، زیرنویس‌گذاری و زمان‌بندی، در یک بستر یکپارچه انجام می‌شوند.',
+      items: [
+        {
+          name: 'سناریونویسی',
+          text: 'نگارش هوشمند متون، قلاب‌های تصویری و سناریوی کامل ویدیوها، کاملاً منطبق بر لحن و استراتژی اختصاصی حساب شما.',
+        },
+        {
+          name: 'استودیوی بصری',
+          text: 'محیط ادیت حرفه‌ای عکس و ویدیو با تایم‌لاین کامل، برای اعمال تغییرات دقیق روی تمامی فریم‌ها، لایه‌ها و چیدمان‌های بصری.',
+        },
+        {
+          name: 'زیرنویس‌گذاری',
+          text: 'تولید خودکار و هوشمند زیرنویس با دقت بالا، همراه با قابلیت سفارشی‌سازی فونت، استایل و انیمیشن‌های متنی.',
+        },
+        {
+          name: 'زمان‌بندی',
+          text: 'قرار دادن محتوای نهایی در صف انتشار برای ساعات اوج درگیری مخاطب، بدون خارج شدن از استودیو.',
+        },
+      ],
     },
     {
-      eyebrow: '۰۲ — به سبک خودت بساز',
-      title: 'هر موضوعی رو به یک پست، کاروسل یا ریلزِ آماده تبدیل کن.',
-      lead: 'یکی از سوژه‌هایی که دیوچه پیدا کرده رو بردار، یا از منابعی که دنبال می‌کنی چیزی بیار، یا از صفر با متن خودت شروع کن. دیوچه پست تکی، کاروسل، ریلز و استوری رو می‌نویسه و طراحی می‌کنه، همه متناسب با لحن و ظاهری که برای اون پیج تعریف کردی.',
+      eyebrow: '۰۲ — تعامل و پاسخ‌گویی هوشمند',
+      title: 'پاسخ‌گویی را از ربات‌های سنتی و پاسخ‌های تکراری جدا کن.',
+      lead: 'دیوچه پیام‌های دایرکت و کامنت‌های دریافتی را با درک کامل از بافت گفت‌وگو تحلیل می‌کند و متناسب با موضوع، کاملاً منطبق بر شخصیت و لحن اختصاصی حساب شما پاسخ می‌دهد. در تمام این مسیر، کنترل و نظارت کامل در دست شماست.',
+      items: [
+        {
+          name: 'درک هوشمند متن',
+          text: 'تحلیل معنایی و درک هدف مخاطب، به‌جای اتکا به کلمات کلیدی صلب و ارسال پاسخ‌های یکسان.',
+        },
+        {
+          name: 'حفظ کامل شخصیت برند',
+          text: 'پاسخ‌گویی دقیق به کامنت‌ها و دایرکت‌ها با رعایت لحن، هویت و چارچوب تعیین‌شده برای حساب.',
+        },
+        {
+          name: 'مدیریت و نظارت کامل',
+          text: 'قابلیت بازبینی تعاملات، تعیین سطوح دسترسی و ورود مستقیم به گفت‌وگوها در صورت نیاز.',
+        },
+      ],
     },
     {
-      eyebrow: '۰۳ — منتشر کن و زمان‌بندی کن',
-      title: 'یک‌بار اکانتت رو وصل کن و زمان‌بندی رو بسپار به دیوچه.',
-      lead: 'اینستاگرامت رو امن و از طریق فیسبوک وصل کن، بدون این‌که لازم باشه توکنی جایی بچسبونی. یا همون لحظه منتشر کن، یا برای بهترین ساعت زمان‌بندی کن؛ دیوچه اتصال رو در پس‌زمینه زنده نگه می‌داره تا صفت هیچ‌وقت وسط راه نیفته.',
+      eyebrow: '۰۳ — آنالیز هوشمند و استراتژی رشد',
+      title: 'داده‌های عملکرد حساب را به گام بعدی تبدیل کن.',
+      lead: 'دیوچه آمار حساب شما را به‌طور پیوسته ارزیابی می‌کند و اعداد پیچیده را به راهکارهای روشن و کاربردی تبدیل می‌کند تا دقیقاً بدانید چه محتوایی موفق بوده و در قدم بعدی باید چه کاری انجام دهید.',
+      items: [
+        {
+          name: 'تبدیل داده به تصمیم',
+          text: 'تبدیل نمودارها و آمار پیچیده به توصیه‌های ساده، دقیق و قابل اجرا.',
+        },
+        {
+          name: 'تحلیل الگوی مخاطب',
+          text: 'شناسایی موفق‌ترین فرمت‌ها، ساعات بهینه برای انتشار و موضوعات جذاب برای مخاطبان شما.',
+        },
+        {
+          name: 'نقشه‌ی راه استراتژیک',
+          text: 'پیشنهادهای شفاف درباره‌ی زوایایی که باید روی آن‌ها تمرکز کنید و خطاهایی که باید از آن‌ها پرهیز شود.',
+        },
+      ],
     },
-  ],
-
-  capabilities: [
-    { name: 'ایده‌ها', text: 'هر صبح سوژه‌های تازه، هرکدام با یک قلاب و یک دلیل که چرا امروز مهم است.' },
-    { name: 'تحلیل', text: 'چیزی که واقعاً جواب داده — به تفکیک منبع، شخصیت، قالب و ساعت.' },
-    { name: 'رصد خبر', text: 'منابعت، فیلترشده روی کلیدواژه‌هایی که برات مهمه.' },
-    { name: 'خوانش هم‌ترازها', text: 'پیج‌هایی که تحسینشان می‌کنی؛ فقط خوانده می‌شوند، هرگز چیزی برایشان فرستاده نمی‌شود.' },
   ],
 
   approach: {
-    eyebrow: 'طرز فکرش',
-    title: 'کارِ سنگین با هوش مصنوعی. قضاوت، وام‌گرفته از آدم‌هایی که این کار را بلدند.',
-    lead: 'دیوچه از هیچ نمی‌نویسد و امیدوار نمی‌ماند. این‌که چه می‌گذارد، چطور می‌گوید و کِی می‌فرستد، از الگوهای پیج‌های واقعی‌ای می‌آید که همین‌طور رشد کرده‌اند. هوش مصنوعی منابع را می‌خواند، پیش‌نویس را می‌نویسد و ریلز را تدوین می‌کند — اما استراتژی‌ات را تنهایی تعیین نمی‌کند.',
+    eyebrow: 'نحوه‌ی تفکر دیوچه',
+    title: 'زحمت اجرا با هوش مصنوعی، تصمیم نهایی با شما.',
+    lead: 'دیوچه کارهای سخت و زمان‌بر را انجام می‌دهد؛ از بررسی فیدها و نوشتن متن اولیه گرفته تا ادیت ویدیو و بازنویسی جملات. اما تصمیم‌گیرنده‌ی نهایی همیشه خود شما هستید. دیوچه هیچ‌وقت به‌تنهایی استراتژی نمی‌چیند؛ مثل یک دستیار کنار شماست تا متن‌ها را دقیق‌تر کند و کیفیت کار را بالا ببرد، در حالی که کنترل کامل ویرایش‌ها دست خودتان می‌ماند.',
   },
-
-  quote: 'ساعتی چهل منبع می‌خواند و سی‌وهشت خبری را که مالِ تو نیست دور می‌ریزد.',
 
   reliability: {
     eyebrow: 'قابل‌اتکا بودن',
-    title: 'ساخته شده که بی‌سروصدا شکست بخورد',
-    lead: 'بیشتر کاری که دیوچه می‌کند وقتی اتفاق می‌افتد که کسی حواسش نیست. پس سوال جالب این است که وقتی چیزی خراب می‌شود چه می‌کند.',
+    title: 'پایداری سیستم و حفظ امنیت حساب‌ها.',
+    lead: 'بخش عمده‌ای از فعالیت‌های دیوچه در پس‌زمینه انجام می‌شود؛ به همین دلیل این سیستم با استانداردهای امنیتی دقیق و ساختاری منعطف در برابر خطا طراحی شده تا امنیت و پایداری حساب‌های شما همواره حفظ شود.',
     items: [
       {
-        title: 'هر اکانت، جدا از بقیه',
-        text: 'خراب شدن یک اکانت هیچ‌وقت به بقیه نمی‌رسد. این یک قاعده‌ی معماری است، نه یک تنظیم.',
+        title: 'ایزوله‌سازی کامل حساب‌ها',
+        text: 'معماری سیستم به‌گونه‌ای است که فعالیت هر حساب کاملاً مجزا از بقیه مدیریت می‌شود. بروز هرگونه مشکل در یک حساب هیچ تأثیری بر سایر حساب‌ها نخواهد داشت.',
       },
       {
-        title: 'هرگز دوبار پست نمی‌کند',
-        text: 'هر مطلب، پیش از ساخته شدن، با هرچه آن اکانت قبلاً منتشر کرده مقایسه می‌شود.',
+        title: 'جلوگیری از انتشار تکراری',
+        text: 'دیوچه پیش از تولید و انتشار هر محتوا سابقه‌ی حساب را به‌دقت بررسی می‌کند تا از ساخته نشدن و فرستاده نشدن پست‌های تکراری مطمئن شود.',
       },
       {
-        title: 'دروازه‌ی بازبینی، اختیاری',
-        text: 'روشنش کن تا تا وقتی خودت ندیده‌ای چیزی به اینستاگرام نرسد.',
+        title: 'درگاه بازبینی و تأیید نهایی',
+        text: 'با فعال کردن این بخش، هیچ ایده‌ای بدون بررسی، ویرایش و تأیید مستقیم شما روی اینستاگرام منتشر نخواهد شد.',
       },
     ],
   },
@@ -374,24 +423,28 @@ export const HOME_FA: HomeCopy = {
     lead: 'هرچه اینجا نیست را در دمو بپرس.',
     items: [
       {
-        q: 'یک «اکانت» یعنی چه؟',
-        a: 'یک اکانت اینستاگرامِ متصل، با منابع، کلیدواژه‌ها، لحن و زمان‌بندی خودش. اکانت‌ها هیچ‌چیزی با هم به اشتراک نمی‌گذارند.',
+        q: 'آیا استفاده از دیوچه خطری برای امنیت حساب اینستاگرام دارد؟',
+        a: 'خیر. دیوچه فقط از طریق APIهای رسمی متا متصل می‌شود و تحت هیچ شرایطی رمز عبور نمی‌خواهد. تمامی فرایندهای انتشار و پاسخ‌گویی کاملاً منطبق بر قوانین و محدودیت‌های استاندارد اینستاگرام انجام می‌شوند.',
       },
       {
-        q: 'برای خواندن پیجم به چه چیزی نیاز دارید؟',
-        a: 'فقط آیدی، و هیچ چیز دیگر. هرچه در آن مرحله خوانده می‌شود همان است که هر بازدیدکننده‌ی پروفایلت می‌بیند. برای اثبات این‌که پیج مال توست یک کد کوتاه در اینستاگرام برای ما می‌فرستی — هیچ رمزی در این ماجرا نیست، و تا خودت نخواهی هیچ‌چیز وصل نمی‌شود.',
+        q: 'آیا برای تولید ویدیو حتماً باید خودم فیلم‌برداری کنم؟',
+        a: 'لزوماً نه. می‌توانید فوتیج‌های شخصی خود را به دیوان استودیو (D1 Studio) بیاورید یا تولید متن‌ها و طرح‌های کاروسل را به سیستم بسپارید. در هر دو حالت، ویرایشگر بصری امکان ادیت دقیق تمام فریم‌ها، لایه‌ها و زیرنویس‌ها را در اختیارتان می‌گذارد.',
       },
       {
-        q: 'به چه زبانی پست می‌گذارد؟',
-        a: 'هر زبانی که برای آن اکانت تعیین کنی. مطالب پیش از نوشته شدن کپشن ترجمه می‌شوند، و چیدمان از جهت همان زبان پیروی می‌کند.',
+        q: 'آیا پست‌ها به‌صورت خودکار منتشر می‌شوند یا امکان بازبینی وجود دارد؟',
+        a: 'کنترل تمام مراحل در دست شماست. با فعال کردن درگاه بازبینی، هیچ ویدیو، کپشن یا پستی بدون بررسی، ویرایش و تأیید مستقیم شما روی حساب قرار نخواهد گرفت.',
       },
       {
-        q: 'دوره‌ی آزمایشی دارد؟',
-        a: 'بله. خودِ خوانش رایگان است و جز یک آیدی چیزی نمی‌خواهد. اگر خواستی دیوچه روی آنچه پیدا کرده کاری هم بکند، دوره‌ی آزمایشی بعدش هم رایگان است — طول آن هنگام دعوت مشخص می‌شود.',
+        q: 'دیوچه چگونه لحن و هویت اختصاصی حساب را یاد می‌گیرد؟',
+        a: 'در مرحله‌ی راه‌اندازی، هویت برند، لحن نگارش و معیارهای بصری خود را تعریف می‌کنید. دیوچه تمامی سناریوها، کپشن‌ها و پاسخ‌های هوشمند را کاملاً منطبق بر این دستورالعمل‌ها تولید می‌کند تا یکدستی برند حفظ شود.',
       },
       {
-        q: 'اینجا «مبتنی بر هوش مصنوعی» دقیقاً یعنی چه؟',
-        a: 'هوش مصنوعی کارِ سنگین را می‌کند: منابع را می‌خواند، پیش‌نویس را می‌نویسد، ریلز را تدوین می‌کند. اما این‌که چه منتشر شود و چطور گفته شود، از الگوهای پیج‌های واقعی‌ای می‌آید که همین‌طور رشد کرده‌اند، نه از حدسِ تنهای یک مدل.',
+        q: 'پاسخ‌گویی به دایرکت‌ها و کامنت‌ها به چه صورت انجام می‌شود؟',
+        a: 'دیوچه از ربات‌های ساده‌ی کلیدواژه‌ای استفاده نمی‌کند؛ متن پیام مخاطب را با درک کامل از بافت گفت‌وگو تحلیل می‌کند و پاسخی روان، هوشمندانه و منطبق بر شخصیت تعیین‌شده برای حساب می‌فرستد.',
+      },
+      {
+        q: 'تست رایگان سیستم به چه شکل است؟',
+        a: 'کافی است آیدی عمومی حساب خود را وارد کنید. دیوچه تحلیل اولیه‌ی حساب شما را رایگان انجام می‌دهد. پس از دیدن گزارش، می‌توانید برای استفاده از ابزارهای تولید محتوا و ادیت، تست رایگان را بدون ثبت اطلاعات مالی فعال کنید.',
       },
     ],
   },
@@ -448,85 +501,91 @@ export const HOME_DE: HomeCopy = {
   },
 
   hero: {
-    titleBefore: 'Manche Seiten haben einen ',
-    titleAccent: 'Diw',
-    titleAfter: '.',
-    lead: 'Er liest, was du gemacht hast, und worauf dein Publikum reagiert hat. Er merkt es sich. Jeden Morgen bringt er Themen, die zu dir gehören und nicht zu allen — dann schreibt, dreht, betextet und plant er, während jedes Wort und jedes Bild deins bleibt.',
+    titleBefore: 'Von der rohen Idee zum fertigen Beitrag — mit ',
+    titleAccent: '10x Tempo',
+    titleAfter: ' und 100 % Kontrolle.',
+    lead: 'Diwche ist deine Content-Abteilung von der Idee bis zur Veröffentlichung. Er findet die Themen, die tragen, bearbeitet Bild und Video in einer vollwertigen Schnittsuite, plant deine Warteschlange und übersetzt Leistungsdaten in deinen nächsten großen Schritt.',
     cta: 'Meine Seite lesen',
     ctaOff: 'Sieh, was er tun würde',
   },
 
-  trustBar: {
-    label: 'Du meldest dich an über',
-    note: 'Dein Konto wird über Metas eigenen Login verbunden — hier wird nie ein Passwort eingegeben, und nichts wird veröffentlicht, bevor du verbindest.',
-    promise: 'Er beantwortet deine Kommentare und Nachrichten in deiner Stimme und vergisst sie danach — wir speichern kein Wort von dem, was dein Publikum dir schreibt.',
+  persona: {
+    title: 'Leg einmal fest, wer du bist — um den Rest kümmert sich Diwche.',
+    text: 'Von Tonfall und Schreibstil bis zur visuellen Handschrift lernt Diwche die genaue Persönlichkeit deines Accounts. Jede Bildunterschrift, jedes Reel und jede Idee klingt und sieht unverkennbar nach dir, ohne dass du es jedes Mal neu erklären musst.',
   },
 
   pilot: {
-    eyebrow: 'Was es kostet, es herauszufinden',
-    title: 'Er liest deine Seite, bevor du ihm irgendetwas zahlst.',
-    lead: 'Gib ihm einen Profilnamen. Er liest, was öffentlich ist, sagt dir, was er gefunden hat, und bietet dir eine kostenlose Testphase an, wenn er etwas damit tun soll. Zwei Wege hinein.',
+    eyebrow: 'Die kostenlose Analyse',
+    title: 'Sieh, wie es funktioniert, bevor du dich festlegst.',
+    lead: 'Ob du einen aktiven Instagram-Account führst oder ein neues Konzept bei null anfängst — Diwche gibt dir einen Startpunkt. Zwei Wege hinein.',
     paths: [
       {
         title: 'Ich poste schon',
-        text: 'Er liest den Account zuerst und sagt dir, was er gefunden hat. Wenn du ihn danach darauf ansetzen willst, ist die Testphase kostenlos — und nichts wird verbunden, bevor du es sagst.',
+        text: 'Diwche liest dein bestehendes öffentliches Profil und zeigt dir die Muster hinter dem, was funktioniert hat. Bring den Auftritt, den Ton und die Einstellungen mit, die du schon benutzt, und führ den Account danach an einer Stelle weiter.',
       },
       {
         title: 'Noch nicht angefangen',
-        text: 'Du hast ein Thema und noch keine Seite. Er arbeitet heraus, welche Blickwinkel es tragen, und hilft dir, den Account selbst aufzubauen — Auftritt, Quellen, Ton. Der Anfang ist ebenfalls kostenlos.',
+        text: 'Du hast ein Thema und noch keinen Account. Diwche arbeitet die Blickwinkel heraus, in denen am meisten steckt, und führt dich durch den Aufbau des Profils — Markenauftritt, visueller Stil und Tonfall.',
       },
     ],
   },
 
   pillars: [
     {
-      eyebrow: '01 — Finde dein nächstes großes Thema',
-      title: 'Ideen, die es wert sind, ohne stundenlange Recherche.',
-      lead: 'Gib ein Themenfeld ein, den Rest übernimmt Diwche. Er durchsucht deine Quellen, beobachtet Profile, die du schätzt, und liefert passende Vorschläge samt klarer Regeln, worüber du posten solltest — und worüber nicht. Wenn dir die Vorschläge nicht gefallen, sitzt du nie fest: füg den Link zu einem Artikel ein, der dir gefällt, oder lenk die Recherche jederzeit in eine andere Richtung.',
+      eyebrow: '01 — D1 Studio',
+      title: 'Produktion von Anfang bis Ende.',
+      lead: 'Bring ein Stück fertig, ob du eigenes Material mitbringst oder mit nichts anfängst. Das D1 Studio hält die ganze Produktion in einem Arbeitsbereich: kein Wechsel mehr zwischen vier Programmen, um zu schreiben, zu schneiden, zu betexten und zu veröffentlichen.',
+      items: [
+        { name: 'Skripte', text: 'Aufhänger, Gliederungen und ganze Skripte, abgestimmt auf Stimme und Strategie dieses Accounts.' },
+        { name: 'Visual Studio', text: 'Ein Timeline-Editor für Video und Bild. Jeder Schnitt, jedes Bild, jedes Layout und jede Ebene bleibt änderbar.' },
+        { name: 'Untertitel', text: 'Untertitel entstehen von selbst — in deinen Stilen, Animationen und deinem Layout.' },
+        { name: 'Planung', text: 'Das fertige Stück wandert in die Warteschlange für die beste Uhrzeit, ohne das Studio zu verlassen.' },
+      ],
     },
     {
-      eyebrow: '02 — Mach daraus, was du willst',
-      title: 'Aus jedem Thema ein fertiger Beitrag, Karussell oder Reel.',
-      lead: 'Nimm ein Thema, das Diwche gefunden hat, zieh etwas aus deinen Quellen, oder fang mit deinem eigenen Text bei null an. Diwche schreibt und gestaltet einzelne Beiträge, Karussells, Reels und Stories — alle im Ton und im Look, den du für diesen Account festgelegt hast.',
+      eyebrow: '02 — Antworten, die den Zusammenhang lesen',
+      title: 'Antworten auf das Geschriebene, nicht auf ein Stichwort darin.',
+      lead: 'Diwche liest eingehende Kommentare und Direktnachrichten im vollen Zusammenhang und antwortet natürlich, im Charakter und Ton dieses Accounts. Kontrolle und Überblick bleiben den ganzen Weg bei dir.',
+      items: [
+        { name: 'Er liest die Absicht', text: 'Was dein Publikum gemeint hat, statt einer Vorlage, die ein erkanntes Stichwort ausgelöst hat.' },
+        { name: 'Antwort in deiner Figur', text: 'Jeder Kommentar und jede DM wird in der Stimme und nach den Regeln beantwortet, die du für den Account gesetzt hast.' },
+        { name: 'Voller Überblick', text: 'Sieh die Verläufe durch, setz Regeln, oder übernimm ein Gespräch jederzeit selbst.' },
+      ],
     },
     {
-      eyebrow: '03 — Veröffentlichen und planen',
-      title: 'Einmal verbinden, um die Uhrzeit kümmert sich Diwche.',
-      lead: 'Verbinde dein Instagram sicher über Facebook, ohne irgendwo ein Token einzufügen. Veröffentliche sofort oder plane für die Zeiten mit der besten Resonanz; Diwche hält die Verbindung im Hintergrund am Leben, damit deine Warteschlange nicht irgendwann stillsteht.',
+      eyebrow: '03 — Auswertung, mit der du etwas anfängst',
+      title: 'Aus Leistungsdaten wird dein nächster Schritt.',
+      lead: 'Diwche verfolgt, was der Account tut, und übersetzt die Zahlen in klare Sprache: was funktioniert hat, was nicht, und was als Nächstes kommen sollte.',
+      items: [
+        { name: 'Von Zahlen zu Bedeutung', text: 'Kurven und Werte kommen als Anweisungen zurück, mit denen du etwas anfangen kannst.' },
+        { name: 'Format und Uhrzeit', text: 'Deine stärksten Formate, deine besten Stunden und das, wofür dein Publikum auftaucht.' },
+        { name: 'Ein Fahrplan', text: 'Klare Regeln, welche Blickwinkel du ausbauen und welche du lassen solltest.' },
+      ],
     },
-  ],
-
-  capabilities: [
-    { name: 'Ideen', text: 'Jeden Morgen frische Themen, jedes mit einem Aufhänger und einem Grund, warum es heute zählt.' },
-    { name: 'Auswertung', text: 'Was tatsächlich funktioniert hat — nach Quelle, Figur, Format und Uhrzeit.' },
-    { name: 'Quellenscan', text: 'Deine Quellen, gefiltert auf die Stichworte, die dich interessieren.' },
-    { name: 'Blick auf andere', text: 'Die Profile, die du schätzt: nur gelesen, nie beschrieben.' },
   ],
 
   approach: {
     eyebrow: 'Wie er denkt',
-    title: 'Die Arbeit macht die KI. Das Urteil ist von Leuten geliehen, die das schon können.',
-    lead: 'Diwche schreibt nicht aus dem Nichts und hofft. Was er veröffentlicht, wie er es sagt und wann er es schickt, folgt Mustern aus echten Profilen, die genau so gewachsen sind. Die KI liest die Quellen, schreibt den Entwurf und schneidet das Reel — deine Strategie bestimmt sie nicht allein.',
+    title: 'Die Ausführung nimmt er ab, entschieden wird von dir.',
+    lead: 'Diwche macht die schwere Arbeit — die Quellen lesen, den Entwurf schreiben, das Material schneiden, die Formulierung schärfen. Die letzte gestalterische Entscheidung trifft er nie. Jeder Entwurf, jedes Skript und jedes Bild bleibt änderbar: er hilft, formuliert um und verbessert, und das letzte Wort ist deins.',
   },
-
-  quote: 'Er liest vierzig Quellen pro Stunde und wirft die achtunddreißig Meldungen weg, die nicht deine sind.',
 
   reliability: {
     eyebrow: 'Verlässlichkeit',
-    title: 'Gebaut, um sicher zu scheitern',
-    lead: 'Das meiste von dem, was Diwche tut, passiert, während niemand zusieht. Die interessante Frage ist also, was er tut, wenn etwas schiefgeht.',
+    title: 'Auf Stabilität gebaut.',
+    lead: 'Das meiste von dem, was Diwche tut, passiert, während niemand zusieht. Deshalb läuft es innerhalb strenger architektonischer Leitplanken — gebaut, um Fehler zu verhindern, ein Problem dort zu halten, wo es entstanden ist, und dir die Kontrolle über die Accounts zu lassen.',
     items: [
       {
         title: 'Jeder Account für sich',
-        text: 'Wenn ein Account ausfällt, berührt das die anderen nie. Das ist eine Regel der Architektur, keine Einstellung.',
+        text: 'Jeder verbundene Account läuft in seiner eigenen Umgebung. Ein Problem bei einem greift nie auf einen anderen über.',
       },
       {
-        title: 'Er postet nie zweimal',
-        text: 'Jeder Beitrag wird gegen alles geprüft, was dieser Account schon veröffentlicht hat, bevor überhaupt etwas gebaut wird.',
+        title: 'Nie zweimal dasselbe',
+        text: 'Jedes Skript, jeder Artikel und jede Datei wird gegen alles geprüft, was dieser Account schon veröffentlicht hat — so geht nichts doppelt raus.',
       },
       {
         title: 'Freigabe, wenn du willst',
-        text: 'Schalt sie ein, und nichts erreicht Instagram, bevor du es gesehen hast.',
+        text: 'Schalt die manuelle Freigabe ein, und nichts erreicht dein Profil, bevor du es gelesen und freigegeben hast.',
       },
     ],
   },
@@ -537,24 +596,28 @@ export const HOME_DE: HomeCopy = {
     lead: 'Was hier fehlt, frag beim Termin.',
     items: [
       {
-        q: 'Was zählt als Account?',
-        a: 'Ein verbundener Instagram-Account mit eigenen Quellen, Stichworten, eigenem Ton und eigener Planung. Accounts teilen nichts miteinander.',
+        q: 'Ist mein Instagram-Account mit Diwche gefährdet?',
+        a: 'Nein. Diwche verbindet sich ausschließlich über die offiziellen Schnittstellen von Meta und fragt nie nach deinem Passwort. Planung, Veröffentlichung und Antworten bleiben innerhalb der Limits und Regeln von Meta.',
       },
       {
-        q: 'Was braucht ihr, um meine Seite zu lesen?',
-        a: 'Den Profilnamen, sonst nichts. Alles, was dabei gelesen wird, sieht jeder, der dein Profil aufruft. Um zu belegen, dass die Seite dir gehört, schickst du uns einen kurzen Code auf Instagram — ein Passwort kommt darin nirgends vor, und nichts wird verbunden, bevor du es willst.',
+        q: 'Muss ich eigenes Videomaterial hochladen?',
+        a: 'Nicht unbedingt. Du kannst eigenes Rohmaterial ins D1 Studio bringen, oder Diwche Beiträge und Karussells aus Text und Grafik bauen lassen. In beiden Fällen bleibt im Timeline-Editor jedes Bild, jede Ebene und jeder Untertitel in deiner Hand.',
       },
       {
-        q: 'In welcher Sprache postet er?',
-        a: 'In der, die du pro Account festlegst. Beiträge werden übersetzt, bevor die Bildunterschrift entsteht, und das Layout folgt der Leserichtung dieser Sprache.',
+        q: 'Veröffentlicht Diwche automatisch, oder kann ich vorher prüfen?',
+        a: 'Das entscheidest du. Schalt die Freigabe ein, und kein Reel, kein Beitrag und keine Bildunterschrift erreicht dein Profil, ohne dass du sie freigegeben hast.',
       },
       {
-        q: 'Gibt es eine Testphase?',
-        a: 'Ja. Die Analyse selbst ist kostenlos und braucht nichts außer einem Profilnamen. Wenn Diwche danach mit dem Gefundenen arbeiten soll, ist auch die Testphase kostenlos — ihre Länge wird bei der Einladung festgelegt.',
+        q: 'Wie trifft Diwche den Ton meiner Marke?',
+        a: 'Beim Einrichten legst du die Figur des Accounts, den Schreibstil und die visuellen Vorgaben einmal fest. Diwche wendet sie auf Skripte, Bildunterschriften und Antworten an, damit alles dieselbe Handschrift trägt.',
       },
       {
-        q: 'Was heißt „KI-gestützt“ hier eigentlich?',
-        a: 'Die KI macht die Arbeit: Quellen lesen, Entwurf schreiben, Reel schneiden. Was veröffentlicht wird und wie es klingt, folgt Mustern aus echten Profilen, die so gewachsen sind — nicht dem Raten eines Modells.',
+        q: 'Sind die Antworten auf DMs und Kommentare einfach Stichwort-Bots?',
+        a: 'Nein. Diwche liest die Bedeutung und die Absicht hinter einer Nachricht und antwortet im Charakter und Ton des Accounts, statt einem Wort eine vorgefertigte Zeile zuzuordnen.',
+      },
+      {
+        q: 'Wie läuft die kostenlose Testphase?',
+        a: 'Gib deinen Instagram-Profilnamen ein — kein Passwort. Diwche liest deine öffentliche Seite kostenlos und sagt dir, was er gefunden hat. Wenn er danach Inhalte bauen und schneiden soll, beginnt die Testphase dort, ohne Vorkasse.',
       },
     ],
   },

@@ -1,0 +1,69 @@
+---
+/**
+ * The band under the hero.
+ *
+ * It was the Meta band: a "You sign in through" label with Meta's wordmark
+ * inlined beside it, and two lines underneath about passwords and about not
+ * storing what your audience writes. Three problems with that. It read as a
+ * sign-in option on a page that has no sign-in; it gave the second screen of
+ * our own site to somebody else's logo; and it spent the most-read strip on the
+ * page on a reassurance nobody had asked for yet.
+ *
+ * What sits here instead is the promise a visitor is actually weighing at that
+ * point: the account's voice is defined once, and then it is held. The
+ * connection story still exists — it is in the FAQ, where the question is
+ * asked.
+ */
+import { HOME_EN, type HomeCopy } from '../content/home';
+
+interface Props {
+  copy?: HomeCopy;
+}
+
+const { copy = HOME_EN } = Astro.props;
+---
+
+<section class="persona" aria-label={copy.persona.title}>
+  <p class="wrap persona__title">{copy.persona.title}</p>
+  <p class="wrap persona__text">{copy.persona.text}</p>
+</section>
+
+<style>
+  .persona {
+    /* A quiet band, not a section: it separates the hero from the pilot offer and
+       carries no rhythm of its own. */
+    background: var(--paper-3);
+    border-block: 1px solid var(--rule-soft);
+    padding-block: var(--s-7);
+    text-align: center;
+  }
+
+  .persona__title {
+    /* The one sentence a cautious owner is looking for; it gets display size,
+       the paragraph underneath stays quiet. */
+    max-width: 24ch;
+    margin-inline: auto;
+    font-size: clamp(1.25rem, 0.9rem + 1.6vw, 1.75rem);
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  .persona__text {
+    margin-top: var(--s-4);
+    max-width: 62ch;
+    margin-inline: auto;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  /* `ch` is the width of a Latin zero, so the same measure is much wider in
+     Persian. Held in `em` instead, the headline keeps its two lines. */
+  :global([lang='fa']) .persona__title {
+    max-width: 20em;
+    line-height: 1.6;
+  }
+</style>
