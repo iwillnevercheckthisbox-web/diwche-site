@@ -1,4 +1,4 @@
-# Nothing here is blocked from crawling on purpose.
+# Nothing here is blocked from search on purpose.
 #
 # /read, /bio and /r are meant to stay out of search results, and they say so
 # themselves with `noindex` in their own markup. That is the directive that
@@ -8,7 +8,54 @@
 # without a description, because nothing was allowed to read it.
 #
 # So the rule is: noindex to remove a page, Disallow only to spare the server.
+
 User-agent: *
 Allow: /
 
+# The AI crawlers are a different question, because `noindex` means nothing to
+# them. It is a search directive: it keeps a page out of a results list, and an
+# assistant reading a page to answer a question is not building a results list.
+# For these agents the fetch itself is the thing to allow or refuse, so here the
+# Disallow really is the right tool — the one place on this site where it is.
+#
+# They are welcome on the marketing pages. Being the source an assistant quotes
+# is worth more than the copy is worth withholding, and there is no moat in a
+# page written to be read.
+#
+# They are not welcome on the three pages that carry someone else's material:
+#   /read  — a funnel that renders figures about the account that walked it
+#   /@…    — an account's own bio page (nginx maps /@handle onto /bio)
+#   /r/…   — a shared report, containing captions a client wrote
+# None of that is secret, and none of it is ours to feed to a model.
+#
+# Each agent below gets its own group, so it stops falling under `*` and reads
+# only these lines. Everything not named here stays allowed.
+
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Disallow: /read
+Disallow: /fa/read
+Disallow: /de/read
+Disallow: /bio
+Disallow: /r/
+Disallow: /@
+
 Sitemap: https://diwche.com/sitemap-index.xml
+
+# If the copy served at https://diwche.com/robots.txt does not match this file,
+# that is not a stale deploy. Cloudflare prepends a managed block of its own —
+# look for "BEGIN Cloudflare Managed content" — and that block is where a
+# blanket `Disallow: /` for the AI crawlers comes from. It is a dashboard
+# setting on the zone (AI Crawl Control), not a file in this repo, and no
+# search engine is named in it: Googlebot, Bingbot, Applebot and the rest are
+# never blocked there. `Google-Extended` and `Applebot-Extended` govern model
+# training only and have no bearing on how either company indexes this site.
