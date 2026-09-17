@@ -1313,6 +1313,12 @@ function run(root: HTMLElement) {
       locale,
       rtl: document.documentElement.dir === 'rtl',
       summary: say.result.chartTitle ?? '',
+      words: {
+        quiet: say.result.chartQuiet ?? '{days}',
+        count: say.result.chartCount ?? '{count}',
+        hidden: say.result.chartHidden ?? '',
+        formats: say.result.chartFormats ?? {},
+      },
     });
     wrap.hidden = !drawn;
   }

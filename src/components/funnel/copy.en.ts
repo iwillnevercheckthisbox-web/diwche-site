@@ -315,6 +315,10 @@ export const EN: FunnelCopy = {
     chartTitle: 'Every post he read',
     chartNote: 'One bar per post, placed by date. Height is likes and comments. The heights use a square-root scale, so one big post does not flatten the rest.',
     chartEmpty: 'Nothing datable to draw.',
+    chartQuiet: '{days} quiet days',
+    chartCount: '{count} likes and comments',
+    chartHidden: 'Likes hidden',
+    chartFormats: { reel: 'Reel', video: 'Video', carousel: 'Carousel', photo: 'Photo', post: 'Post' },
     sections: {
       rhythm: 'How often you post',
       format: 'What works when you do',

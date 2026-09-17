@@ -16,7 +16,7 @@ import { HOME_DE, HOME_EN, HOME_FA, type HomeCopy } from '../content/home';
 import { LEARN_UI } from '../content/learn/ui';
 import { learnHome, type NavSection } from '../lib/learn';
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '../lib/direction';
-import { breadcrumbs, techArticle } from '../lib/seo';
+import { SITE_NAME, breadcrumbs, techArticle } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -68,7 +68,9 @@ const here = nav.find((s) => s.section === currentSection);
  */
 const home = locale === DEFAULT_LOCALE ? '/' : `/${locale}/`;
 const trail = [
-  { name: HOME[locale].meta.title.split(' — ')[0], url: home },
+  // The site's name, not the front of the homepage title: that title stopped having a
+  // ' — ' to split on when it became a sentence (#379), and the crumb became all of it.
+  { name: SITE_NAME, url: home },
   { name: ui.landingTitle, url: learnHome(locale) },
   ...(here ? [{ name: here.title, url: here.href }] : []),
   ...(current.includes('/') ? [{ name: title.split(' — ')[0], url: Astro.url.pathname }] : []),

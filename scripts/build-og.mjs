@@ -34,14 +34,14 @@ const H = 630;
 /*
  * The line on the card.
  *
- * Deliberately NOT the meta description: that one is written to survive being
- * cut at 160 characters in a result list, and it reads as a paragraph. A card is
- * looked at, not read, so this is the shortest true sentence in each language.
+ * The same sentence as the page title and the link preview (#379), minus the
+ * name in front of it: the wordmark is already on the card, one line above.
+ * Keep it in step with `meta.title` in src/content/home.ts.
  */
 const CARDS = {
-  en: { dir: 'ltr', tag: 'A manager for one Instagram account. Yours.', foot: 'diwche.com' },
-  fa: { dir: 'rtl', tag: 'یک مدیر برای پیج اینستاگرامت.', foot: 'diwche.com' },
-  de: { dir: 'ltr', tag: 'Ein Manager für einen Instagram-Account. Deinen.', foot: 'diwche.com' },
+  en: { dir: 'ltr', tag: 'The Diw you didn’t know you needed.', foot: 'diwche.com' },
+  fa: { dir: 'rtl', tag: 'دیوی که نمی‌دونستی بهش نیاز داری', foot: 'diwche.com' },
+  de: { dir: 'ltr', tag: 'Der Diw, von dem du nicht wusstest, dass du ihn brauchst.', foot: 'diwche.com' },
 };
 
 /** The dark palette, read from the stylesheet rather than copied out of it. */

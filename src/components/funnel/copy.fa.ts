@@ -323,6 +323,10 @@ export const FA: FunnelCopy = {
     chartTitle: 'همه‌ی پست‌هایی که خوند',
     chartNote: 'هر میله یک پست، بر اساس تاریخ. ارتفاع یعنی لایک و کامنت. مقیاس ارتفاع جذری‌ست تا یک پست بزرگ بقیه را صاف نکند.',
     chartEmpty: 'چیزی با تاریخ مشخص برای رسم نبود.',
+    chartQuiet: '{days} روز سکوت',
+    chartCount: '{count} لایک و کامنت',
+    chartHidden: 'لایک‌ها پنهان',
+    chartFormats: { reel: 'ریلز', video: 'ویدیو', carousel: 'کاروسل', photo: 'عکس', post: 'پست' },
     sections: {
       rhythm: 'چند وقت به چند وقت پست می‌ذاری',
       format: 'وقتی می‌ذاری، چی جواب می‌ده',

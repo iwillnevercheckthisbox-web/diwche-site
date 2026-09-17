@@ -319,6 +319,10 @@ export const DE: FunnelCopy = {
     chartTitle: 'Jeder Beitrag, den er gelesen hat',
     chartNote: 'Ein Balken je Beitrag, nach Datum. Die Höhe sind Likes und Kommentare, auf einer Wurzelskala — damit ein großer Beitrag den Rest nicht plattdrückt.',
     chartEmpty: 'Nichts Datierbares zum Zeichnen.',
+    chartQuiet: '{days} Tage ohne Beitrag',
+    chartCount: '{count} Likes und Kommentare',
+    chartHidden: 'Likes ausgeblendet',
+    chartFormats: { reel: 'Reel', video: 'Video', carousel: 'Karussell', photo: 'Foto', post: 'Beitrag' },
     sections: {
       rhythm: 'Wie oft du postest',
       format: 'Was dann funktioniert',

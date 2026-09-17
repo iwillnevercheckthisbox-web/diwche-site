@@ -114,6 +114,22 @@ p {
   text-wrap: pretty;
 }
 
+/*
+ * Running text is justified (#379), in either direction.
+ *
+ * Opt-in by class rather than on `p`: a `p` on this site is as often an eyebrow, a label or
+ * a one-line title as it is a paragraph, and justifying those only drags a centred line to
+ * one edge. The last line sits where the block around it aligns — the start edge, or the
+ * middle in a centred block, which says so with `--last-line: center`. Hyphenation is what
+ * keeps a narrow justified card from opening rivers between words; it follows `lang`, so a
+ * Persian line, which has no hyphen to break on, is simply spaced.
+ */
+.running-text {
+  text-align: justify;
+  text-align-last: var(--last-line, start);
+  hyphens: auto;
+}
+
 a {
   color: inherit;
   text-decoration-color: var(--rule);

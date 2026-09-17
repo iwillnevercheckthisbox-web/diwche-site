@@ -8,6 +8,7 @@
  * error rather than an English paragraph on a German page.
  */
 import Art from './Art.astro';
+import artManifest from '../../public/art/manifest.json';
 import PersonaBand from './PersonaBand.astro';
 import SectionHeader from './SectionHeader.astro';
 import Card from './Card.astro';
@@ -32,6 +33,9 @@ const { copy, locale } = Astro.props;
 const readEnabled = import.meta.env.PUBLIC_READ === 'on';
 const readHref = locale === 'en' ? '/read' : `/${locale}/read`;
 const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
+// The approach drawing is still to arrive (build-art.py PENDING); until it does the section is
+// the plain header it always was, rather than a two-column row with a hole in it.
+const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
 ---
 
 <!-- ================================================================== HERO -->
@@ -41,7 +45,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
     <h1 class="hero__title">
       {copy.hero.titleBefore}<span class="hero__title-accent">{copy.hero.titleAccent}</span>{copy.hero.titleAfter}
     </h1>
-    <p class="lead hero__lead">{copy.hero.lead}</p>
+    <p class="lead hero__lead running-text">{copy.hero.lead}</p>
 
     <div class="hero__actions">
       <a class="btn" href={readEnabled ? readHref : '#pilot'}>
@@ -75,7 +79,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
           <li style={`--reveal-delay: ${i * 50}ms`}>
             <Card class="path">
               <h3 class="path__title">{p.title}</h3>
-              <p class="path__text">{p.text}</p>
+              <p class="path__text running-text">{p.text}</p>
             </Card>
           </li>
         ))
@@ -102,7 +106,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
         {pillar.items.map((c, n) => (
           <li class="cap reveal" style={`--reveal-delay: ${n * 50}ms`}>
             <h3 class="cap__name">{c.name}</h3>
-            <p class="cap__text">{c.text}</p>
+            <p class="cap__text running-text">{c.text}</p>
           </li>
         ))}
       </ul>
@@ -111,15 +115,35 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
 }
 
 <!-- =============================================================== APPROACH -->
+<!-- The same two columns as a pillar row, copy first: on a Persian page that puts the
+     drawing on the left, on an English one on the right — the side a row's picture sits
+     on is the end of the line, whichever way the line runs. -->
 <section class="section" id="approach">
-  <div class="wrap reveal">
-    <SectionHeader
-      align="left"
-      eyebrow={copy.approach.eyebrow}
-      title={copy.approach.title}
-      lead={copy.approach.lead}
-    />
-  </div>
+  {approachDrawn ? (
+    <div class="wrap pillar__row">
+      <div class="pillar__copy reveal">
+        <SectionHeader
+          align="left"
+          eyebrow={copy.approach.eyebrow}
+          title={copy.approach.title}
+          lead={copy.approach.lead}
+        />
+      </div>
+
+      <div class="pillar__visual reveal" style="--reveal-delay: 60ms">
+        <Art name="approach-thinking" />
+      </div>
+    </div>
+  ) : (
+    <div class="wrap reveal">
+      <SectionHeader
+        align="left"
+        eyebrow={copy.approach.eyebrow}
+        title={copy.approach.title}
+        lead={copy.approach.lead}
+      />
+    </div>
+  )}
 </section>
 
 <!-- =========================================================== RELIABILITY -->
@@ -140,7 +164,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
           <li class="reveal" style={`--reveal-delay: ${i * 50}ms`}>
             <Card class="trust">
               <h3 class="trust__title">{t.title}</h3>
-              <p class="trust__text">{t.text}</p>
+              <p class="trust__text running-text">{t.text}</p>
             </Card>
           </li>
         ))
@@ -171,6 +195,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
     overflow: hidden;
     padding-block: clamp(3rem, 1rem + 8vw, 6.5rem) clamp(2rem, 1rem + 5vw, 5rem);
     text-align: center;
+    --last-line: center;
   }
 
   /* The hero's own light source, over the page's ambient wash: sapphire from the
@@ -229,6 +254,7 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
     display: grid;
     justify-items: center;
     text-align: center;
+    --last-line: center;
   }
 
   /* A single standing figure, taller than it is wide — so it takes less width
@@ -248,7 +274,10 @@ const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-5);
-    text-align: left;
+    /* `start`, never `left`: this was the one physical alignment on the page, and it set
+       both Persian cards flush left under a right-to-left heading. */
+    text-align: start;
+    --last-line: start;
   }
 
   .path__title {

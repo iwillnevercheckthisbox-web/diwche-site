@@ -267,6 +267,17 @@ export interface FunnelCopy {
     chartTitle: string;
     chartNote: string;
     chartEmpty: string;
+    /**
+     * The longest silence, written on its shaded column: `{days}`, in the reader's own digits.
+     * The unit is days because days is what it counts — never a word Instagram does not use.
+     */
+    chartQuiet: string;
+    /** One post's figure in the readout under the pointer: `{count}` likes and comments. */
+    chartCount: string;
+    /** A post on a page that hides its like counts: in the readout, and in the legend. */
+    chartHidden: string;
+    /** Format names for the readout and the legend, keyed the way the backend sends them. */
+    chartFormats: { reel: string; video: string; carousel: string; photo: string; post: string };
 
     /**
      * The report's sections, in the order the backend sends them.

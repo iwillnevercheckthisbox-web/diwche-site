@@ -25,7 +25,7 @@ const { copy = HOME_EN } = Astro.props;
 
 <section class="persona" aria-label={copy.persona.title}>
   <p class="wrap persona__title">{copy.persona.title}</p>
-  <p class="wrap persona__text">{copy.persona.text}</p>
+  <p class="wrap persona__text running-text">{copy.persona.text}</p>
 </section>
 
 <style>
@@ -36,6 +36,7 @@ const { copy = HOME_EN } = Astro.props;
     border-block: 1px solid var(--rule-soft);
     padding-block: var(--s-7);
     text-align: center;
+    --last-line: center;
   }
 
   .persona__title {

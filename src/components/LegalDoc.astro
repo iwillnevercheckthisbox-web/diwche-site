@@ -19,14 +19,14 @@ const { doc } = Astro.props;
   <header class="doc__head">
     <h1 class="doc__title">{doc.title}</h1>
     <p class="doc__updated">{doc.updated}</p>
-    <p class="doc__lead">{doc.lead}</p>
+    <p class="doc__lead running-text">{doc.lead}</p>
   </header>
 
   {
     doc.sections.map((section) => (
       <section class="doc__section">
         <h2 class="doc__h2">{section.title}</h2>
-        {section.body.map((p) => <p class="doc__p">{p}</p>)}
+        {section.body.map((p) => <p class="doc__p running-text">{p}</p>)}
         {section.points && (
           <ul class="doc__points">
             {section.points.map((point) => <li>{point}</li>)}

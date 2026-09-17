@@ -8,6 +8,9 @@ import sitemap from '@astrojs/sitemap';
 /**
  * `lastmod`, taken from the article that actually changed.
  *
+ * (While the guide is parked — see the sitemap filter below — no /learn URL is
+ * in the sitemap, so nothing here is used. It is left for the day it returns.)
+ *
  * The sitemap shipped without one, so Google had no signal about which of the
  * ninety-odd URLs was worth recrawling. The tempting fix is to stamp the build
  * date on every entry — but a sitemap where all pages changed at the same second
@@ -74,21 +77,26 @@ export default defineConfig({
   integrations: [
     mdx(),
     /*
-     * The guide (/learn) is not in the nav any more; the sitemap is how search
-     * engines keep finding its pages.
-     *
      * Kept out: the pages that already say noindex (/read, /bio, /r, in every
      * language), the two post-action pages (/confirm, /consent) nobody should
-     * land on from a search, and the DE/FA learn trees, which have no articles
-     * yet and would only advertise empty section shells. No `i18n` option on
-     * purpose: it would emit a blanket alternate per locale, which is exactly
-     * what Base.astro's per-page hreflang avoids (see its `alternates` note).
+     * land on from a search, and the guide (/learn), in every language.
+     *
+     * The guide is off the site (#379). Its routes are parked in `_learn`
+     * folders under src/pages, src/pages/fa and src/pages/de — the underscore
+     * is what keeps Astro from building them — and its articles stay in
+     * src/content/learn. So nothing under /learn is built today and this line
+     * changes no output; it is here so that un-parking the routes cannot
+     * quietly re-advertise the guide before somebody decides it should be.
+     *
+     * No `i18n` option on purpose: it would emit a blanket alternate per
+     * locale, which is exactly what Base.astro's per-page hreflang avoids (see
+     * its `alternates` note).
      */
     sitemap({
       filter: (page) => {
         const path = new URL(page).pathname;
         if (/^\/(?:(?:de|fa)\/)?(?:read|bio|r|confirm|consent)(?:\/|$)/.test(path)) return false;
-        if (/^\/(?:de|fa)\/learn(?:\/|$)/.test(path)) return false;
+        if (/^\/(?:(?:de|fa)\/)?learn(?:\/|-index\.|$)/.test(path)) return false;
         return true;
       },
       // No lastmod is better than a wrong one — see articleDates() above.

@@ -26,7 +26,7 @@ export interface HomeCopy {
      * The name of the control that opens the links on a phone.
      *
      * There was no such control. Under 760px the nav simply hid its links, so Features, the
-     * free read, Reliability, the FAQ and the guides were unreachable on the device most
+     * free read, Reliability and the FAQ were unreachable on the device most
      * visitors arrive on — the site had a navigation bar with nothing in it.
      */
     menu: string;
@@ -98,18 +98,17 @@ export const HOME_EN: HomeCopy = {
   locale: 'en',
 
   meta: {
-    title: 'Diwche — a manager for one Instagram account. Yours.',
-    description:
-      'Diwche runs one Instagram account: reads your feeds, writes and designs the post, and publishes it on schedule — tuned to what works on accounts like yours.',
+    title: 'Diwche, The Diw you didn’t know you needed.',
+    description: 'Diwche, The Diw you didn’t know you needed.',
   },
 
   nav: {
     // Pricing is deliberately absent: no number has been decided, and a tier
     // list of placeholders is worse than none because a reader cannot tell.
     //
-    // The guide (/learn) is deliberately not here either. It stays published
-    // and in the sitemap for search, and the footer still links to it; it just
-    // is no longer a headline destination.
+    // The guide (/learn) is not here, and not anywhere else either: it is off
+    // the site for now (#379). The articles stay in src/content/learn, and the
+    // routes that published them are parked under src/pages/**/_learn.
     links: [
       { href: '/#product', label: 'Features' },
       { href: '/#pilot', label: 'The free read' },
@@ -267,7 +266,7 @@ export const HOME_EN: HomeCopy = {
       },
       {
         title: 'Learn',
-        links: [{ href: '/#faq', label: 'FAQ' }, { href: '/learn', label: 'Guides' }, { label: 'About Diwche' }],
+        links: [{ href: '/#faq', label: 'FAQ' }, { label: 'About Diwche' }],
       },
       { title: 'Legal', links: [{ href: '/privacy', label: 'Privacy' }, { href: '/terms', label: 'Terms' }] },
     ],
@@ -279,17 +278,16 @@ export const HOME_FA: HomeCopy = {
   locale: 'fa',
 
   meta: {
-    title: 'دیوچه — یک مدیر برای پیج اینستاگرامت.',
-    description:
-      'دیوچه پیج اینستاگرامت را می‌گرداند: منابعت را می‌خواند، پست را می‌نویسد و طراحی می‌کند و سر ساعت منتشر می‌کند — بر اساس آنچه روی پیج‌های مشابه جواب داده.',
+    title: 'دیوچه، دیوی که نمی‌دونستی بهش نیاز داری',
+    description: 'دیوچه، دیوی که نمی‌دونستی بهش نیاز داری',
   },
 
   nav: {
     links: [
-      { href: '/fa/#product', label: 'امکانات' },
-      { href: '/fa/#pilot', label: 'خوانش رایگان' },
-      { href: '/fa/#reliability', label: 'قابل‌اتکا بودن' },
-      { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
+      { href: '/fa/#product', label: 'خدمات' },
+      { href: '/fa/#pilot', label: 'آشنایی با دیوچه' },
+      { href: '/fa/#reliability', label: 'چرا دیوچه' },
+      { href: '/fa/#faq', label: 'سوالات متداول' },
     ],
     cta: 'خوانش رایگان',
     theme: 'رفتن به تم روشن',
@@ -312,7 +310,7 @@ export const HOME_FA: HomeCopy = {
   },
 
   pilot: {
-    eyebrow: 'خوانش رایگان',
+    eyebrow: 'آشنایی با دیوچه',
     title: 'دیوچه، نقطه‌ی شروع برای همه.',
     lead: 'مهم نیست حساب فعال در اینستاگرام داشته باشی یا تازه در ابتدای راه ایده‌پردازی باشی؛ دیوچه در هر دو حالت ساختاری منسجم برای شروع دارد.',
     paths: [
@@ -329,9 +327,9 @@ export const HOME_FA: HomeCopy = {
 
   pillars: [
     {
-      eyebrow: '۰۱ — دیوان استودیو (D1 Studio)',
+      eyebrow: '۰۱ — استودیو دیوان',
       title: 'استودیوی کامل تولید محتوا.',
-      lead: 'چه فوتیج و ویدیوهای شخصی خودتان را داشته باشید و چه بخواهید همه‌چیز را از صفر بسازید، دیوان استودیو تمام فرایند تولید محتوا را پوشش می‌دهد. دیگر نیازی نیست برای تولید یک پست بین چند برنامه‌ی مختلف جابه‌جا شوید؛ تمامی مراحل، از سناریونویسی تا ادیت، زیرنویس‌گذاری و زمان‌بندی، در یک بستر یکپارچه انجام می‌شوند.',
+      lead: 'چه فوتیج و ویدیوهای شخصی خودتان را داشته باشید و چه بخواهید همه‌چیز را از صفر بسازید، استودیو دیوان تمام فرایند تولید محتوا را پوشش می‌دهد. دیگر نیازی نیست برای تولید یک پست بین چند برنامه‌ی مختلف جابه‌جا شوید؛ تمامی مراحل، از سناریونویسی تا ادیت، زیرنویس‌گذاری و زمان‌بندی، در یک بستر یکپارچه انجام می‌شوند.',
       items: [
         {
           name: 'سناریونویسی',
@@ -398,7 +396,7 @@ export const HOME_FA: HomeCopy = {
   },
 
   reliability: {
-    eyebrow: 'قابل‌اتکا بودن',
+    eyebrow: 'چرا دیوچه',
     title: 'پایداری سیستم و حفظ امنیت حساب‌ها.',
     lead: 'بخش عمده‌ای از فعالیت‌های دیوچه در پس‌زمینه انجام می‌شود؛ به همین دلیل این سیستم با استانداردهای امنیتی دقیق و ساختاری منعطف در برابر خطا طراحی شده تا امنیت و پایداری حساب‌های شما همواره حفظ شود.',
     items: [
@@ -418,7 +416,7 @@ export const HOME_FA: HomeCopy = {
   },
 
   faq: {
-    eyebrow: 'سوال‌های پرتکرار',
+    eyebrow: 'سوالات متداول',
     title: 'چند تا سوال',
     lead: 'هرچه اینجا نیست را در دمو بپرس.',
     items: [
@@ -428,7 +426,7 @@ export const HOME_FA: HomeCopy = {
       },
       {
         q: 'آیا برای تولید ویدیو حتماً باید خودم فیلم‌برداری کنم؟',
-        a: 'لزوماً نه. می‌توانید فوتیج‌های شخصی خود را به دیوان استودیو (D1 Studio) بیاورید یا تولید متن‌ها و طرح‌های کاروسل را به سیستم بسپارید. در هر دو حالت، ویرایشگر بصری امکان ادیت دقیق تمام فریم‌ها، لایه‌ها و زیرنویس‌ها را در اختیارتان می‌گذارد.',
+        a: 'لزوماً نه. می‌توانید فوتیج‌های شخصی خود را به استودیو دیوان بیاورید یا تولید متن‌ها و طرح‌های کاروسل را به سیستم بسپارید. در هر دو حالت، ویرایشگر بصری امکان ادیت دقیق تمام فریم‌ها، لایه‌ها و زیرنویس‌ها را در اختیارتان می‌گذارد.',
       },
       {
         q: 'آیا پست‌ها به‌صورت خودکار منتشر می‌شوند یا امکان بازبینی وجود دارد؟',
@@ -464,8 +462,7 @@ export const HOME_FA: HomeCopy = {
       {
         title: 'یادگیری',
         links: [
-          { href: '/fa/#faq', label: 'سوال‌های پرتکرار' },
-          { href: '/fa/learn', label: 'راهنماها' },
+          { href: '/fa/#faq', label: 'سوالات متداول' },
           { label: 'درباره‌ی دیوچه' },
         ],
       },
@@ -474,7 +471,7 @@ export const HOME_FA: HomeCopy = {
         links: [{ href: '/fa/privacy', label: 'حریم خصوصی' }, { href: '/fa/terms', label: 'شرایط استفاده' }],
       },
     ],
-    contact: { title: 'با ما حرف بزن', lead: 'این یکی را یک آدم واقعی می‌خواند.' },
+    contact: { title: 'با ما در تماس باش', lead: 'این یکی را یک آدم واقعی می‌خواند.' },
   },
 };
 
@@ -482,9 +479,8 @@ export const HOME_DE: HomeCopy = {
   locale: 'de',
 
   meta: {
-    title: 'Diwche — ein Manager für einen Instagram-Account. Deinen.',
-    description:
-      'Diwche führt einen Instagram-Account: liest deine Quellen, schreibt und gestaltet den Beitrag, veröffentlicht ihn pünktlich — orientiert an Profilen wie deinem.',
+    title: 'Diwche, der Diw, von dem du nicht wusstest, dass du ihn brauchst.',
+    description: 'Diwche, der Diw, von dem du nicht wusstest, dass du ihn brauchst.',
   },
 
   nav: {
@@ -638,7 +634,6 @@ export const HOME_DE: HomeCopy = {
         title: 'Lernen',
         links: [
           { href: '/de/#faq', label: 'Fragen' },
-          { href: '/de/learn', label: 'Anleitungen' },
           { label: 'Über Diwche' },
         ],
       },
