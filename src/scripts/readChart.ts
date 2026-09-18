@@ -219,10 +219,15 @@ function render(
       svg.append(
         el('rect', {
           x: fix(left),
-          y: '0',
+          // Starts at the top of the PLOT, not of the drawing, so its label sits above it rather
+          // than inside it and the band stops competing with the bars for the reader's eye.
+          y: String(LANE_TOP),
           width: fix(right - left),
-          height: String(floor),
+          height: String(floor - LANE_TOP),
           fill: 'var(--chart-quiet)',
+          // Lighter than it was, and the gridlines drawn after it cross it: a solid slab taller
+          // than every bar read as the biggest bar on the chart rather than as empty time.
+          'fill-opacity': '0.55',
           rx: '3',
         })
       );
@@ -239,6 +244,59 @@ function render(
       svg.append(label);
       clampInside(label, width);
     }
+  }
+
+  // ---- The value axis: what a height actually MEANS (#379, round 2) ---------------------------
+  //
+  // The chart had no numbers on it anywhere. A reader could see that one post towered over the
+  // rest and could not tell whether the tower was fifty or three hundred and fifty, which is the
+  // first thing anyone wants to know — "the labels and values are easy to understand" was the
+  // retest, and there were no values to understand.
+  //
+  // The ticks are chosen by where they LAND, not by round arithmetic on the values: on a square
+  // root scale evenly-spaced values bunch up at the top, so three heights are picked first
+  // (35 %, 65 % and 100 % of the plot) and each is turned back into the value that sits there,
+  // rounded to something a person would say. The top one is the real peak, unrounded, because
+  // that post is the finding.
+  //
+  // Drawn across the full width and OVER the quiet band, which is also what stops that band
+  // reading as an enormous bar: once three lines cross it, it is visibly behind the chart.
+  const ticks = valueTicks(tallest);
+  // Drawn with the gridlines, appended after the bars: on a phone the leftmost bar sits under the
+  // leading edge, and a label printed before it came out half-covered ("20" reading as "2").
+  const tickLabels: SVGTextElement[] = [];
+  for (const value of ticks) {
+    const y = floor - barHeight(value);
+    svg.append(
+      el('line', {
+        x1: '0',
+        y1: fix(y),
+        x2: String(width),
+        y2: fix(y),
+        stroke: 'var(--chart-axis)',
+        'stroke-width': '1',
+        'stroke-opacity': '0.35',
+        'stroke-dasharray': '2 4',
+      })
+    );
+    // Sitting just above its own line at the leading edge, so the plot keeps its full width
+    // instead of giving up a gutter to an axis column.
+    tickLabels.push(
+      text(new Intl.NumberFormat(locale).format(value), {
+        x: rtl ? String(width - 2) : '2',
+        y: fix(y - 3),
+        'text-anchor': rtl ? 'end' : 'start',
+        'font-size': '10',
+        fill: 'var(--ink-3)',
+        // A halo of the card's own background, so the number stays readable where a bar runs
+        // underneath it. paint-order puts the stroke behind the glyph rather than over it.
+        stroke: 'var(--paper-2)',
+        'stroke-width': '3',
+        'stroke-linejoin': 'round',
+        'paint-order': 'stroke fill',
+        class: 'chart__tick',
+      })
+    );
   }
 
   // ---- The baseline ---------------------------------------------------------------------------
@@ -270,7 +328,10 @@ function render(
       // axis colour, which on the dark page was a smudge you had to be told about.
       anyHidden = true;
       const w = Math.max(bar, MIN_OUTLINE);
-      const h = Math.max(14, plot * 0.22);
+      // Deliberately short and at the baseline: tall enough to see, low enough that nobody reads
+      // a number off it. With a value axis on the chart now, a mid-height outline would look like
+      // a post sitting on one of the gridlines.
+      const h = Math.max(10, plot * 0.12);
       node = el('rect', {
         x: fix(cx - w / 2 + 0.75),
         y: fix(floor - h + 0.75),
@@ -295,6 +356,9 @@ function render(
     svg.append(node);
     marks.push({ post, cx, node });
   }
+
+  // The axis numbers go on last, over the bars — see tickLabels above.
+  for (const label of tickLabels) svg.append(label);
 
   // ---- The readout: what a bar is, on hover, touch or the arrow keys ---------------------------
   const tip = document.createElement('div');
@@ -495,6 +559,35 @@ function clampInside(label: SVGTextElement, width: number) {
   const half = box.width / 2;
   const clamped = Math.min(Math.max(cx, half + 1), width - half - 1);
   if (clamped !== cx) label.setAttribute('x', fix(clamped));
+}
+
+/**
+ * Up to three values to rule the chart at, chosen by where they land rather than by their size.
+ *
+ * The heights are a square root, so picking round values (100, 200, 300) puts three lines in the
+ * top third and nothing below. Picking the heights first and converting back gives lines that are
+ * evenly spread down the plot; each is then rounded to 1, 2 or 5 x a power of ten, which is what
+ * a person would say out loud. The peak keeps its exact value — it is the post the reader came
+ * for, and rounding 343 to 300 would be drawing a line where no post is.
+ */
+function valueTicks(tallest: number): number[] {
+  if (!(tallest > 0)) return [];
+  const out: number[] = [tallest];
+  for (const fraction of [0.35, 0.65]) {
+    const value = round125(tallest * fraction * fraction);
+    // Not worth a line if it rounds to nothing, or sits on top of one already drawn.
+    if (value > 0 && out.every((v) => Math.abs(v - value) > tallest * 0.06)) out.push(value);
+  }
+  return out.sort((a, b) => a - b);
+}
+
+/** The nearest 1, 2 or 5 times a power of ten — 43 -> 50, 118 -> 100, 270 -> 200. */
+function round125(value: number): number {
+  if (!(value > 0)) return 0;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+  const n = value / magnitude;
+  const step = n >= 5 ? 5 : n >= 2 ? 2 : 1;
+  return step * magnitude;
 }
 
 function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string>): SVGElementTagNameMap[K] {
