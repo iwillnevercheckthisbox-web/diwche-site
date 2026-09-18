@@ -18,6 +18,7 @@ import '../styles/tokens.css';
 import '../styles/base.css';
 import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
 import { humanCheckLabel } from '../lib/humanCheck';
+import { OG_LOCALE, ogImageFor } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -30,6 +31,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 // Direction follows the content language, resolved in one place — never
 // hardcoded here. See src/lib/direction.ts.
 const dir = dirFor(locale);
+// The brand card in this page's language. Bare pages are shared in chat far more often than
+// they are found in search — which is the whole of Trello #379 item 8's second half.
+const card = new URL(ogImageFor(locale), Astro.site);
 
 /**
  * Proof-of-human, when there is a key for it.
@@ -62,6 +66,25 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_KEY ?? '';
     <link rel="icon" type="image/png" sizes="32x32" href="/brand/icon-32.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/brand/icon-512.png" />
     <link rel="apple-touch-icon" href="/brand/icon-180.png" />
+
+    <!-- Open Graph, which this layout carried none of.
+         `noindex` above keeps these pages out of search, and that is right — but it says nothing
+         about a link pasted into Telegram, WhatsApp or Slack, and those are exactly how /read and
+         a bio page travel. With no tags at all the scraper falls back to whatever it can find,
+         which is how a shared link came back wearing an old title belonging to somebody's
+         Instagram account (#379 item 8). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Diwche" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image" content={card} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:image" content={card} />
 
     {
       turnstileKey && (
