@@ -17,6 +17,7 @@ import '@fontsource-variable/vazirmatn';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import { DEFAULT_LOCALE, dirFor, type Locale } from '../lib/direction';
+import { humanCheckLabel } from '../lib/humanCheck';
 
 interface Props {
   title: string;
@@ -41,7 +42,12 @@ const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_KEY ?? '';
 ---
 
 <!doctype html>
-<html lang={locale} dir={dir} data-turnstile-key={turnstileKey || undefined}>
+<html
+  lang={locale}
+  dir={dir}
+  data-turnstile-key={turnstileKey || undefined}
+  data-turnstile-label={turnstileKey ? humanCheckLabel(locale) : undefined}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

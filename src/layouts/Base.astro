@@ -9,6 +9,7 @@ import '../styles/base.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { DEFAULT_LOCALE, LOCALES, dirFor, type Locale } from '../lib/direction';
+import { humanCheckLabel } from '../lib/humanCheck';
 import { OG_LOCALE, graph, ogImageFor } from '../lib/seo';
 import { HOME_EN, type HomeCopy } from '../content/home';
 
@@ -87,7 +88,12 @@ const jsonLd = graph(locale, schema);
 ---
 
 <!doctype html>
-<html lang={locale} dir={dir} data-turnstile-key={turnstileKey || undefined}>
+<html
+  lang={locale}
+  dir={dir}
+  data-turnstile-key={turnstileKey || undefined}
+  data-turnstile-label={turnstileKey ? humanCheckLabel(locale) : undefined}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

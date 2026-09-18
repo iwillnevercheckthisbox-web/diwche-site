@@ -39,13 +39,14 @@ export interface HumanToken {
   failed: boolean;
 }
 
-/** The widget's own size in its normal rendering; the host is cut to it. */
+/** The widget's own size in its normal rendering; its mount inside the card is cut to it. */
 const WIDTH = 300;
 const HEIGHT = 65;
-const GAP = 8;
 
 let widget: { id: string; api: TurnstileApi; minted: boolean } | null = null;
 let host: HTMLElement | null = null;
+/** The 300x65 box the widget itself is rendered into, inside the card. */
+let mount: HTMLElement | null = null;
 let pending: ((token: string | null) => void) | null = null;
 let silentNulls = 0;
 /** The tail of the queue described in `turnstileToken`. Nothing asks the widget out of turn. */
@@ -85,13 +86,22 @@ function conceal() {
   host.style.visibility = 'hidden';
   host.style.opacity = '0';
   host.style.pointerEvents = 'none';
+  const card = host.firstElementChild as HTMLElement | null;
+  if (card) card.style.transform = 'translateY(6px) scale(.98)';
 }
 
 function reveal() {
   if (!host) return;
   host.style.visibility = 'visible';
   host.style.opacity = '1';
-  host.style.pointerEvents = 'auto';
+  // The scrim itself never takes the pointer — only the card does. A full-viewport overlay that
+  // swallowed clicks would take the page with it if conceal() ever failed to run.
+  host.style.pointerEvents = 'none';
+  const card = host.firstElementChild as HTMLElement | null;
+  // Two frames, so the transition has a start to run from rather than being set in the same tick.
+  if (card) requestAnimationFrame(() => requestAnimationFrame(() => {
+    card.style.transform = 'translateY(0) scale(1)';
+  }));
 }
 
 function dropWidget() {
@@ -103,7 +113,7 @@ function dropWidget() {
     }
   }
   widget = null;
-  if (host) host.textContent = '';
+  if (mount) mount.textContent = '';
 }
 
 /**
@@ -113,30 +123,57 @@ function dropWidget() {
  * bottom centre of the viewport.
  */
 function place(anchor: HTMLElement | null | undefined) {
-  if (!host) {
-    host = document.createElement('div');
-    host.setAttribute('data-turnstile-host', '');
-    host.style.cssText =
-      `position:fixed;width:${WIDTH}px;height:${HEIGHT}px;z-index:2147483000;` +
-      'pointer-events:none;background:transparent;visibility:hidden;opacity:0;';
-    document.body.append(host);
-  }
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  let left = (vw - WIDTH) / 2;
-  let top = vh - HEIGHT - GAP;
-
-  const rect = anchor?.getBoundingClientRect();
-  if (rect && rect.width > 0 && rect.bottom > 0 && rect.top < vh) {
-    left = rect.left + rect.width / 2 - WIDTH / 2;
-    top = rect.top - HEIGHT - GAP;
-    if (top < GAP) top = Math.min(rect.bottom + GAP, vh - HEIGHT - GAP);
-  }
-  left = Math.max(GAP, Math.min(vw - WIDTH - GAP, left));
-  top = Math.max(GAP, Math.min(vh - HEIGHT - GAP, top));
-  host.style.left = `${Math.round(left)}px`;
-  host.style.top = `${Math.round(top)}px`;
+  build();
+  // Centred, over a scrim, rather than pinned above whichever button was pressed (Trello #379).
+  // The old box was 300x65 of transparent nothing dropped on top of the page wherever the
+  // pointer happened to be — a Cloudflare widget with no frame, no background and no sentence,
+  // which is what "it feels like it has simply been dropped onto the page" describes. Anchoring
+  // it to the button was meant to put it where the visitor was looking; a centred card with the
+  // page dimmed behind it does that better and cannot land half off the screen on a phone.
+  void anchor;
   reveal();
+}
+
+/**
+ * The card the widget sits in: the site's own panel, a scrim behind it, and a line saying what
+ * is happening. Built once, kept for the life of the page — the widget inside it is rendered
+ * once and executed per token, so tearing the card down would take the widget with it.
+ *
+ * The mount the widget is given keeps its exact 300x65: Cloudflare answers a host with no layout
+ * with error 300010 and no token, and that is a lesson this file already paid for once.
+ */
+function build() {
+  if (host) return;
+  host = document.createElement('div');
+  host.setAttribute('data-turnstile-host', '');
+  host.style.cssText =
+    'position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;' +
+    'pointer-events:none;visibility:hidden;opacity:0;' +
+    'background:color-mix(in srgb, var(--paper, #0b0e14) 72%, transparent);' +
+    '-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);' +
+    'transition:opacity 180ms ease;';
+
+  const card = document.createElement('div');
+  card.setAttribute('data-turnstile-card', '');
+  card.style.cssText =
+    'pointer-events:auto;display:grid;gap:12px;justify-items:center;' +
+    'padding:20px;border-radius:14px;' +
+    'background:var(--paper-2, #12151d);border:1px solid var(--rule, rgba(255,255,255,.12));' +
+    'box-shadow:0 18px 50px rgba(0,0,0,.45);' +
+    'transform:translateY(6px) scale(.98);transition:transform 180ms ease;';
+
+  const label = document.createElement('p');
+  label.textContent = document.documentElement.dataset.turnstileLabel || '';
+  label.style.cssText =
+    'margin:0;font-size:13px;line-height:1.4;text-align:center;color:var(--ink-2, #aab);max-width:300px;';
+  if (label.textContent) card.append(label);
+
+  mount = document.createElement('div');
+  mount.style.cssText = `width:${WIDTH}px;height:${HEIGHT}px;`;
+  card.append(mount);
+
+  host.append(card);
+  document.body.append(host);
 }
 
 /** The script is async, so it may not have arrived by the time the button is pressed. */
@@ -247,7 +284,7 @@ async function mint(
       if (widget && widget.api !== api) dropWidget();
 
       if (!widget) {
-        const id = api.render(host!, {
+        const id = api.render(mount!, {
           sitekey: key,
           appearance: 'interaction-only',
           execution: 'execute',
