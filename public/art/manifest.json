@@ -13,9 +13,9 @@
   },
   {
     "slug": "studio-writing",
-    "width": 840,
-    "height": 805,
-    "alt": "Diwche hunched over a ledger under a lamp, writing by quill among charts and maps."
+    "width": 824,
+    "height": 840,
+    "alt": "Diwche in shirtsleeves and waistcoat, writing in an open ledger with a quill, an inkwell and a pot of pens on the desk beside him."
   },
   {
     "slug": "replies-mailbox",
@@ -28,5 +28,11 @@
     "width": 840,
     "height": 836,
     "alt": "Diwche in a tinkered-together instrument vest, a colander on his head and dials on his chest, reading his own numbers."
+  },
+  {
+    "slug": "approach-thinking",
+    "width": 752,
+    "height": 655,
+    "alt": "Diwche resting his head on one hand over a sketch he has struck through in red, crumpled drafts and a forgotten mug around him."
   }
 ]

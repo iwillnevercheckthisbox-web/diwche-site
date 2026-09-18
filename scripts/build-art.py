@@ -51,7 +51,8 @@ ART = [
     ),
     (
         "studio-writing",
-        "Diwche hunched over a ledger under a lamp, writing by quill among charts and maps.",
+        "Diwche in shirtsleeves and waistcoat, writing in an open ledger with a quill, "
+        "an inkwell and a pot of pens on the desk beside him.",
     ),
     (
         "replies-mailbox",
@@ -62,10 +63,11 @@ ART = [
         "Diwche in a tinkered-together instrument vest, a colander on his head and dials "
         "on his chest, reading his own numbers.",
     ),
-    # "How Diwche thinks" (#approach). The drawing is "Replace 2.png" on Trello #379 and is
-    # not in the repo yet: save it as art/source/approach-thinking.png, describe it here in
-    # place of the None, and rebuild. Until then it is PENDING and the section has no picture.
-    ("approach-thinking", None),
+    (
+        "approach-thinking",
+        "Diwche resting his head on one hand over a sketch he has struck through in red, "
+        "crumpled drafts and a forgotten mug around him.",
+    ),
 ]
 
 # Drawings that are planned but whose file has not arrived yet.
@@ -74,7 +76,7 @@ ART = [
 # page that wants it renders without it (Home.astro asks the manifest) — never with some other
 # drawing standing in, which on the homepage meant the same figure twice. Once the file
 # exists it builds like any other and this entry stops mattering.
-PENDING = {"approach-thinking"}
+PENDING: set[str] = set()
 
 # The mark. Trimmed to the horns themselves — the source has about a third of its
 # height in empty margin, which would render as a mysteriously small logo.
