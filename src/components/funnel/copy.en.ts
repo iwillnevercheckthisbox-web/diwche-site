@@ -90,7 +90,11 @@ export const EN: FunnelCopy = {
         },
       ],
       shot: {
-        src: '/mascot/v2/working-hard.svg',
+        // The drawn cut-out, not the animated mascot scene (#379). working-hard.svg is
+        // a square raster with its own opaque background, so on this screen it read as a
+        // framed tile dropped between the question and the answers — every other figure
+        // on the read floats with no frame at all.
+        src: '/art/studio-writing.webp',
         label: 'Diwche',
         alt: 'The Diw, taking notes.',
       },
