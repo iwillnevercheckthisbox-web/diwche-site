@@ -1317,6 +1317,7 @@ function run(root: HTMLElement) {
         quiet: say.result.chartQuiet ?? '{days}',
         count: say.result.chartCount ?? '{count}',
         hidden: say.result.chartHidden ?? '',
+        hiddenNote: say.result.chartHiddenNote ?? '',
         formats: say.result.chartFormats ?? {},
       },
     });

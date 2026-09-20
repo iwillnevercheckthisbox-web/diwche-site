@@ -50,6 +50,10 @@ export interface ChartWords {
   count: string;
   /** In place of a figure, for a page that hides its like counts. Also the legend's word. */
   hidden: string;
+  /** One line saying what that word means, on the legend entry. "Likes hidden" on its own read
+   *  as something this report had done, or failed to do; it is a choice the page's owner made on
+   *  Instagram, and the count is unknown rather than zero. */
+  hiddenNote: string;
   /** Format names, keyed the way the backend sends them. */
   formats: Record<'reel' | 'video' | 'carousel' | 'photo' | 'post', string>;
 }
@@ -446,6 +450,9 @@ function render(
     swatch.setAttribute('data-swatch', entry.key);
     if (entry.key !== 'hidden') swatch.style.background = TONE_FILL[entry.key as Tone];
     item.append(swatch, document.createTextNode(entry.label));
+    // The one entry that names a state rather than a format says what it means, for a pointer and
+    // for a screen reader; a tap gets it too, since the title shows on long-press.
+    if (entry.key === 'hidden' && words.hiddenNote) item.title = words.hiddenNote;
     legend.append(item);
   }
   if (entries.length > 1 || anyHidden) host.append(legend);

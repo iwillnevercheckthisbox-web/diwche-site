@@ -329,7 +329,8 @@ export const FA: FunnelCopy = {
     chartEmpty: 'چیزی با تاریخ مشخص برای رسم نبود.',
     chartQuiet: '{days} روز سکوت',
     chartCount: '{count} لایک و کامنت',
-    chartHidden: 'لایک‌ها پنهان',
+    chartHidden: 'لایک‌ها عمومی نیست',
+    chartHiddenNote: 'صاحب صفحه نمایش لایک‌های این پست را خاموش کرده، برای همین بدون عدد نشان داده می‌شود.',
     chartFormats: { reel: 'ریلز', video: 'ویدیو', carousel: 'کاروسل', photo: 'عکس', post: 'پست' },
     sections: {
       rhythm: 'چند وقت به چند وقت پست می‌ذاری',

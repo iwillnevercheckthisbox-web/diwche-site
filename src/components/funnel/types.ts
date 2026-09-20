@@ -276,6 +276,7 @@ export interface FunnelCopy {
     chartCount: string;
     /** A post on a page that hides its like counts: in the readout, and in the legend. */
     chartHidden: string;
+    chartHiddenNote: string;
     /** Format names for the readout and the legend, keyed the way the backend sends them. */
     chartFormats: { reel: string; video: string; carousel: string; photo: string; post: string };
 

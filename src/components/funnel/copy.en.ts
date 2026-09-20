@@ -321,7 +321,8 @@ export const EN: FunnelCopy = {
     chartEmpty: 'Nothing datable to draw.',
     chartQuiet: '{days} quiet days',
     chartCount: '{count} likes and comments',
-    chartHidden: 'Likes hidden',
+    chartHidden: 'Likes not public',
+    chartHiddenNote: 'The owner turned likes off for this post, so it is shown without a count.',
     chartFormats: { reel: 'Reel', video: 'Video', carousel: 'Carousel', photo: 'Photo', post: 'Post' },
     sections: {
       rhythm: 'How often you post',
