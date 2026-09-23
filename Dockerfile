@@ -66,6 +66,11 @@ COPY --from=build /app/dist/ /usr/share/nginx/html/
 # variables that exist in the environment are substituted, which is why $host
 # and $remote_addr survive untouched.
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+# Where /api/public/* is forwarded. It used to be a literal NAS address in the
+# template; when production moved to the R740 (2026-09-22) the NAS backend was
+# stopped and every read answered 502 while the static site looked fine. The
+# deploy overrides this from the API_UPSTREAM Gitea variable when it is set.
+ENV API_UPSTREAM=http://192.168.1.101:5556
 COPY security-headers.conf /etc/nginx/conf.d/security-headers.conf
 
 # nginx listens on 80 inside the container; the host maps 5659:80 in docker run
