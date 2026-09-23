@@ -637,8 +637,10 @@ export async function fetchBioPage(slug: string): Promise<BioPage | null> {
 /**
  * A shared report, as one finished HTML document.
  *
- * Null when the link was revoked or never existed — not an error the reader caused, so it is not
- * thrown. The report is served as text/html, so this reads the body rather than parsing JSON.
+ * Null only on a 404: the link was revoked or never existed — not an error the reader caused, so
+ * it is not thrown. Every other failure (network, 5xx, 429, 403) throws, because a share link does
+ * not expire and a server having a bad minute must not be shown as one. The report is served as
+ * text/html, so this reads the body rather than parsing JSON.
  */
 export async function fetchSharedReport(token: string): Promise<string | null> {
   const res = await fetch(`${BASE}/reports/${encodeURIComponent(token)}`);

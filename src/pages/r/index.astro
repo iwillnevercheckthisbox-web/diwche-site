@@ -25,6 +25,12 @@ import Bare from '../../layouts/Bare.astro';
     <a class="report-home" href="/">Go to diwche.com</a>
   </div>
 
+  <div class="report-state" id="report-failed" role="alert" hidden>
+    <h1>We couldn't load this report right now</h1>
+    <p>Try again in a minute.</p>
+    <button type="button" class="report-retry" id="report-retry">Try again</button>
+  </div>
+
   <iframe id="report-frame" class="report-frame" title="Report" sandbox="allow-same-origin" hidden></iframe>
 </Bare>
 
@@ -59,6 +65,18 @@ import Bare from '../../layouts/Bare.astro';
 
   .report-state p { color: var(--ink-2); margin: 0; }
   .report-home { color: var(--horn); margin-top: var(--s-3); }
+
+  .report-retry {
+    margin-top: var(--s-3);
+    font: inherit;
+    color: var(--horn);
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: var(--s-2) var(--s-4);
+    cursor: pointer;
+  }
+  .report-retry:disabled { opacity: 0.5; cursor: progress; }
 
   .report-spinner {
     width: 28px;
