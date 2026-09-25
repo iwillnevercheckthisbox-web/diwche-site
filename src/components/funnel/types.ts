@@ -279,6 +279,17 @@ export interface FunnelCopy {
     chartHiddenNote: string;
     /** Format names for the readout and the legend, keyed the way the backend sends them. */
     chartFormats: { reel: string; video: string; carousel: string; photo: string; post: string };
+    /** Legend word for a pinned post, and one line saying why its date is not the page's pace. */
+    chartPinned: string;
+    chartPinnedNote: string;
+    /**
+     * What the chart covers, under it (#541). Recent stretch: `{days}`, `{count}` drawn, `{total}`
+     * read. Everything since the oldest unpinned post: `{count}`, `{total}` and that `{date}`. And when the report's best post is not
+     * in what is drawn: its `{count}` of likes and comments and its `{date}`.
+     */
+    chartWindowDays: string;
+    chartWindowAll: string;
+    chartBestOutside: string;
 
     /**
      * The report's sections, in the order the backend sends them.

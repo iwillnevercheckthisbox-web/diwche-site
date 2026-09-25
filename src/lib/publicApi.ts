@@ -70,6 +70,10 @@ export interface TimelinePoint {
   /** Null when the page hides its like counts. Drawn as unknown, never as a zero. */
   engagement: number | null;
   format: string;
+  /** Pinned to the top of the grid, or set aside from the rhythm as one. Drawn, marked. */
+  pinned?: boolean;
+  /** The post every "best post" sentence in the report names. */
+  best?: boolean;
 }
 
 /** How often the page posts, judged over the last sixty days. From the dates alone. */

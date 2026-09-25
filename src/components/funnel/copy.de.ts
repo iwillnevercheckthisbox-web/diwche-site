@@ -328,6 +328,11 @@ export const DE: FunnelCopy = {
     chartHidden: 'Likes nicht öffentlich',
     chartHiddenNote: 'Der Inhaber hat die Likes für diesen Beitrag ausgeblendet, daher wird er ohne Zahl gezeigt.',
     chartFormats: { reel: 'Reel', video: 'Video', carousel: 'Karussell', photo: 'Foto', post: 'Beitrag' },
+    chartPinned: 'Angepinnt',
+    chartPinnedNote: 'Oben im Profil angepinnt. Er wird gezeigt, aber sein Datum zählt nicht dazu, wie oft du postest.',
+    chartWindowDays: 'Zu sehen: die letzten {days} Tage – {count} der {total} Beiträge, die er gelesen hat.',
+    chartWindowAll: 'Zu sehen: {count} der {total} Beiträge, die er gelesen hat, seit {date}.',
+    chartBestOutside: 'Dein bester Beitrag unter den gelesenen ({count} Likes und Kommentare, {date}) ist älter als dieser Ausschnitt.',
     sections: {
       rhythm: 'Wie oft du postest',
       format: 'Was dann funktioniert',

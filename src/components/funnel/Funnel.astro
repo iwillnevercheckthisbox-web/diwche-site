@@ -1817,6 +1817,23 @@ const alwaysShown = screens.filter((s) => s.kind !== 'error' && !s.showIf).lengt
     border: 1.5px solid var(--ink-2);
   }
 
+  /* The same ring that sits over a pinned bar. */
+  .chart__plot :global(.chart__legend [data-swatch='pinned']) {
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+  }
+
+  /* What the chart covers — a caption, not a finding. Direction comes from the page. */
+  .chart__plot :global(.chart__window) {
+    margin: var(--s-2) 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    text-align: start;
+  }
+
   .chart__note {
     font-size: 12px;
     line-height: 1.5;

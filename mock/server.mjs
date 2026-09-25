@@ -62,6 +62,9 @@ function timeline(count = 26) {
     // A twenty-one day silence in the middle, so the shaded gap has something to shade.
     at -= (i === 8 ? 21 : 2 + (i % 4)) * DAY;
   }
+  // The page's pin: its biggest post, from over a year ago. Drawn only if it falls in the window,
+  // and otherwise named under the chart as the best post outside it (#541).
+  points.push({ at: Date.now() - 400 * DAY, engagement: 1100, format: 'reel', pinned: true, best: true });
   return points;
 }
 
@@ -99,8 +102,8 @@ const strong = (handle) => ({
     {
       key: 'best',
       label: 'The one that worked',
-      value: '5.1×',
-      text: 'Your best post got 343 likes and comments — 5.1 times everyone who follows you. It was a reel, recently, and it went well past your own audience.',
+      value: '13×',
+      text: 'Of your last 27 posts, your best got 1,100 likes and comments — 13 times everyone who follows you. It was a reel, a while back, and it went well past your own audience. It is the one pinned to the top of your grid.',
       section: 'format',
       verdict: 'good',
     },
@@ -216,7 +219,7 @@ const strong = (handle) => ({
   size: {
     tier: '1k',
     lines: [
-      { key: 'reach1', value: '84', text: '1% of your followers is 84 responses a post. Your best post got 61.' },
+      { key: 'reach1', value: '84', text: '1% of your followers is 84 people. The best of your last 27 posts got 1,100 likes and comments.' },
       { key: 'dormant', value: '7,900', text: '7,900 followers you already have that a typical post does not reach.' },
       { key: 'brand', value: '0.6%', text: 'The share of your followers a brand would expect to see on a post before it pays for one.' },
       { key: 'hours', value: '20', text: 'About twenty hours a month go into nine posts. He would make that twenty posts for the same hours.' },
@@ -321,7 +324,7 @@ const weak = (handle) => ({
   size: {
     tier: '1k',
     lines: [
-      { key: 'reach1', value: '84', text: '1% of your followers is 84 responses a post. Your best post got 40.' },
+      { key: 'reach1', value: '84', text: '1% of your followers is 84 people. The best of your last 19 posts got 1,100 likes and comments.' },
       { key: 'dormant', value: '8,200', text: '8,200 followers you already have that a typical post does not reach.' },
       { key: 'brand', value: '0.6%', text: 'The share of your followers a brand would expect to see on a post before it pays for one.' },
       { key: 'hours', value: '24', text: 'About twenty-four hours a month go into twelve posts that open the same way.' },

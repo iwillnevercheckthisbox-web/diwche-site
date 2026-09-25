@@ -40,6 +40,11 @@ export interface TimelinePoint {
   /** Likes plus comments, or null when the page hides its like counts. */
   engagement: number | null;
   format: string;
+  /** Pinned to the top of the grid, or set aside from the rhythm as one. Drawn and marked, but its
+   *  date never sets the window or the quiet stretch — it says nothing about how the page runs. */
+  pinned?: boolean;
+  /** The post every "best post" sentence in the report names. */
+  best?: boolean;
 }
 
 /** The chart's words, from the page's copy file. */
@@ -56,6 +61,15 @@ export interface ChartWords {
   hiddenNote: string;
   /** Format names, keyed the way the backend sends them. */
   formats: Record<'reel' | 'video' | 'carousel' | 'photo' | 'post', string>;
+  /** Legend word for a pinned post, and one line saying why it is marked. */
+  pinned: string;
+  pinnedNote: string;
+  /** What the chart covers when it draws the recent stretch: `{days}`, `{count}`, `{total}`. */
+  windowDays: string;
+  /** What the chart covers when it draws from the oldest post that is not pinned: `{count}`, `{total}`, `{date}`. */
+  windowAll: string;
+  /** The best post falls outside what is drawn: `{count}` likes and comments, on `{date}`. */
+  bestOutside: string;
 }
 
 interface Options {
@@ -95,6 +109,9 @@ const LABEL_GAP = 10;
  */
 const QUIET_DAYS = 14;
 const DAY = 24 * 60 * 60 * 1000;
+/** The recent stretch the chart prefers, and how many posts it needs to be worth drawing alone. */
+const RECENT_DAYS = 90;
+const RECENT_MIN_POSTS = 8;
 
 type Tone = 'reel' | 'carousel' | 'photo';
 
@@ -117,13 +134,34 @@ const TONE_FILL: Record<Tone, string> = {
  * The last ninety days when there is enough in them to be a picture of the page as it runs now,
  * and otherwise everything we were given — a page that posts monthly would otherwise be drawn as
  * an empty strip with two bars at the end.
+ *
+ * Judged on the posts that are not pinned. A pin from two years ago would otherwise stretch
+ * "everything we were given" back to it and draw a silence the page never had — the same reason
+ * the backend keeps pins out of the rhythm. The pin is still drawn if it falls inside.
  */
-function windowFor(points: TimelinePoint[]): { from: number; to: number } {
+function windowFor(points: TimelinePoint[]): { from: number; to: number; recent: boolean } {
   const now = Date.now();
-  const ninety = now - 90 * DAY;
-  const recent = points.filter((p) => p.at >= ninety).length;
-  const oldest = Math.min(...points.map((p) => p.at));
-  return { from: recent >= 8 ? ninety : oldest, to: now };
+  const cutoff = now - RECENT_DAYS * DAY;
+  const body = points.filter((p) => !p.pinned);
+  const basis = body.length >= 2 ? body : points;
+  const recent = basis.filter((p) => p.at >= cutoff).length >= RECENT_MIN_POSTS;
+  const oldest = Math.min(...basis.map((p) => p.at));
+  return { from: recent ? cutoff : oldest, to: now, recent };
+}
+
+/**
+ * The best post: the one the backend marked, or — on a read stored before it marked one — the
+ * post with the most likes and comments. Hidden counts are unknown, so they never win.
+ */
+function bestOf(points: TimelinePoint[]): TimelinePoint | null {
+  const marked = points.find((p) => p.best);
+  if (marked) return marked;
+  let top: TimelinePoint | null = null;
+  for (const p of points) {
+    if (p.engagement == null) continue;
+    if (!top || p.engagement > (top.engagement ?? 0) || (p.engagement === top.engagement && p.at > top.at)) top = p;
+  }
+  return top;
 }
 
 /** A redraw per host, so a second report on the same screen does not leave the first one listening. */
@@ -135,9 +173,10 @@ export function drawTimeline(host: HTMLElement, points: TimelinePoint[], options
   const usable = points.filter((p) => Number.isFinite(p.at));
   if (usable.length < 2) return false;
 
-  const { from, to } = windowFor(usable);
+  const { from, to, recent } = windowFor(usable);
   const inWindow = usable.filter((p) => p.at >= from).sort((a, b) => a.at - b.at);
   if (inWindow.length < 2) return false;
+  const coverage = { recent, total: usable.length, best: bestOf(usable) };
 
   // Drawn at the width it is shown at. A hidden host has no width yet, so the first real
   // drawing happens when it is shown — which the observer reports like any other resize.
@@ -146,7 +185,7 @@ export function drawTimeline(host: HTMLElement, points: TimelinePoint[], options
     const width = Math.floor(host.clientWidth);
     if (width <= 0 || width === drawnWidth) return;
     drawnWidth = width;
-    render(host, inWindow, from, to, width, options);
+    render(host, inWindow, from, to, width, options, coverage);
   };
 
   if (typeof ResizeObserver === 'function') {
@@ -167,7 +206,8 @@ function render(
   from: number,
   to: number,
   width: number,
-  options: Options
+  options: Options,
+  coverage: { recent: boolean; total: number; best: TimelinePoint | null }
 ) {
   const { words, locale, rtl } = options;
   const height = width < NARROW ? HEIGHT_NARROW : HEIGHT_WIDE;
@@ -204,12 +244,15 @@ function render(
   host.append(svg);
 
   // ---- The longest silence, behind everything, with its length written on it -----------------
+  // Between posts that are not pinned: a pin's date is when it was made, not when the page was
+  // last active, and the backend judges the rhythm the same way.
+  const rhythm = posts.filter((p) => !p.pinned);
   let gapFrom = 0;
   let gapTo = 0;
-  for (let i = 1; i < posts.length; i++) {
-    if (posts[i].at - posts[i - 1].at > gapTo - gapFrom) {
-      gapFrom = posts[i - 1].at;
-      gapTo = posts[i].at;
+  for (let i = 1; i < rhythm.length; i++) {
+    if (rhythm[i].at - rhythm[i - 1].at > gapTo - gapFrom) {
+      gapFrom = rhythm[i - 1].at;
+      gapTo = rhythm[i].at;
     }
   }
   const gapDays = Math.round((gapTo - gapFrom) / DAY);
@@ -322,6 +365,7 @@ function render(
   const marks: { post: TimelinePoint; cx: number; node: SVGGraphicsElement }[] = [];
   const tones = new Set<Tone>();
   let anyHidden = false;
+  let anyPinned = false;
   for (const post of posts) {
     const cx = x(post.at);
     let node: SVGGraphicsElement;
@@ -359,6 +403,23 @@ function render(
     node.setAttribute('class', 'chart__mark');
     svg.append(node);
     marks.push({ post, cx, node });
+    if (post.pinned) {
+      // A small ring just above the mark: the post is on the chart, and it is the page's pin.
+      anyPinned = true;
+      node.setAttribute('data-pinned', '');
+      const top = post.engagement == null ? floor - Math.max(10, plot * 0.12) : floor - barHeight(post.engagement);
+      svg.append(
+        el('circle', {
+          cx: fix(cx),
+          cy: fix(Math.max(4, top - 6)),
+          r: '3',
+          fill: 'var(--paper-2)',
+          stroke: 'var(--ink)',
+          'stroke-width': '1.5',
+          class: 'chart__pin',
+        })
+      );
+    }
   }
 
   // The axis numbers go on last, over the bars — see tickLabels above.
@@ -389,7 +450,7 @@ function render(
     tipValue.textContent =
       post.engagement == null ? words.hidden : fill(words.count, { count: counts.format(post.engagement) });
     const format = words.formats[post.format as keyof ChartWords['formats']] ?? words.formats.post;
-    tipMeta.textContent = `${dates.format(new Date(post.at))} · ${format}`;
+    tipMeta.textContent = `${dates.format(new Date(post.at))} · ${format}${post.pinned && words.pinned ? ` · ${words.pinned}` : ''}`;
     tip.hidden = false;
     // Over the bar, kept inside the plot on both edges. `left` and not a logical inset on
     // purpose: `cx` is a coordinate measured from the drawing's left edge, already mirrored
@@ -444,18 +505,45 @@ function render(
     if (tones.has(tone)) entries.push({ key: tone, label: words.formats[tone] });
   }
   if (anyHidden) entries.push({ key: 'hidden', label: words.hidden });
+  if (anyPinned && words.pinned) entries.push({ key: 'pinned', label: words.pinned });
   for (const entry of entries) {
     const item = document.createElement('li');
     const swatch = document.createElement('i');
     swatch.setAttribute('data-swatch', entry.key);
-    if (entry.key !== 'hidden') swatch.style.background = TONE_FILL[entry.key as Tone];
+    if (entry.key !== 'hidden' && entry.key !== 'pinned') swatch.style.background = TONE_FILL[entry.key as Tone];
     item.append(swatch, document.createTextNode(entry.label));
     // The one entry that names a state rather than a format says what it means, for a pointer and
     // for a screen reader; a tap gets it too, since the title shows on long-press.
     if (entry.key === 'hidden' && words.hiddenNote) item.title = words.hiddenNote;
+    if (entry.key === 'pinned' && words.pinnedNote) item.title = words.pinnedNote;
     legend.append(item);
   }
-  if (entries.length > 1 || anyHidden) host.append(legend);
+  if (entries.length > 1 || anyHidden || anyPinned) host.append(legend);
+
+  // ---- What the chart covers, said out loud (#541) --------------------------------------------
+  //
+  // The tallest bar used to read as the page's best post while the report's best post sat outside
+  // the drawing. So the window is named, and when the best post is not in it, that is said too.
+  const caption = document.createElement('p');
+  caption.className = 'chart__window';
+  const drawnCount = counts.format(posts.length);
+  caption.textContent = coverage.recent
+    ? fill(words.windowDays, {
+        days: counts.format(RECENT_DAYS),
+        count: drawnCount,
+        total: counts.format(coverage.total),
+      })
+    : fill(words.windowAll, { count: drawnCount, total: counts.format(coverage.total), date: dates.format(new Date(from)) });
+  const best = coverage.best;
+  if (best && best.engagement != null && !posts.includes(best) && words.bestOutside) {
+    caption.append(
+      document.createElement('br'),
+      document.createTextNode(
+        fill(words.bestOutside, { count: counts.format(best.engagement), date: dates.format(new Date(best.at)) })
+      )
+    );
+  }
+  if (caption.textContent) host.append(caption);
 }
 
 /**

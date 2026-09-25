@@ -332,6 +332,11 @@ export const FA: FunnelCopy = {
     chartHidden: 'لایک‌ها عمومی نیست',
     chartHiddenNote: 'صاحب صفحه نمایش لایک‌های این پست را خاموش کرده، برای همین بدون عدد نشان داده می‌شود.',
     chartFormats: { reel: 'ریلز', video: 'ویدیو', carousel: 'کاروسل', photo: 'عکس', post: 'پست' },
+    chartPinned: 'پین‌شده',
+    chartPinnedNote: 'بالای صفحه پین شده. نشان داده می‌شود، اما تاریخش در حساب اینکه چقدر پست می‌گذاری نمی‌آید.',
+    chartWindowDays: 'نمودار {days} روز اخیر: {count} پست از {total} پستی که خوند.',
+    chartWindowAll: 'نمودار {count} پست از {total} پستی که خوند، از {date}.',
+    chartBestOutside: 'بهترین پستت بین پست‌هایی که خوند ({count} لایک و کامنت، {date}) قدیمی‌تر از این بازه است.',
     sections: {
       rhythm: 'چند وقت به چند وقت پست می‌ذاری',
       format: 'وقتی می‌ذاری، چی جواب می‌ده',

@@ -324,6 +324,11 @@ export const EN: FunnelCopy = {
     chartHidden: 'Likes not public',
     chartHiddenNote: 'The owner turned likes off for this post, so it is shown without a count.',
     chartFormats: { reel: 'Reel', video: 'Video', carousel: 'Carousel', photo: 'Photo', post: 'Post' },
+    chartPinned: 'Pinned',
+    chartPinnedNote: 'Pinned to the top of the grid. It is drawn, but its date is left out of how often you post.',
+    chartWindowDays: 'Showing the last {days} days: {count} of the {total} posts he read.',
+    chartWindowAll: 'Showing {count} of the {total} posts he read, from {date} on.',
+    chartBestOutside: 'Your best post of the ones he read ({count} likes and comments, {date}) is older than this.',
     sections: {
       rhythm: 'How often you post',
       format: 'What works when you do',

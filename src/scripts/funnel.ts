@@ -1319,6 +1319,11 @@ function run(root: HTMLElement) {
         hidden: say.result.chartHidden ?? '',
         hiddenNote: say.result.chartHiddenNote ?? '',
         formats: say.result.chartFormats ?? {},
+        pinned: say.result.chartPinned ?? '',
+        pinnedNote: say.result.chartPinnedNote ?? '',
+        windowDays: say.result.chartWindowDays ?? '',
+        windowAll: say.result.chartWindowAll ?? '',
+        bestOutside: say.result.chartBestOutside ?? '',
       },
     });
     wrap.hidden = !drawn;
