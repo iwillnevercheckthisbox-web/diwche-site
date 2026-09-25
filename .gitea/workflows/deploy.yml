@@ -183,6 +183,12 @@ jobs:
             docker ps -f "name=diwche-site"
 
             echo "Cleaning old images..."
-            docker image prune -af || true
+            # Only this app's own old builds, newest three kept. `docker image prune -af` removed
+            # every image no container was using at that moment, on a server now shared with other
+            # stacks: the :prev images their pipelines roll back to, and the GPU sidecar images
+            # that cannot be pulled back from the registry because they were built on this host.
+            OWN_REPO=$(echo "git.helabyte.com/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            docker images "$OWN_REPO" --format '{{.Repository}}:{{.Tag}}' | tail -n +4 | xargs -r docker rmi >/dev/null 2>&1 || true
+            docker image prune -f >/dev/null || true
 
             echo "Deployment complete."
