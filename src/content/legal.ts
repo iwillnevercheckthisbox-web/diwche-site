@@ -1,22 +1,30 @@
 /**
- * The privacy policy, in three languages.
+ * The privacy policy and the terms, in three languages.
  *
- * This is a real document with a real job: Meta's dashboard requires a privacy
- * policy URL before an app can be submitted for review, and this is that URL.
- * It is also the thing a stranger reads before deciding whether to hand over
- * an address, so it is written to be understood rather than to be survived.
+ * This is a real document with a real job: the app stores and Meta's dashboard
+ * require a privacy policy URL, and this is that URL. It is also the thing a
+ * stranger reads before deciding whether to make an account or hand over an
+ * address, so it is written to be understood rather than to be survived.
  *
  * **It is a careful draft, not legal advice.** Somebody qualified should read
  * it before it is relied on, particularly the retention periods, which are
  * chosen to match what the code actually does rather than what is customary.
  *
- * Every claim in here is checked against the code:
+ * Every claim in here is checked against the code (2026-10-04, Trello #318;
+ * the file list per claim is in findings/plans/mobile-signup-approval.md):
  *
- * - the public read stores what `V60__public_audit.sql` stores
- * - the cache period is `public.cache-hours`, seven days
- * - consents store what `V62__public_consent.sql` stores
+ * - the public read stores what `V60__public_audit.sql` stores, cached for
+ *   `public.cache-hours` (seven days); consents store what `V62__public_consent.sql` stores
  * - the model sees computed facts only, never the raw page (`AuditNarrator`)
- * - nothing is posted to anyone's Instagram without a connected account
+ * - transcription in Auto is ElevenLabs → OpenAI → our own machines (`WhisperRouter`);
+ *   the phones send the sound only (`SubtitleVideoUpload.swift`, `AudioExtract.kt`)
+ * - text generation is Gemini with OpenAI as the fallback (`GeminiClient`, `OpenAiFallbackClient`)
+ * - peers are read through Apify (`PeerSnapshotService`, `ApifyInstagramService`)
+ * - push tokens are stored with user id, platform, app version, locale (`PushToken`)
+ * - crash reports go to our own GlitchTip with the Keycloak sub only, sendDefaultPii off
+ *   (`CrashReporting.swift`, `SessionStore.kt`)
+ * - every app request carries app version, OS and device model (`AppHeaders`)
+ * - the sign-up approval and its Telegram message follow the plan's Batch 1
  *
  * If one of those changes, this changes with it. A policy that describes a
  * system that no longer exists is worse than none, because it is a promise
@@ -39,9 +47,9 @@ export interface LegalDoc {
 }
 
 /** Bumped whenever the text changes, and shown at the top of the page. */
-export const PRIVACY_UPDATED = '2026-09-06';
+export const PRIVACY_UPDATED = '2026-10-04';
 /** The terms have their own date; they change on a different rhythm. */
-export const TERMS_UPDATED = '2026-09-06';
+export const TERMS_UPDATED = '2026-10-04';
 
 const CONTACT = 'support@diwche.com';
 
@@ -49,12 +57,54 @@ export const PRIVACY: Record<string, LegalDoc> = {
   en: {
     title: 'Privacy',
     updated: PRIVACY_UPDATED,
-    lead: 'Diwche runs Instagram accounts on their owners’ behalf. This describes exactly what we hold, why, and how to make us delete it. It is written to be read.',
+    lead: 'Diwche is a content studio on your phone: ideas, scripts, photo and video editing, subtitles. This describes exactly what we hold about you, why, and how to make us delete it. It is written to be read.',
     sections: [
       {
         title: 'Who we are',
         body: [
           `Diwche is operated by Helabyte. Write to ${CONTACT} about anything on this page and a person will answer.`,
+        ],
+      },
+      {
+        title: 'Your Diwche account',
+        body: [
+          'You make a Diwche account in the phone app, with an email address and a password or with your Google account. We hold your name, your email address, when you signed up, and whether you did it on an iPhone or an Android phone.',
+          'Your password is kept by our own sign-in server (Keycloak, running on our servers in Europe), and only as a one-way hash. Nobody at Diwche can read it, and the rest of Diwche never receives it.',
+        ],
+      },
+      {
+        title: 'Signing in with Google',
+        body: [
+          'If you choose “Continue with Google”, Google tells our sign-in server your name, your email address and that Google has confirmed that address. Google’s standard sign-in also passes a link to your profile picture and your language setting; we do not use them. We get nothing else from your Google account — not your contacts, your mail, your files, and never your Google password.',
+          'You can remove Diwche in your Google account’s settings, where it lists the apps you sign in to. That stops Google signing you in to Diwche; it does not delete your Diwche account — for that, see “Deleting your account” below.',
+        ],
+      },
+      {
+        title: 'Before your account opens',
+        body: [
+          'Every new account is looked at by a person on our team before it can be used; until then the app tells you it is waiting. The person checking sees your name, your email address, how you signed up (Google or email) and whether you use an iPhone or Android. A short message with exactly those details, and nothing more, is sent to them on Telegram so a sign-up is not missed.',
+          'If we decline a sign-up, we keep that record so the same account is not sent for checking again. Write to us and we delete it.',
+        ],
+      },
+      {
+        title: 'Ideas, scripts and your page',
+        body: [
+          'When you set up, the app sends your phone’s language, region and time zone so the first ideas fit you. What you tell it about yourself and your work — typed, or spoken and turned into text — becomes your page’s profile, which you can read and change in the app.',
+          'Ideas and scripts are written by Google’s Gemini from what you have told us and from the ideas you kept or turned down. If Gemini is unavailable, the same request goes to OpenAI instead.',
+          'If you name Instagram accounts you look up to, Apify reads what those profiles show publicly so the ideas can learn from them. Nothing is posted and nobody is contacted.',
+        ],
+      },
+      {
+        title: 'The phone app',
+        body: [
+          'Photos and videos you pick are edited on your phone. They reach our servers only when you use something that needs the server — turning speech into text, or keeping or exporting a project on our side — and a project kept on our servers is deleted when you delete it.',
+          'For subtitles and spoken notes, the app sends the sound only, never the picture. The speech is turned into text by ElevenLabs, by OpenAI if ElevenLabs fails, and now and then by our own machines. The uploaded sound is deleted when the job is done; the text comes back to you.',
+        ],
+        points: [
+          'Notifications: if you allow them, Apple or Google gives the app a push token. We store it with your account id, the app version and your language, so we can tell you when something is ready.',
+          'Crash reports go to our own error tracker (GlitchTip, on our servers). They carry your account id so we can find the problem — never your name or email address.',
+          'Every request from the app says which app version, phone model and system version it comes from, so we know which build has a problem.',
+          'The photo editor reports how long its slow steps took on your phone model — timings and sizes only, never your pictures, your words or your account.',
         ],
       },
       {
@@ -86,9 +136,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'What we ask Instagram for, and nothing more',
+        title: 'If your Instagram account is connected',
         body: [
-          'When you connect an account, the permission screen lists exactly what we use: reading your profile and posts, publishing on your behalf, and replying to comments and direct messages. We ask for nothing beyond that, and Meta shows you the full list before you agree.',
+          'The phone app does not connect to your Instagram and never posts on it; you publish what you make yourself. Some accounts were connected earlier through our web dashboard, and for those this still applies.',
+          'The permission screen listed exactly what we use: reading the profile and posts, publishing the posts you scheduled, and replying to comments and direct messages. We ask for nothing beyond that, and Meta shows the full list before you agree.',
           'Comments and messages are not stored. When someone comments on your post or writes to you and you have turned auto-reply on, Meta notifies us, we answer, and we keep only the comment’s or message’s ID so that the same one is never answered twice. The text itself is not written anywhere.',
         ],
       },
@@ -103,17 +154,23 @@ export const PRIVACY: Record<string, LegalDoc> = {
         title: 'Who else touches your data',
         body: ['Only these, and only for the job named:'],
         points: [
-          'Meta (Instagram Graph API) — reading public profile data, and publishing on your behalf once you connect an account.',
+          'Google — signing in with Google, if you choose it; Gemini, which writes ideas and scripts and phrases the free read’s sentences; and delivering notifications to Android phones.',
+          'OpenAI — turning speech into text when ElevenLabs fails, and writing when Gemini is unavailable.',
+          'ElevenLabs — turning speech into text.',
+          'Apify — reading the public Instagram profiles you name.',
+          'Apple — delivering notifications to iPhones.',
+          'Telegram — carrying the short message about a new sign-up to the people who check it.',
           'Brevo — sending the emails you asked for.',
-          'Cloudflare — serving this site and telling people from scripts.',
-          'Google (Gemini) — phrasing sentences from figures we have already calculated.',
-          'Our own servers, which are in Europe.',
+          'Cloudflare — serving this site, carrying the app’s traffic to our servers, and telling people from scripts.',
+          'Meta (Instagram) — the free read, and accounts connected through our web dashboard.',
+          'Our own servers in Europe, which run the sign-in (Keycloak), the app’s server and the crash tracker.',
         ],
       },
       {
-        title: 'Deleting your data',
+        title: 'Deleting your account',
         body: [
-          `Write to ${CONTACT} from the address you gave us, or with the Instagram handle you entered, and we will delete everything we hold about you and confirm when it is done. You do not have to give a reason.`,
+          `In the app, Profile ▸ Delete account deletes your sign-in at once. To also erase what you made or told us on our servers — your page’s profile, ideas, scripts, kept projects — write to ${CONTACT} from your account’s email address. We do it within thirty days and confirm when it is done. A sign-up we declined is deleted the same way.`,
+          `For the free read and our emails, write to ${CONTACT} from the address you gave us, or with the Instagram handle you entered, and we will delete everything we hold about you and confirm it. You do not have to give a reason.`,
           'Disconnecting Diwche from your Instagram account, or removing yourself as a tester, stops all access immediately from Meta’s side.',
         ],
       },
@@ -135,12 +192,54 @@ export const PRIVACY: Record<string, LegalDoc> = {
   fa: {
     title: 'حریم خصوصی',
     updated: PRIVACY_UPDATED,
-    lead: 'دیوچه پیج اینستاگرام را از طرف صاحبش می‌گرداند. اینجا دقیقاً نوشته‌ایم چه چیزی نگه می‌داریم، چرا، و چطور می‌توانی بخواهی پاکش کنیم. نوشته شده که خوانده شود.',
+    lead: 'دیوچه یک استودیوی ساخت محتوا روی گوشی است: ایده، سناریو، ویرایش عکس و ویدیو، زیرنویس. اینجا دقیقاً نوشته‌ایم چه چیزی از تو نگه می‌داریم، چرا، و چطور می‌توانی بخواهی پاکش کنیم. نوشته شده که خوانده شود.',
     sections: [
       {
         title: 'ما کی هستیم',
         body: [
           `دیوچه توسط Helabyte اداره می‌شود. درباره‌ی هر چیزی در این صفحه به ${CONTACT} بنویس؛ یک آدم جوابت را می‌دهد.`,
+        ],
+      },
+      {
+        title: 'حساب دیوچه‌ات',
+        body: [
+          'حساب دیوچه را در اپ گوشی می‌سازی؛ با ایمیل و رمز، یا با حساب گوگلت. از تو این‌ها را نگه می‌داریم: اسمت، ایمیلت، زمان ثبت‌نامت، و این‌که با آیفون ثبت‌نام کرده‌ای یا با گوشی اندروید.',
+          'رمزت را سرور ورود خودمان نگه می‌دارد (Keycloak، که روی سرورهای خودمان در اروپا اجرا می‌شود)، آن هم فقط به شکل هش یک‌طرفه. هیچ‌کس در دیوچه نمی‌تواند آن را بخواند و بقیه‌ی بخش‌های دیوچه اصلاً به آن دسترسی ندارند.',
+        ],
+      },
+      {
+        title: 'ورود با گوگل',
+        body: [
+          'اگر «ادامه با گوگل» را بزنی، گوگل اسمت، ایمیلت و این‌که آن ایمیل را تأیید کرده به سرور ورود ما می‌گوید. ورود معمولی گوگل لینک عکس پروفایل و زبانت را هم می‌فرستد، ولی ما از این دو استفاده نمی‌کنیم. چیز دیگری از حساب گوگلت به ما نمی‌رسد؛ نه مخاطبانت، نه ایمیل‌هایت، نه فایل‌هایت، و هرگز رمز گوگلت.',
+          'هر وقت بخواهی می‌توانی در تنظیمات حساب گوگلت، همان‌جا که اپ‌هایی را که با گوگل واردشان شده‌ای نشان می‌دهد، دیوچه را برداری. این کار فقط ورود با گوگل به دیوچه را قطع می‌کند و حساب دیوچه‌ات را پاک نمی‌کند؛ برای پاک کردن حساب، بخش «پاک کردن حسابت» را پایین‌تر ببین.',
+        ],
+      },
+      {
+        title: 'پیش از باز شدن حسابت',
+        body: [
+          'هر حساب تازه را، پیش از این‌که قابل استفاده شود، یکی از اعضای تیم ما نگاه می‌کند؛ تا آن موقع اپ به تو می‌گوید که منتظر تأیید هستی. کسی که بررسی می‌کند اسمت، ایمیلت، روش ثبت‌نامت (گوگل یا ایمیل) و نوع گوشی‌ات (آیفون یا اندروید) را می‌بیند. یک پیام کوتاه با همین چند مورد، و نه بیشتر، در تلگرام برایش فرستاده می‌شود تا ثبت‌نامی از قلم نیفتد.',
+          'اگر ثبت‌نامی را نپذیریم، سابقه‌اش را نگه می‌داریم تا همان حساب دوباره برای بررسی نیاید. اگر بخواهی پاکش کنیم، کافی است برایمان بنویسی.',
+        ],
+      },
+      {
+        title: 'ایده‌ها، سناریوها و پیجت',
+        body: [
+          'وقتی اپ را راه می‌اندازی، زبان، منطقه و منطقه‌ی زمانی گوشی‌ات را برایمان می‌فرستد تا ایده‌های اول به کارت بیایند. چیزهایی که درباره‌ی خودت و کارت به اپ می‌گویی — چه تایپ کنی، چه بگویی و به متن تبدیل شود — می‌شود پروفایل پیجت، که در خود اپ می‌توانی بخوانی و عوضش کنی.',
+          'ایده‌ها و سناریوها را Gemini (از گوگل) می‌نویسد، از روی همین حرف‌ها و ایده‌هایی که نگه داشته‌ای یا کنار گذاشته‌ای. اگر Gemini در دسترس نباشد، همان درخواست به OpenAI می‌رود.',
+          'اگر پیج‌هایی را که الگویت هستند نام ببری، Apify آنچه آن پروفایل‌ها به‌طور عمومی نشان می‌دهند را می‌خواند تا ایده‌ها از آن‌ها یاد بگیرند. چیزی منتشر نمی‌شود و به کسی پیام داده نمی‌شود.',
+        ],
+      },
+      {
+        title: 'اپ گوشی',
+        body: [
+          'عکس‌ها و ویدیوهایی که انتخاب می‌کنی روی خود گوشی‌ات ویرایش می‌شوند. فقط وقتی به سرورهای ما می‌رسند که از کاری استفاده کنی که سرور لازم دارد — تبدیل گفتار به متن، یا نگه داشتن و خروجی گرفتن پروژه روی سرور — و پروژه‌ای که روی سرور مانده، با پاک کردنش از آنجا هم پاک می‌شود.',
+          'برای زیرنویس و یادداشت‌های صوتی، اپ فقط صدا را می‌فرستد، هیچ‌وقت تصویر را. گفتار را ElevenLabs به متن تبدیل می‌کند؛ اگر نشد OpenAI، و گاهی هم ماشین‌های خودمان. فایل صدا بعد از تمام شدن کار پاک می‌شود و متن به خودت برمی‌گردد.',
+        ],
+        points: [
+          'اعلان‌ها: اگر اجازه بدهی، اپل یا گوگل یک توکن اعلان به اپ می‌دهد. آن را همراه شناسه‌ی حسابت، نسخه‌ی اپ و زبانت نگه می‌داریم تا وقتی چیزی آماده شد خبرت کنیم.',
+          'گزارش‌های خرابی (کرش) به ردیاب خطای خودمان می‌رود (GlitchTip، روی سرورهای خودمان). فقط شناسه‌ی حسابت همراهش است تا بتوانیم مشکل را پیدا کنیم — هرگز اسم یا ایمیلت.',
+          'هر درخواستی که اپ می‌فرستد می‌گوید از کدام نسخه‌ی اپ، کدام مدل گوشی و کدام نسخه‌ی سیستم‌عامل آمده، تا بدانیم مشکل مال کدام نسخه است.',
+          'ویرایشگر عکس گزارش می‌دهد که مرحله‌های سنگینش روی مدل گوشی تو چقدر طول کشیده‌اند — فقط زمان و اندازه، هرگز عکس‌ها، نوشته‌ها یا حسابت.',
         ],
       },
       {
@@ -172,9 +271,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'چیزهایی که از اینستاگرام می‌خواهیم، و نه بیشتر',
+        title: 'اگر اینستاگرامت وصل است',
         body: [
-          'وقتی اکانتت را وصل می‌کنی، صفحه‌ی مجوزها دقیقاً همان چیزهایی را نشان می‌دهد که استفاده می‌کنیم: خواندن پروفایل و پست‌هایت، انتشار از طرف تو، و پاسخ به کامنت‌ها و دایرکت‌ها. چیزی فراتر از این نمی‌خواهیم و متا فهرست کامل را پیش از تأیید به تو نشان می‌دهد.',
+          'اپ گوشی به اینستاگرامت وصل نمی‌شود و هیچ‌وقت چیزی رویش منتشر نمی‌کند؛ آنچه می‌سازی را خودت منتشر می‌کنی. بعضی حساب‌ها قبلاً از راه داشبورد وب ما وصل شده‌اند و این بخش برای آن‌ها هنوز صدق می‌کند.',
+          'صفحه‌ی مجوزها دقیقاً همان چیزهایی را نشان داد که استفاده می‌کنیم: خواندن پروفایل و پست‌ها، منتشر کردن پست‌هایی که خودت زمان‌بندی کرده‌ای، و جواب دادن به کامنت‌ها و دایرکت‌ها. چیزی فراتر از این نمی‌خواهیم و متا فهرست کامل را پیش از تأیید نشان می‌دهد.',
           'کامنت‌ها و دایرکت‌ها ذخیره نمی‌شوند. وقتی کسی زیر پستت کامنت می‌گذارد یا برایت پیام می‌فرستد و تو پاسخ خودکار را روشن کرده باشی، متا به ما خبر می‌دهد، ما جواب می‌دهیم، و فقط شناسه‌ی کامنت یا پیام را نگه می‌داریم تا یکی دو بار جواب نگیرد. خودِ متن هیچ‌جا نوشته نمی‌شود.',
         ],
       },
@@ -189,17 +289,23 @@ export const PRIVACY: Record<string, LegalDoc> = {
         title: 'چه کسان دیگری با داده‌ات سروکار دارند',
         body: ['فقط این‌ها، و فقط برای همان کاری که نوشته شده:'],
         points: [
-          'متا (Instagram Graph API) — خواندن اطلاعات عمومی پروفایل، و انتشار از طرف تو بعد از این‌که خودت اکانت را وصل کردی.',
+          'گوگل — ورود با گوگل، اگر انتخابش کنی؛ Gemini، که ایده و سناریو می‌نویسد و جمله‌های خوانش رایگان را می‌سازد؛ و رساندن اعلان به گوشی‌های اندروید.',
+          'OpenAI — تبدیل گفتار به متن وقتی ElevenLabs نتواند، و نوشتن وقتی Gemini در دسترس نباشد.',
+          'ElevenLabs — تبدیل گفتار به متن.',
+          'Apify — خواندن پروفایل‌های عمومی اینستاگرام که خودت نام می‌بری.',
+          'اپل — رساندن اعلان به آیفون.',
+          'تلگرام — رساندن پیام کوتاه ثبت‌نام تازه به کسانی که بررسی‌اش می‌کنند.',
           'Brevo — فرستادن ایمیل‌هایی که خواسته‌ای.',
-          'Cloudflare — سرو کردن این سایت و تشخیص آدم از ربات.',
-          'گوگل (Gemini) — جمله‌بندی چیزی که قبلاً حساب شده.',
-          'سرورهای خودمان، که در اروپا هستند.',
+          'Cloudflare — سرو کردن این سایت، رساندن ترافیک اپ به سرورهای ما، و تشخیص آدم از ربات.',
+          'متا (اینستاگرام) — خوانش رایگان، و حساب‌هایی که از راه داشبورد وب ما وصل شده‌اند.',
+          'سرورهای خودمان در اروپا، که سرور ورود (Keycloak)، سرور اپ و ردیاب خطا روی آن‌ها اجرا می‌شوند.',
         ],
       },
       {
-        title: 'پاک کردن داده‌ات',
+        title: 'پاک کردن حسابت',
         body: [
-          `از همان آدرسی که به ما داده‌ای، یا با همان آیدی‌ای که وارد کرده‌ای، به ${CONTACT} بنویس تا هرچه از تو داریم پاک کنیم و بعدش تأییدش را بفرستیم. لازم نیست دلیلی بیاوری.`,
+          `در اپ، از «پروفایل» و بعد «حذف حساب»، حساب ورودت همان لحظه پاک می‌شود. اگر می‌خواهی آنچه ساخته‌ای یا به ما گفته‌ای هم از سرورهایمان پاک شود — پروفایل پیجت، ایده‌ها، سناریوها، پروژه‌های نگه‌داشته — از ایمیل همان حساب به ${CONTACT} بنویس. حداکثر ظرف سی روز انجامش می‌دهیم و وقتی تمام شد خبرت می‌کنیم. ثبت‌نامی که نپذیرفته‌ایم هم به همین شکل پاک می‌شود.`,
+          `برای خوانش رایگان و ایمیل‌هایمان، از همان آدرسی که به ما داده‌ای، یا با همان آیدی‌ای که وارد کرده‌ای، به ${CONTACT} بنویس تا هرچه از تو داریم پاک کنیم و بعدش تأییدش را بفرستیم. لازم نیست دلیلی بیاوری.`,
           'قطع کردن دسترسی دیوچه از اینستاگرامت، یا برداشتن خودت از فهرست تسترها، دسترسی را همان لحظه از سمت متا می‌بندد.',
         ],
       },
@@ -221,12 +327,54 @@ export const PRIVACY: Record<string, LegalDoc> = {
   de: {
     title: 'Datenschutz',
     updated: PRIVACY_UPDATED,
-    lead: 'Diwche führt Instagram-Accounts im Auftrag ihrer Inhaber. Hier steht genau, was wir speichern, warum, und wie du uns dazu bringst, es zu löschen. Geschrieben zum Lesen, nicht zum Überstehen.',
+    lead: 'Diwche ist ein Content-Studio auf deinem Handy: Ideen, Skripte, Foto- und Videobearbeitung, Untertitel. Hier steht genau, was wir über dich speichern, warum, und wie du uns dazu bringst, es zu löschen. Geschrieben zum Lesen, nicht zum Überstehen.',
     sections: [
       {
         title: 'Wer wir sind',
         body: [
           `Diwche wird von Helabyte betrieben. Schreib zu allem auf dieser Seite an ${CONTACT} — es antwortet ein Mensch.`,
+        ],
+      },
+      {
+        title: 'Dein Diwche-Konto',
+        body: [
+          'Du legst dein Diwche-Konto in der Handy-App an, mit E-Mail-Adresse und Passwort oder mit deinem Google-Konto. Wir speichern deinen Namen, deine E-Mail-Adresse, wann du dich registriert hast und ob das auf einem iPhone oder einem Android-Handy war.',
+          'Dein Passwort verwahrt unser eigener Anmeldeserver (Keycloak, auf unseren Servern in Europa), und zwar nur als Einweg-Hash. Niemand bei Diwche kann es lesen, und der Rest von Diwche bekommt es nie.',
+        ],
+      },
+      {
+        title: 'Anmelden mit Google',
+        body: [
+          'Wählst du „Weiter mit Google“, teilt Google unserem Anmeldeserver deinen Namen, deine E-Mail-Adresse und mit, dass Google diese Adresse bestätigt hat. Die übliche Google-Anmeldung übermittelt außerdem einen Link zu deinem Profilbild und deine Spracheinstellung; beides nutzen wir nicht. Sonst bekommen wir nichts aus deinem Google-Konto — keine Kontakte, keine Mails, keine Dateien und nie dein Google-Passwort.',
+          'Du kannst Diwche in den Einstellungen deines Google-Kontos entfernen, dort, wo die Apps stehen, bei denen du dich mit Google anmeldest. Damit endet die Anmeldung über Google; dein Diwche-Konto wird dadurch nicht gelöscht — dazu unten „Dein Konto löschen“.',
+        ],
+      },
+      {
+        title: 'Bevor dein Konto freigeschaltet wird',
+        body: [
+          'Jedes neue Konto sieht sich eine Person aus unserem Team an, bevor es genutzt werden kann; bis dahin zeigt dir die App, dass du wartest. Wer prüft, sieht deinen Namen, deine E-Mail-Adresse, wie du dich registriert hast (Google oder E-Mail) und ob du ein iPhone oder Android nutzt. Eine kurze Nachricht mit genau diesen Angaben, und nichts weiter, geht per Telegram an diese Person, damit keine Anmeldung untergeht.',
+          'Lehnen wir eine Anmeldung ab, behalten wir diesen Eintrag, damit dasselbe Konto nicht erneut zur Prüfung kommt. Schreib uns, und wir löschen ihn.',
+        ],
+      },
+      {
+        title: 'Ideen, Skripte und deine Seite',
+        body: [
+          'Beim Einrichten schickt die App Sprache, Region und Zeitzone deines Handys, damit die ersten Ideen zu dir passen. Was du der App über dich und deine Arbeit erzählst — getippt oder gesprochen und in Text umgewandelt —, wird zum Profil deiner Seite, das du in der App lesen und ändern kannst.',
+          'Ideen und Skripte schreibt Googles Gemini aus dem, was du uns erzählt hast, und aus den Ideen, die du behalten oder verworfen hast. Ist Gemini nicht erreichbar, geht dieselbe Anfrage an OpenAI.',
+          'Nennst du Instagram-Konten, die dir als Vorbild dienen, liest Apify, was diese Profile öffentlich zeigen, damit die Ideen davon lernen. Es wird nichts veröffentlicht und niemand kontaktiert.',
+        ],
+      },
+      {
+        title: 'Die Handy-App',
+        body: [
+          'Fotos und Videos, die du auswählst, werden auf deinem Handy bearbeitet. Auf unsere Server gelangen sie nur, wenn du etwas nutzt, das den Server braucht — Sprache in Text umwandeln oder ein Projekt bei uns aufbewahren oder exportieren —, und ein Projekt auf unseren Servern wird gelöscht, wenn du es löschst.',
+          'Für Untertitel und gesprochene Notizen schickt die App nur den Ton, nie das Bild. In Text umgewandelt wird er von ElevenLabs, von OpenAI, falls ElevenLabs scheitert, und ab und zu auf unseren eigenen Rechnern. Der hochgeladene Ton wird nach getaner Arbeit gelöscht; der Text kommt zu dir zurück.',
+        ],
+        points: [
+          'Benachrichtigungen: Wenn du sie erlaubst, gibt Apple oder Google der App ein Push-Token. Wir speichern es mit deiner Konto-ID, der App-Version und deiner Sprache, damit wir dir sagen können, wenn etwas fertig ist.',
+          'Absturzberichte gehen an unseren eigenen Fehler-Tracker (GlitchTip, auf unseren Servern). Sie tragen deine Konto-ID, damit wir das Problem finden — nie deinen Namen oder deine E-Mail-Adresse.',
+          'Jede Anfrage der App nennt App-Version, Handymodell und Systemversion, damit wir wissen, welcher Build ein Problem hat.',
+          'Der Foto-Editor meldet, wie lange seine aufwendigen Schritte auf deinem Handymodell gedauert haben — nur Zeiten und Größen, nie deine Bilder, deine Texte oder dein Konto.',
         ],
       },
       {
@@ -258,9 +406,10 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'Worum wir Instagram bitten – und um nichts mehr',
+        title: 'Wenn dein Instagram-Konto verbunden ist',
         body: [
-          'Wenn du ein Konto verbindest, zeigt der Berechtigungsbildschirm genau das, was wir nutzen: dein Profil und deine Beiträge lesen, in deinem Namen veröffentlichen, auf Kommentare und Direktnachrichten antworten. Mehr fordern wir nicht an, und Meta zeigt dir die vollständige Liste, bevor du zustimmst.',
+          'Die Handy-App verbindet sich nicht mit deinem Instagram und veröffentlicht dort nie etwas; was du machst, veröffentlichst du selbst. Einige Konten wurden früher über unser Web-Dashboard verbunden, und für sie gilt weiterhin Folgendes.',
+          'Der Berechtigungsbildschirm hat genau das gezeigt, was wir nutzen: Profil und Beiträge lesen, die von dir geplanten Beiträge veröffentlichen, auf Kommentare und Direktnachrichten antworten. Mehr fordern wir nicht an, und Meta zeigt die vollständige Liste, bevor du zustimmst.',
           'Kommentare und Nachrichten werden nicht gespeichert. Kommentiert jemand deinen Beitrag oder schreibt dir und du hast die automatische Antwort eingeschaltet, benachrichtigt uns Meta, wir antworten und behalten nur die ID des Kommentars oder der Nachricht, damit nichts zweimal beantwortet wird. Der Text selbst wird nirgends abgelegt.',
         ],
       },
@@ -275,17 +424,23 @@ export const PRIVACY: Record<string, LegalDoc> = {
         title: 'Wer sonst mit deinen Daten zu tun hat',
         body: ['Nur diese, und nur für den genannten Zweck:'],
         points: [
-          'Meta (Instagram Graph API) — Lesen öffentlicher Profildaten und, sobald du ein Konto verbindest, Veröffentlichen in deinem Namen.',
+          'Google — Anmelden mit Google, wenn du das wählst; Gemini, das Ideen und Skripte schreibt und die Sätze der kostenlosen Analyse formuliert; und Zustellen von Benachrichtigungen auf Android-Handys.',
+          'OpenAI — Sprache in Text umwandeln, wenn ElevenLabs scheitert, und Schreiben, wenn Gemini nicht erreichbar ist.',
+          'ElevenLabs — Sprache in Text umwandeln.',
+          'Apify — Lesen der öffentlichen Instagram-Profile, die du nennst.',
+          'Apple — Zustellen von Benachrichtigungen auf iPhones.',
+          'Telegram — Übermitteln der kurzen Nachricht über eine neue Anmeldung an die Personen, die sie prüfen.',
           'Brevo — Versand der E-Mails, um die du gebeten hast.',
-          'Cloudflare — Ausliefern dieser Seite und Unterscheiden von Menschen und Skripten.',
-          'Google (Gemini) — Formulieren von Sätzen aus bereits berechneten Zahlen.',
-          'Unsere eigenen Server, die in Europa stehen.',
+          'Cloudflare — Ausliefern dieser Seite, Weiterleiten des App-Verkehrs an unsere Server und Unterscheiden von Menschen und Skripten.',
+          'Meta (Instagram) — die kostenlose Analyse und Konten, die über unser Web-Dashboard verbunden sind.',
+          'Unsere eigenen Server in Europa, auf denen die Anmeldung (Keycloak), der App-Server und der Fehler-Tracker laufen.',
         ],
       },
       {
-        title: 'Daten löschen',
+        title: 'Dein Konto löschen',
         body: [
-          `Schreib von der Adresse, die du uns gegeben hast, oder mit dem eingegebenen Profilnamen an ${CONTACT}. Wir löschen alles, was wir über dich haben, und bestätigen es. Eine Begründung brauchst du nicht.`,
+          `In der App löscht Profil ▸ Konto löschen deine Anmeldung sofort. Soll auch gelöscht werden, was du auf unseren Servern erstellt oder uns erzählt hast — das Profil deiner Seite, Ideen, Skripte, aufbewahrte Projekte —, schreib von der E-Mail-Adresse deines Kontos an ${CONTACT}. Wir erledigen das binnen dreißig Tagen und bestätigen es. Eine abgelehnte Anmeldung wird auf dieselbe Weise gelöscht.`,
+          `Für die kostenlose Analyse und unsere E-Mails schreib von der Adresse, die du uns gegeben hast, oder mit dem eingegebenen Profilnamen an ${CONTACT}. Wir löschen alles, was wir über dich haben, und bestätigen es. Eine Begründung brauchst du nicht.`,
           'Wenn du Diwche in Instagram trennst oder dich als Tester entfernst, endet der Zugriff sofort auf Metas Seite.',
         ],
       },
@@ -318,45 +473,48 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'What Diwche is',
         body: [
-          'Diwche is a publishing assistant for Instagram professional accounts, operated by Helabyte. It reads news sources you choose, prepares posts and short videos, publishes them to your account on the schedule you set, and can answer comments in a tone you pick.',
+          'Diwche is a content studio for your phone, operated by Helabyte. It helps you find ideas, write scripts, edit photos and videos, and add subtitles. You publish what you make yourself: Diwche does not connect to your Instagram and does not post on it.',
+          'Some accounts were connected to Instagram earlier through our web dashboard. For those, Diwche publishes only what you scheduled, under the rules you set, and you can revoke the connection in your Instagram settings at any time.',
         ],
       },
       {
         title: 'Your account',
         body: [
-          'You need an Instagram professional account (business or creator) that you are allowed to manage. Connecting it happens through Meta’s own login screen; you can revoke the connection in your Instagram settings at any time, and everything stops that instant.',
-          'You are responsible for what is published on your account. Diwche drafts; you set the schedule and the rules. Check the first few posts before you let it run.',
-        ],
-      },
-      {
-        title: 'What we will not do',
-        body: [
-          'We do not ask for or store your Instagram password. We do not store your comments or direct messages; we answer them and keep only an ID so nothing is answered twice. We do not post anything outside the schedule and rules you set, and we do not use your account for anyone else.',
+          'An account is for one person. Use your real name and an email address that is yours, and keep your password to yourself.',
+          'New accounts are checked by us before they open. We may decline a sign-up without giving a reason.',
+          'You are responsible for what you make with Diwche and for what you publish.',
         ],
       },
       {
         title: 'Content',
         body: [
-          'Posts are built from public news sources and from material you upload. You keep the rights to what you upload; you give us permission to process it only for the job you asked for. Make sure you may use what you upload. If a source or rights holder objects to something we published for you, we will take it down when you or they tell us.',
+          'You keep the rights to what you make and upload; you give us permission to process it only to do what you asked. Make sure you may use what you upload. If a rights holder objects to something kept on our servers, we will remove it when you or they tell us.',
+          'Ideas, scripts and subtitles are written with AI and can be wrong. Read them before you post.',
+        ],
+      },
+      {
+        title: 'What we will not do',
+        body: [
+          'We do not sell your data. We do not post anything anywhere in your name. We do not ask for or store your Instagram password, and we do not use your account for anyone else.',
         ],
       },
       {
         title: 'Availability and limits',
         body: [
-          'Instagram and Meta change their platform without notice. When they do, a feature may pause until we adapt. We run the service carefully but promise no uptime, no reach, and no follower numbers; the outcome of a post is Instagram’s to decide.',
+          'The platforms and services Diwche relies on change without notice. When they do, a feature may pause until we adapt. We run the service carefully but promise no uptime, no reach, and no follower numbers; how a post does is up to the platform you post it on.',
           'To the extent the law allows, our liability is limited to what you paid us in the three months before the problem. Nothing here limits liability for intent, gross negligence, or harm to life and health.',
         ],
       },
       {
         title: 'Ending',
         body: [
-          'You can stop at any time by disconnecting your account or writing to us; we delete what we hold as described in the privacy policy. We can end the service for an account that breaks Instagram’s rules or these terms, and will say why.',
+          'You can delete your account at any time in the app, under Profile ▸ Delete account; what we hold is then deleted as described in the privacy policy. We may suspend or close an account that breaks these terms, the law, or other people’s rights, and we will say why.',
         ],
       },
       {
         title: 'Changes and contact',
         body: [
-          `When these terms change, the date at the top changes, and people with a connected account are told by email before it takes effect. Write to ${CONTACT} about anything on this page.`,
+          `When these terms change, the date at the top changes, and if a change affects how you use Diwche we tell account holders by email before it takes effect. Write to ${CONTACT} about anything on this page.`,
         ],
       },
     ],
@@ -370,45 +528,48 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'دیوچه چیست',
         body: [
-          'دیوچه دستیار انتشار برای پیج‌های حرفه‌ای اینستاگرام است و توسط Helabyte اداره می‌شود. منابع خبری‌ای را که خودت انتخاب می‌کنی می‌خواند، پست و ویدیوی کوتاه آماده می‌کند، طبق زمان‌بندی تو روی پیجت منتشر می‌کند، و می‌تواند با لحنی که انتخاب می‌کنی به کامنت‌ها جواب بدهد.',
+          'دیوچه یک استودیوی ساخت محتوا برای گوشی است که Helabyte اداره‌اش می‌کند. کمکت می‌کند ایده پیدا کنی، سناریو بنویسی، عکس و ویدیو ویرایش کنی و زیرنویس بگذاری. آنچه می‌سازی را خودت منتشر می‌کنی: دیوچه به اینستاگرامت وصل نمی‌شود و چیزی رویش پست نمی‌کند.',
+          'بعضی حساب‌ها قبلاً از راه داشبورد وب ما به اینستاگرام وصل شده‌اند. برای آن‌ها دیوچه فقط همان چیزی را منتشر می‌کند که خودت زمان‌بندی کرده‌ای، طبق قواعدی که خودت گذاشته‌ای، و هر وقت بخواهی می‌توانی در تنظیمات اینستاگرامت دسترسی را قطع کنی.',
         ],
       },
       {
-        title: 'اکانت تو',
+        title: 'حساب تو',
         body: [
-          'به یک اکانت حرفه‌ای اینستاگرام (بیزینس یا کریِیتور) نیاز داری که اجازه‌ی مدیریتش را داری. وصل کردنش از طریق صفحه‌ی ورود خودِ متا انجام می‌شود؛ هر وقت بخواهی می‌توانی در تنظیمات اینستاگرامت دسترسی را قطع کنی و همان لحظه همه‌چیز متوقف می‌شود.',
-          'مسئولیت چیزی که روی پیجت منتشر می‌شود با توست. دیوچه پیش‌نویس می‌کند؛ زمان‌بندی و قواعد را تو تعیین می‌کنی. چند پست اول را قبل از این‌که رهایش کنی بررسی کن.',
-        ],
-      },
-      {
-        title: 'کارهایی که نمی‌کنیم',
-        body: [
-          'رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم. کامنت‌ها و دایرکت‌هایت را ذخیره نمی‌کنیم؛ جوابشان را می‌دهیم و فقط یک شناسه نگه می‌داریم تا چیزی دو بار جواب نگیرد. خارج از زمان‌بندی و قواعدی که تعیین کرده‌ای چیزی منتشر نمی‌کنیم و از اکانتت برای کس دیگری استفاده نمی‌کنیم.',
+          'هر حساب مال یک نفر است. اسم واقعی‌ات و ایمیلی را که مال خودت است بده، و رمزت را پیش خودت نگه دار.',
+          'حساب‌های تازه پیش از باز شدن به دست ما بررسی می‌شوند. ممکن است ثبت‌نامی را بدون گفتن دلیل نپذیریم.',
+          'مسئولیت چیزی که با دیوچه می‌سازی و منتشر می‌کنی با خودت است.',
         ],
       },
       {
         title: 'محتوا',
         body: [
-          'پست‌ها از منابع خبری عمومی و از چیزهایی که خودت آپلود می‌کنی ساخته می‌شوند. حقوق آنچه آپلود می‌کنی برای خودت می‌ماند؛ به ما فقط برای همان کاری که خواسته‌ای اجازه‌ی پردازشش را می‌دهی. مطمئن شو اجازه‌ی استفاده از آنچه آپلود می‌کنی را داری. اگر منبع یا صاحب حقی به چیزی که برایت منتشر کرده‌ایم اعتراض کند، به محض اطلاع تو یا او برش می‌داریم.',
+          'حقوق چیزهایی که می‌سازی و آپلود می‌کنی برای خودت می‌ماند؛ به ما فقط اجازه می‌دهی برای همان کاری که خواسته‌ای پردازششان کنیم. مطمئن شو اجازه‌ی استفاده از آنچه آپلود می‌کنی را داری. اگر صاحب حقی به چیزی که روی سرورهای ما مانده اعتراض کند، به محض این‌که تو یا او خبرمان کنید برش می‌داریم.',
+          'ایده‌ها، سناریوها و زیرنویس‌ها با هوش مصنوعی نوشته می‌شوند و ممکن است اشتباه داشته باشند. پیش از انتشار بخوانشان.',
+        ],
+      },
+      {
+        title: 'کارهایی که نمی‌کنیم',
+        body: [
+          'داده‌ات را نمی‌فروشیم. هیچ‌جا به اسم تو چیزی منتشر نمی‌کنیم. رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم، و از حسابت برای کس دیگری استفاده نمی‌کنیم.',
         ],
       },
       {
         title: 'در دسترس بودن و محدودیت‌ها',
         body: [
-          'اینستاگرام و متا پلتفرمشان را بدون اطلاع قبلی تغییر می‌دهند. وقتی این اتفاق بیفتد ممکن است یک قابلیت تا وقتی خودمان را وفق بدهیم متوقف شود. سرویس را با دقت اداره می‌کنیم اما هیچ تضمینی برای در دسترس بودن، ریچ یا تعداد فالوور نمی‌دهیم؛ نتیجه‌ی یک پست را اینستاگرام تعیین می‌کند.',
+          'پلتفرم‌ها و سرویس‌هایی که دیوچه به آن‌ها تکیه دارد بدون اطلاع قبلی تغییر می‌کنند. وقتی این اتفاق بیفتد ممکن است یک قابلیت تا وقتی خودمان را وفق بدهیم متوقف شود. سرویس را با دقت اداره می‌کنیم اما هیچ تضمینی برای در دسترس بودن، ریچ یا تعداد فالوور نمی‌دهیم؛ نتیجه‌ی یک پست را پلتفرمی تعیین می‌کند که رویش منتشرش می‌کنی.',
           'تا جایی که قانون اجازه می‌دهد، مسئولیت ما محدود به مبلغی است که در سه ماه پیش از بروز مشکل به ما پرداخته‌ای. هیچ‌چیز در اینجا مسئولیت ناشی از عمد، قصور فاحش یا آسیب به جان و سلامت را محدود نمی‌کند.',
         ],
       },
       {
         title: 'پایان دادن',
         body: [
-          'هر وقت بخواهی می‌توانی با قطع کردن اکانت یا نوشتن به ما متوقفش کنی؛ آنچه داریم را طبق سیاست حریم خصوصی پاک می‌کنیم. ما هم می‌توانیم سرویس اکانتی را که قواعد اینستاگرام یا این شرایط را زیر پا می‌گذارد پایان دهیم، و دلیلش را می‌گوییم.',
+          'هر وقت بخواهی می‌توانی در اپ، از «پروفایل» و بعد «حذف حساب»، حسابت را پاک کنی؛ آنچه داریم طبق سیاست حریم خصوصی پاک می‌شود. ما هم ممکن است حسابی را که این شرایط، قانون یا حقوق دیگران را زیر پا بگذارد معلق کنیم یا ببندیم، و دلیلش را می‌گوییم.',
         ],
       },
       {
         title: 'تغییرات و تماس',
         body: [
-          `با هر تغییر در این شرایط، تاریخ بالای صفحه عوض می‌شود و به کسانی که اکانت وصل‌شده دارند پیش از اجرا ایمیل می‌زنیم. درباره‌ی هر چیزی در این صفحه به ${CONTACT} بنویس.`,
+          `با هر تغییر در این شرایط، تاریخ بالای صفحه عوض می‌شود، و اگر تغییری روی استفاده‌ی تو از دیوچه اثر بگذارد، پیش از اجرا به صاحبان حساب ایمیل می‌زنیم. درباره‌ی هر چیزی در این صفحه به ${CONTACT} بنویس.`,
         ],
       },
     ],
@@ -422,45 +583,48 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'Was Diwche ist',
         body: [
-          'Diwche ist ein Veröffentlichungsassistent für professionelle Instagram-Konten, betrieben von Helabyte. Er liest Nachrichtenquellen, die du auswählst, bereitet Beiträge und kurze Videos vor, veröffentlicht sie nach deinem Zeitplan auf deinem Konto und kann Kommentare in einem Ton beantworten, den du festlegst.',
+          'Diwche ist ein Content-Studio für dein Handy, betrieben von Helabyte. Es hilft dir, Ideen zu finden, Skripte zu schreiben, Fotos und Videos zu bearbeiten und Untertitel hinzuzufügen. Was du machst, veröffentlichst du selbst: Diwche verbindet sich nicht mit deinem Instagram und postet dort nichts.',
+          'Einige Konten wurden früher über unser Web-Dashboard mit Instagram verbunden. Für sie veröffentlicht Diwche nur, was du geplant hast, nach den Regeln, die du gesetzt hast, und du kannst die Verbindung jederzeit in deinen Instagram-Einstellungen widerrufen.',
         ],
       },
       {
         title: 'Dein Konto',
         body: [
-          'Du brauchst ein professionelles Instagram-Konto (Business oder Creator), das du verwalten darfst. Die Verbindung läuft über Metas eigenen Anmeldebildschirm; du kannst sie jederzeit in deinen Instagram-Einstellungen widerrufen, und alles stoppt in diesem Moment.',
-          'Für das, was auf deinem Konto erscheint, bist du verantwortlich. Diwche entwirft; Zeitplan und Regeln bestimmst du. Prüfe die ersten Beiträge, bevor du es laufen lässt.',
-        ],
-      },
-      {
-        title: 'Was wir nicht tun',
-        body: [
-          'Wir fragen nicht nach deinem Instagram-Passwort und speichern es nicht. Wir speichern weder deine Kommentare noch deine Direktnachrichten; wir beantworten sie und behalten nur eine ID, damit nichts zweimal beantwortet wird. Wir veröffentlichen nichts außerhalb des Zeitplans und der Regeln, die du gesetzt hast, und nutzen dein Konto für niemanden sonst.',
+          'Ein Konto ist für eine Person. Verwende deinen echten Namen und eine E-Mail-Adresse, die dir gehört, und behalte dein Passwort für dich.',
+          'Neue Konten prüfen wir, bevor sie freigeschaltet werden. Wir können eine Anmeldung ohne Angabe von Gründen ablehnen.',
+          'Für das, was du mit Diwche erstellst und veröffentlichst, bist du verantwortlich.',
         ],
       },
       {
         title: 'Inhalte',
         body: [
-          'Beiträge entstehen aus öffentlichen Nachrichtenquellen und aus Material, das du hochlädst. Die Rechte daran bleiben bei dir; du erlaubst uns die Verarbeitung nur für den Zweck, den du beauftragt hast. Stelle sicher, dass du das Hochgeladene verwenden darfst. Widerspricht eine Quelle oder ein Rechteinhaber etwas, das wir für dich veröffentlicht haben, nehmen wir es auf Hinweis von dir oder ihm herunter.',
+          'Die Rechte an dem, was du erstellst und hochlädst, bleiben bei dir; du erlaubst uns die Verarbeitung nur, um zu tun, worum du gebeten hast. Stelle sicher, dass du das Hochgeladene verwenden darfst. Widerspricht ein Rechteinhaber etwas, das auf unseren Servern liegt, entfernen wir es auf Hinweis von dir oder ihm.',
+          'Ideen, Skripte und Untertitel entstehen mit KI und können falsch sein. Lies sie, bevor du postest.',
+        ],
+      },
+      {
+        title: 'Was wir nicht tun',
+        body: [
+          'Wir verkaufen deine Daten nicht. Wir veröffentlichen nirgends etwas in deinem Namen. Wir fragen nicht nach deinem Instagram-Passwort, speichern es nicht und nutzen dein Konto für niemanden sonst.',
         ],
       },
       {
         title: 'Verfügbarkeit und Haftung',
         body: [
-          'Instagram und Meta ändern ihre Plattform ohne Vorankündigung. Dann kann eine Funktion pausieren, bis wir nachgezogen haben. Wir betreiben den Dienst sorgfältig, versprechen aber keine Verfügbarkeit, keine Reichweite und keine Followerzahlen; über das Ergebnis eines Beitrags entscheidet Instagram.',
+          'Die Plattformen und Dienste, auf die Diwche angewiesen ist, ändern sich ohne Vorankündigung. Dann kann eine Funktion pausieren, bis wir nachgezogen haben. Wir betreiben den Dienst sorgfältig, versprechen aber keine Verfügbarkeit, keine Reichweite und keine Followerzahlen; über das Ergebnis eines Beitrags entscheidet die Plattform, auf der du ihn veröffentlichst.',
           'Soweit gesetzlich zulässig, ist unsere Haftung auf den Betrag begrenzt, den du in den drei Monaten vor dem Problem an uns gezahlt hast. Für Vorsatz, grobe Fahrlässigkeit und Schäden an Leben, Körper und Gesundheit gilt keine Begrenzung.',
         ],
       },
       {
         title: 'Beenden',
         body: [
-          'Du kannst jederzeit aufhören, indem du dein Konto trennst oder uns schreibst; wir löschen, was wir haben, wie in der Datenschutzerklärung beschrieben. Wir können den Dienst für ein Konto beenden, das gegen Instagrams Regeln oder diese Bedingungen verstößt, und sagen warum.',
+          'Du kannst dein Konto jederzeit in der App löschen, unter Profil ▸ Konto löschen; was wir haben, wird dann wie in der Datenschutzerklärung beschrieben gelöscht. Wir können ein Konto sperren oder schließen, das gegen diese Bedingungen, das Gesetz oder die Rechte anderer verstößt, und sagen dir, warum.',
         ],
       },
       {
         title: 'Änderungen und Kontakt',
         body: [
-          `Ändern sich diese Bedingungen, ändert sich das Datum oben, und Personen mit verbundenem Konto erfahren es vorab per E-Mail. Schreib zu allem auf dieser Seite an ${CONTACT}.`,
+          `Ändern sich diese Bedingungen, ändert sich das Datum oben, und betrifft eine Änderung, wie du Diwche nutzt, erfahren Kontoinhaber es vorab per E-Mail. Schreib zu allem auf dieser Seite an ${CONTACT}.`,
         ],
       },
     ],
