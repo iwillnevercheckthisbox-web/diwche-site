@@ -38,6 +38,12 @@ export interface HomeCopy {
     titleAccent: string;
     titleAfter: string;
     lead: string;
+    /**
+     * One plain line on what the phone app does and where it publishes.
+     * Platform reviewers (TikTok's above all) look for the product on the home
+     * page; wording only, no partner logos, no claim of endorsement.
+     */
+    app: string;
     cta: string;
     /** Shown while the read is not connected to a backend. */
     ctaOff: string;
@@ -135,6 +141,7 @@ export const HOME_EN: HomeCopy = {
      * something, set in a button the width of the sentence — which on a phone
      * wrapped to two lines under a headline that had already said who he is.
      */
+    app: 'The Diwche phone app plans your week of posts, helps you make them, and — when you tap Publish — posts them to Instagram and TikTok, then shows you how they did.',
     cta: 'Read my page',
     ctaOff: 'See what he would do',
   },
@@ -300,6 +307,7 @@ export const HOME_FA: HomeCopy = {
     titleAccent: '۱۰ برابر سریع‌تر',
     titleAfter: '، با کنترل ۱۰۰٪ روی جزئیات.',
     lead: 'دیوچه دستیار کامل جریان تولید محتوای شماست. ایده‌های پربازدید را پیدا می‌کند، ابزار ادیت کامل ویدیو و عکس را در اختیارتان می‌گذارد، انتشار را خودکار می‌سازد و آمار را به راهکارهای عملی تبدیل می‌کند.',
+    app: 'اپ گوشی دیوچه پست‌های هفته‌ات را برنامه‌ریزی می‌کند، در ساختنشان کمکت می‌کند، و وقتی «انتشار» را بزنی آن‌ها را در اینستاگرام و تیک‌تاک منتشر می‌کند و بعد نشانت می‌دهد چطور عمل کرده‌اند.',
     cta: 'پیجم رو بخون',
     ctaOff: 'ببین چه می‌کنه',
   },
@@ -501,6 +509,7 @@ export const HOME_DE: HomeCopy = {
     titleAccent: '10x Tempo',
     titleAfter: ' und 100 % Kontrolle.',
     lead: 'Diwche ist deine Content-Abteilung von der Idee bis zur Veröffentlichung. Er findet die Themen, die tragen, bearbeitet Bild und Video in einer vollwertigen Schnittsuite, plant deine Warteschlange und übersetzt Leistungsdaten in deinen nächsten großen Schritt.',
+    app: 'Die Diwche-App plant deine Beiträge für die Woche, hilft dir, sie zu machen, veröffentlicht sie — wenn du auf Veröffentlichen tippst — auf Instagram und TikTok und zeigt dir danach, wie sie gelaufen sind.',
     cta: 'Meine Seite lesen',
     ctaOff: 'Sieh, was er tun würde',
   },

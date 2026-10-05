@@ -46,6 +46,7 @@ const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
       {copy.hero.titleBefore}<span class="hero__title-accent">{copy.hero.titleAccent}</span>{copy.hero.titleAfter}
     </h1>
     <p class="lead hero__lead running-text">{copy.hero.lead}</p>
+    <p class="hero__app running-text">{copy.hero.app}</p>
 
     <div class="hero__actions">
       <a class="btn" href={readEnabled ? readHref : '#pilot'}>
@@ -230,6 +231,15 @@ const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
     margin-top: var(--s-5);
     margin-inline: auto;
     max-width: 56ch;
+  }
+
+  .hero__app {
+    margin-top: var(--s-3);
+    margin-inline: auto;
+    max-width: 56ch;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-2);
   }
 
   .hero__actions {

@@ -32,6 +32,15 @@ const { doc } = Astro.props;
             {section.points.map((point) => <li>{point}</li>)}
           </ul>
         )}
+        {section.links && (
+          <ul class="doc__points doc__links">
+            {section.links.map((link) => (
+              <li>
+                <a href={link.href} rel="noopener" target="_blank">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     ))
   }
@@ -86,5 +95,11 @@ const { doc } = Astro.props;
     gap: var(--s-2);
     line-height: 1.7;
     color: var(--ink-2);
+  }
+
+  .doc__links a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 </style>

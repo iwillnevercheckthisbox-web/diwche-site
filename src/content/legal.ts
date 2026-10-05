@@ -25,6 +25,9 @@
  *   (`CrashReporting.swift`, `SessionStore.kt`)
  * - every app request carries app version, OS and device model (`AppHeaders`)
  * - the sign-up approval and its Telegram message follow the plan's Batch 1
+ * - the phone apps' optional Instagram and TikTok connections (read profile, posts and
+ *   their numbers; publish only on the person's own Publish tap; disconnect under
+ *   Your plan ▸ Where you post) were written 2026-10-05 for TikTok's app review
  *
  * If one of those changes, this changes with it. A policy that describes a
  * system that no longer exists is worse than none, because it is a promise
@@ -37,6 +40,8 @@ export interface LegalSection {
   body: string[];
   /** Optional bullet list under the paragraphs. */
   points?: string[];
+  /** Optional outside links under the section, shown as a plain list. */
+  links?: { label: string; href: string }[];
 }
 
 export interface LegalDoc {
@@ -47,9 +52,9 @@ export interface LegalDoc {
 }
 
 /** Bumped whenever the text changes, and shown at the top of the page. */
-export const PRIVACY_UPDATED = '2026-10-04';
+export const PRIVACY_UPDATED = '2026-10-05';
 /** The terms have their own date; they change on a different rhythm. */
-export const TERMS_UPDATED = '2026-10-04';
+export const TERMS_UPDATED = '2026-10-05';
 
 const CONTACT = 'support@diwche.com';
 
@@ -108,6 +113,20 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
+        title: 'Connecting Instagram and TikTok (optional)',
+        body: [
+          'The Diwche phone app, on iPhone, iPad and Android, can connect to your Instagram and your TikTok account. This is optional: nothing is connected unless you choose to connect it, and the rest of the app works without it.',
+          'Instagram is connected through Instagram’s own login. We then read your profile, the list of your posts and each post’s numbers — reach, views, likes, comments, saves, shares and follows — to show you what worked in your weekly plan. Later, when you tap Publish on a post, we publish that post to your Instagram. We publish nothing you did not tap Publish on.',
+          'TikTok is connected with Login with TikTok. We then read your basic profile (your name and avatar), your follower and like counts, and the list of your videos with their numbers. A video is uploaded and published to TikTok only when you tap Publish on TikTok’s own posting screen in the app, with the privacy and interaction settings you choose there.',
+          'We never see, ask for or store your Instagram or TikTok password. The access keys that Instagram and TikTok give us are stored encrypted on our own servers in Europe and are used only for the things above.',
+        ],
+        points: [
+          'You can disconnect at any time in the app, under Your plan ▸ Where you post, or in your Instagram or TikTok settings. Disconnecting stops our access immediately.',
+          'We do not sell what we read from these accounts and do not use it for advertising.',
+          'To have it deleted, see “Deleting your account” below: it is gone within thirty days.',
+        ],
+      },
+      {
         title: 'The free read on this site',
         body: [
           'If you give us an Instagram handle, we ask Instagram’s own Business Discovery API for what your profile already shows publicly: your follower count, your post count, your biography, your profile picture, and for recent posts the caption, the type, the time and the number of likes and comments.',
@@ -136,9 +155,9 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'If your Instagram account is connected',
+        title: 'Instagram accounts connected through our web dashboard',
         body: [
-          'The phone app does not connect to your Instagram and never posts on it; you publish what you make yourself. Some accounts were connected earlier through our web dashboard, and for those this still applies.',
+          'Some accounts were connected to Instagram earlier through our web dashboard. For those, this still applies.',
           'The permission screen listed exactly what we use: reading the profile and posts, publishing the posts you scheduled, and replying to comments and direct messages. We ask for nothing beyond that, and Meta shows the full list before you agree.',
           'Comments and messages are not stored. When someone comments on your post or writes to you and you have turned auto-reply on, Meta notifies us, we answer, and we keep only the comment’s or message’s ID so that the same one is never answered twice. The text itself is not written anywhere.',
         ],
@@ -162,7 +181,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
           'Telegram — carrying the short message about a new sign-up to the people who check it.',
           'Brevo — sending the emails you asked for.',
           'Cloudflare — serving this site, carrying the app’s traffic to our servers, and telling people from scripts.',
-          'Meta (Instagram) — the free read, and accounts connected through our web dashboard.',
+          'Meta (Instagram) — the free read, Instagram accounts you connect in the app, and accounts connected through our web dashboard.',
+          'TikTok — Login with TikTok, reading your profile and videos, and publishing the videos you post, if you connect TikTok.',
           'Our own servers in Europe, which run the sign-in (Keycloak), the app’s server and the crash tracker.',
         ],
       },
@@ -171,7 +191,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
         body: [
           `In the app, Profile ▸ Delete account deletes your sign-in at once. To also erase what you made or told us on our servers — your page’s profile, ideas, scripts, kept projects — write to ${CONTACT} from your account’s email address. We do it within thirty days and confirm when it is done. A sign-up we declined is deleted the same way.`,
           `For the free read and our emails, write to ${CONTACT} from the address you gave us, or with the Instagram handle you entered, and we will delete everything we hold about you and confirm it. You do not have to give a reason.`,
-          'Disconnecting Diwche from your Instagram account, or removing yourself as a tester, stops all access immediately from Meta’s side.',
+          'What we read from a connected Instagram or TikTok account, and the access keys for it, are deleted within thirty days when you delete your account or write to us.',
+          'Disconnecting in the app (Your plan ▸ Where you post), in your Instagram or TikTok settings, or removing yourself as a tester, stops all access immediately.',
         ],
       },
       {
@@ -243,6 +264,20 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
+        title: 'وصل کردن اینستاگرام و تیک‌تاک (اختیاری)',
+        body: [
+          'اپ گوشی دیوچه، روی آیفون، آیپد و اندروید، می‌تواند به اینستاگرام و تیک‌تاکت وصل شود. این کار اختیاری است: تا خودت نخواهی هیچ‌چیز وصل نمی‌شود، و بقیه‌ی اپ بدون آن هم کار می‌کند.',
+          'اینستاگرام از راه صفحه‌ی ورود خودِ اینستاگرام وصل می‌شود. بعد از آن پروفایلت، فهرست پست‌هایت و عددهای هر پست — ریچ، بازدید، لایک، کامنت، ذخیره، اشتراک‌گذاری و فالوهای تازه — را می‌خوانیم تا در برنامه‌ی هفتگی‌ات نشانت دهیم چه چیزی جواب داده. بعدها وقتی روی یک پست «انتشار» را بزنی، همان پست را در اینستاگرامت منتشر می‌کنیم. چیزی را که خودت «انتشار» نزده‌ای منتشر نمی‌کنیم.',
+          'تیک‌تاک با «ورود با تیک‌تاک» (Login with TikTok) وصل می‌شود. بعد از آن پروفایل پایه‌ات (اسم و عکس پروفایل)، تعداد فالوورها و لایک‌هایت، و فهرست ویدیوهایت با عددهایشان را می‌خوانیم. ویدیو فقط وقتی در تیک‌تاک آپلود و منتشر می‌شود که خودت در صفحه‌ی انتشار خودِ تیک‌تاک در اپ «انتشار» را بزنی، با همان تنظیمات حریم خصوصی و تعاملی که آنجا انتخاب کرده‌ای.',
+          'رمز اینستاگرام یا تیک‌تاکت را نه می‌بینیم، نه می‌خواهیم و نه ذخیره می‌کنیم. کلیدهای دسترسی‌ای که اینستاگرام و تیک‌تاک به ما می‌دهند رمزگذاری‌شده روی سرورهای خودمان در اروپا نگه داشته می‌شوند و فقط برای همین کارها به کار می‌روند.',
+        ],
+        points: [
+          'هر وقت بخواهی می‌توانی در اپ، از «برنامهٔ تو» و بعد «کجا منتشر می‌کنی»، یا در تنظیمات اینستاگرام یا تیک‌تاکت، اتصال را قطع کنی. با قطع کردن، دسترسی ما همان لحظه بسته می‌شود.',
+          'آنچه از این حساب‌ها می‌خوانیم را نمی‌فروشیم و برای تبلیغات استفاده نمی‌کنیم.',
+          'برای پاک کردنش، بخش «پاک کردن حسابت» را پایین‌تر ببین: حداکثر ظرف سی روز پاک می‌شود.',
+        ],
+      },
+      {
         title: 'خوانش رایگان در این سایت',
         body: [
           'اگر آیدی اینستاگرامت را بدهی، از API رسمی Business Discovery اینستاگرام همان چیزی را می‌پرسیم که پروفایلت همین حالا عمومی نشان می‌دهد: تعداد دنبال‌کننده، تعداد پست، بیو، عکس پروفایل، و برای پست‌های اخیر متن کپشن، نوع پست، زمان و تعداد لایک و کامنت.',
@@ -271,9 +306,9 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'اگر اینستاگرامت وصل است',
+        title: 'حساب‌های اینستاگرامی که از راه داشبورد وب ما وصل شده‌اند',
         body: [
-          'اپ گوشی به اینستاگرامت وصل نمی‌شود و هیچ‌وقت چیزی رویش منتشر نمی‌کند؛ آنچه می‌سازی را خودت منتشر می‌کنی. بعضی حساب‌ها قبلاً از راه داشبورد وب ما وصل شده‌اند و این بخش برای آن‌ها هنوز صدق می‌کند.',
+          'بعضی حساب‌ها قبلاً از راه داشبورد وب ما به اینستاگرام وصل شده‌اند. این بخش برای آن‌ها هنوز صدق می‌کند.',
           'صفحه‌ی مجوزها دقیقاً همان چیزهایی را نشان داد که استفاده می‌کنیم: خواندن پروفایل و پست‌ها، منتشر کردن پست‌هایی که خودت زمان‌بندی کرده‌ای، و جواب دادن به کامنت‌ها و دایرکت‌ها. چیزی فراتر از این نمی‌خواهیم و متا فهرست کامل را پیش از تأیید نشان می‌دهد.',
           'کامنت‌ها و دایرکت‌ها ذخیره نمی‌شوند. وقتی کسی زیر پستت کامنت می‌گذارد یا برایت پیام می‌فرستد و تو پاسخ خودکار را روشن کرده باشی، متا به ما خبر می‌دهد، ما جواب می‌دهیم، و فقط شناسه‌ی کامنت یا پیام را نگه می‌داریم تا یکی دو بار جواب نگیرد. خودِ متن هیچ‌جا نوشته نمی‌شود.',
         ],
@@ -297,7 +332,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
           'تلگرام — رساندن پیام کوتاه ثبت‌نام تازه به کسانی که بررسی‌اش می‌کنند.',
           'Brevo — فرستادن ایمیل‌هایی که خواسته‌ای.',
           'Cloudflare — سرو کردن این سایت، رساندن ترافیک اپ به سرورهای ما، و تشخیص آدم از ربات.',
-          'متا (اینستاگرام) — خوانش رایگان، و حساب‌هایی که از راه داشبورد وب ما وصل شده‌اند.',
+          'متا (اینستاگرام) — خوانش رایگان، حساب‌های اینستاگرامی که در اپ وصل می‌کنی، و حساب‌هایی که از راه داشبورد وب ما وصل شده‌اند.',
+          'تیک‌تاک — ورود با تیک‌تاک، خواندن پروفایل و ویدیوهایت، و منتشر کردن ویدیوهایی که خودت پست می‌کنی، اگر تیک‌تاک را وصل کنی.',
           'سرورهای خودمان در اروپا، که سرور ورود (Keycloak)، سرور اپ و ردیاب خطا روی آن‌ها اجرا می‌شوند.',
         ],
       },
@@ -306,7 +342,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
         body: [
           `در اپ، از «پروفایل» و بعد «حذف حساب»، حساب ورودت همان لحظه پاک می‌شود. اگر می‌خواهی آنچه ساخته‌ای یا به ما گفته‌ای هم از سرورهایمان پاک شود — پروفایل پیجت، ایده‌ها، سناریوها، پروژه‌های نگه‌داشته — از ایمیل همان حساب به ${CONTACT} بنویس. حداکثر ظرف سی روز انجامش می‌دهیم و وقتی تمام شد خبرت می‌کنیم. ثبت‌نامی که نپذیرفته‌ایم هم به همین شکل پاک می‌شود.`,
           `برای خوانش رایگان و ایمیل‌هایمان، از همان آدرسی که به ما داده‌ای، یا با همان آیدی‌ای که وارد کرده‌ای، به ${CONTACT} بنویس تا هرچه از تو داریم پاک کنیم و بعدش تأییدش را بفرستیم. لازم نیست دلیلی بیاوری.`,
-          'قطع کردن دسترسی دیوچه از اینستاگرامت، یا برداشتن خودت از فهرست تسترها، دسترسی را همان لحظه از سمت متا می‌بندد.',
+          'آنچه از یک حساب وصل‌شده‌ی اینستاگرام یا تیک‌تاک خوانده‌ایم، همراه کلیدهای دسترسی‌اش، حداکثر ظرف سی روز بعد از این‌که حسابت را پاک کنی یا برایمان بنویسی پاک می‌شود.',
+          'قطع کردن اتصال در اپ («برنامهٔ تو» و بعد «کجا منتشر می‌کنی»)، در تنظیمات اینستاگرام یا تیک‌تاکت، یا برداشتن خودت از فهرست تسترها، دسترسی را همان لحظه می‌بندد.',
         ],
       },
       {
@@ -378,6 +415,20 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
+        title: 'Instagram und TikTok verbinden (freiwillig)',
+        body: [
+          'Die Diwche-App für iPhone, iPad und Android kann sich mit deinem Instagram- und deinem TikTok-Konto verbinden. Das ist freiwillig: Verbunden wird nur, was du selbst verbindest, und der Rest der App funktioniert auch ohne.',
+          'Instagram wird über Instagrams eigene Anmeldung verbunden. Danach lesen wir dein Profil, die Liste deiner Beiträge und die Zahlen jedes Beitrags — Reichweite, Aufrufe, Likes, Kommentare, Speicherungen, Teilungen und neue Follower —, um dir in deinem Wochenplan zu zeigen, was funktioniert hat. Wenn du später bei einem Beitrag auf Veröffentlichen tippst, veröffentlichen wir genau diesen Beitrag auf deinem Instagram. Nichts, worauf du nicht Veröffentlichen getippt hast.',
+          'TikTok wird mit „Login with TikTok“ verbunden. Danach lesen wir dein Basisprofil (Name und Profilbild), deine Follower- und Like-Zahlen und die Liste deiner Videos mit ihren Zahlen. Ein Video wird nur dann zu TikTok hochgeladen und veröffentlicht, wenn du in der App auf TikToks eigenem Veröffentlichungsbildschirm auf Veröffentlichen tippst — mit den Privatsphäre- und Interaktionseinstellungen, die du dort wählst.',
+          'Wir sehen dein Instagram- oder TikTok-Passwort nie, fragen nicht danach und speichern es nicht. Die Zugangsschlüssel, die Instagram und TikTok uns geben, liegen verschlüsselt auf unseren eigenen Servern in Europa und werden nur für das oben Genannte genutzt.',
+        ],
+        points: [
+          'Du kannst die Verbindung jederzeit trennen: in der App unter Your plan ▸ Where you post, oder in deinen Instagram- bzw. TikTok-Einstellungen. Danach endet unser Zugriff sofort.',
+          'Was wir aus diesen Konten lesen, verkaufen wir nicht und nutzen es nicht für Werbung.',
+          'Zum Löschen siehe unten „Dein Konto löschen“: Es ist binnen dreißig Tagen weg.',
+        ],
+      },
+      {
         title: 'Die kostenlose Analyse auf dieser Seite',
         body: [
           'Wenn du uns einen Instagram-Profilnamen gibst, fragen wir bei Metas eigener Business-Discovery-API genau das ab, was dein Profil ohnehin öffentlich zeigt: Follower-Zahl, Anzahl der Beiträge, Biografie, Profilbild und für die letzten Beiträge Bildunterschrift, Typ, Zeitpunkt sowie Anzahl der Likes und Kommentare.',
@@ -406,9 +457,9 @@ export const PRIVACY: Record<string, LegalDoc> = {
         ],
       },
       {
-        title: 'Wenn dein Instagram-Konto verbunden ist',
+        title: 'Instagram-Konten, die über unser Web-Dashboard verbunden sind',
         body: [
-          'Die Handy-App verbindet sich nicht mit deinem Instagram und veröffentlicht dort nie etwas; was du machst, veröffentlichst du selbst. Einige Konten wurden früher über unser Web-Dashboard verbunden, und für sie gilt weiterhin Folgendes.',
+          'Einige Konten wurden früher über unser Web-Dashboard mit Instagram verbunden. Für sie gilt weiterhin Folgendes.',
           'Der Berechtigungsbildschirm hat genau das gezeigt, was wir nutzen: Profil und Beiträge lesen, die von dir geplanten Beiträge veröffentlichen, auf Kommentare und Direktnachrichten antworten. Mehr fordern wir nicht an, und Meta zeigt die vollständige Liste, bevor du zustimmst.',
           'Kommentare und Nachrichten werden nicht gespeichert. Kommentiert jemand deinen Beitrag oder schreibt dir und du hast die automatische Antwort eingeschaltet, benachrichtigt uns Meta, wir antworten und behalten nur die ID des Kommentars oder der Nachricht, damit nichts zweimal beantwortet wird. Der Text selbst wird nirgends abgelegt.',
         ],
@@ -432,7 +483,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
           'Telegram — Übermitteln der kurzen Nachricht über eine neue Anmeldung an die Personen, die sie prüfen.',
           'Brevo — Versand der E-Mails, um die du gebeten hast.',
           'Cloudflare — Ausliefern dieser Seite, Weiterleiten des App-Verkehrs an unsere Server und Unterscheiden von Menschen und Skripten.',
-          'Meta (Instagram) — die kostenlose Analyse und Konten, die über unser Web-Dashboard verbunden sind.',
+          'Meta (Instagram) — die kostenlose Analyse, Instagram-Konten, die du in der App verbindest, und Konten, die über unser Web-Dashboard verbunden sind.',
+          'TikTok — Login with TikTok, Lesen deines Profils und deiner Videos und Veröffentlichen der Videos, die du postest, wenn du TikTok verbindest.',
           'Unsere eigenen Server in Europa, auf denen die Anmeldung (Keycloak), der App-Server und der Fehler-Tracker laufen.',
         ],
       },
@@ -441,7 +493,8 @@ export const PRIVACY: Record<string, LegalDoc> = {
         body: [
           `In der App löscht Profil ▸ Konto löschen deine Anmeldung sofort. Soll auch gelöscht werden, was du auf unseren Servern erstellt oder uns erzählt hast — das Profil deiner Seite, Ideen, Skripte, aufbewahrte Projekte —, schreib von der E-Mail-Adresse deines Kontos an ${CONTACT}. Wir erledigen das binnen dreißig Tagen und bestätigen es. Eine abgelehnte Anmeldung wird auf dieselbe Weise gelöscht.`,
           `Für die kostenlose Analyse und unsere E-Mails schreib von der Adresse, die du uns gegeben hast, oder mit dem eingegebenen Profilnamen an ${CONTACT}. Wir löschen alles, was wir über dich haben, und bestätigen es. Eine Begründung brauchst du nicht.`,
-          'Wenn du Diwche in Instagram trennst oder dich als Tester entfernst, endet der Zugriff sofort auf Metas Seite.',
+          'Was wir aus einem verbundenen Instagram- oder TikTok-Konto gelesen haben, samt den Zugangsschlüsseln, wird binnen dreißig Tagen gelöscht, wenn du dein Konto löschst oder uns schreibst.',
+          'Trennst du die Verbindung in der App (Your plan ▸ Where you post), in deinen Instagram- oder TikTok-Einstellungen oder entfernst dich als Tester, endet der Zugriff sofort.',
         ],
       },
       {
@@ -473,8 +526,20 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'What Diwche is',
         body: [
-          'Diwche is a content studio for your phone, operated by Helabyte. It helps you find ideas, write scripts, edit photos and videos, and add subtitles. You publish what you make yourself: Diwche does not connect to your Instagram and does not post on it.',
+          'Diwche is a content studio for your phone, operated by Helabyte. It helps you find ideas, write scripts, edit photos and videos, and add subtitles. If you choose, the phone app connects to your Instagram and TikTok to show how your posts did and to publish the posts you tap Publish on; see “Connected platforms” below.',
           'Some accounts were connected to Instagram earlier through our web dashboard. For those, Diwche publishes only what you scheduled, under the rules you set, and you can revoke the connection in your Instagram settings at any time.',
+        ],
+      },
+      {
+        title: 'Connected platforms',
+        body: [
+          'Connecting Instagram or TikTok is optional. When you use them through Diwche, their own terms and rules apply as well as these.',
+          'Diwche publishes only when you act: a post goes to Instagram when you tap Publish, and a video goes to TikTok only when you tap Publish on TikTok’s posting screen, with the settings you chose there. You can disconnect at any time in the app, under Your plan ▸ Where you post.',
+          'What you post to TikTok must follow TikTok’s Music Usage Confirmation and its Branded Content Policy.',
+        ],
+        links: [
+          { label: 'TikTok Music Usage Confirmation', href: 'https://www.tiktok.com/legal/page/global/music-usage-confirmation/en' },
+          { label: 'TikTok Branded Content Policy', href: 'https://www.tiktok.com/legal/page/global/bc-policy/en' },
         ],
       },
       {
@@ -495,7 +560,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'What we will not do',
         body: [
-          'We do not sell your data. We do not post anything anywhere in your name. We do not ask for or store your Instagram password, and we do not use your account for anyone else.',
+          'We do not sell your data. We never post anything in your name that you did not tap Publish on. We do not ask for or store your Instagram or TikTok password, and we do not use your account for anyone else.',
         ],
       },
       {
@@ -528,8 +593,20 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'دیوچه چیست',
         body: [
-          'دیوچه یک استودیوی ساخت محتوا برای گوشی است که Helabyte اداره‌اش می‌کند. کمکت می‌کند ایده پیدا کنی، سناریو بنویسی، عکس و ویدیو ویرایش کنی و زیرنویس بگذاری. آنچه می‌سازی را خودت منتشر می‌کنی: دیوچه به اینستاگرامت وصل نمی‌شود و چیزی رویش پست نمی‌کند.',
+          'دیوچه یک استودیوی ساخت محتوا برای گوشی است که Helabyte اداره‌اش می‌کند. کمکت می‌کند ایده پیدا کنی، سناریو بنویسی، عکس و ویدیو ویرایش کنی و زیرنویس بگذاری. اگر بخواهی، اپ گوشی به اینستاگرام و تیک‌تاکت وصل می‌شود تا نشانت دهد پست‌هایت چطور عمل کرده‌اند و پست‌هایی را که خودت «انتشار» را برایشان زده‌ای منتشر کند؛ بخش «پلتفرم‌های وصل‌شده» را پایین‌تر ببین.',
           'بعضی حساب‌ها قبلاً از راه داشبورد وب ما به اینستاگرام وصل شده‌اند. برای آن‌ها دیوچه فقط همان چیزی را منتشر می‌کند که خودت زمان‌بندی کرده‌ای، طبق قواعدی که خودت گذاشته‌ای، و هر وقت بخواهی می‌توانی در تنظیمات اینستاگرامت دسترسی را قطع کنی.',
+        ],
+      },
+      {
+        title: 'پلتفرم‌های وصل‌شده',
+        body: [
+          'وصل کردن اینستاگرام یا تیک‌تاک اختیاری است. وقتی از آن‌ها از راه دیوچه استفاده می‌کنی، علاوه بر این شرایط، شرایط و قوانین خودِ آن‌ها هم برقرار است.',
+          'دیوچه فقط با کار خودِ تو منتشر می‌کند: پست وقتی به اینستاگرام می‌رود که «انتشار» را بزنی، و ویدیو فقط وقتی به تیک‌تاک می‌رود که در صفحه‌ی انتشار تیک‌تاک «انتشار» را بزنی، با همان تنظیماتی که آنجا انتخاب کرده‌ای. هر وقت بخواهی می‌توانی در اپ، از «برنامهٔ تو» و بعد «کجا منتشر می‌کنی»، اتصال را قطع کنی.',
+          'آنچه در تیک‌تاک منتشر می‌کنی باید با «تأیید استفاده از موسیقی» (Music Usage Confirmation) و «سیاست محتوای برند» (Branded Content Policy) تیک‌تاک سازگار باشد.',
+        ],
+        links: [
+          { label: 'تأیید استفاده از موسیقی در تیک‌تاک (Music Usage Confirmation)', href: 'https://www.tiktok.com/legal/page/global/music-usage-confirmation/en' },
+          { label: 'سیاست محتوای برند تیک‌تاک (Branded Content Policy)', href: 'https://www.tiktok.com/legal/page/global/bc-policy/en' },
         ],
       },
       {
@@ -550,7 +627,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'کارهایی که نمی‌کنیم',
         body: [
-          'داده‌ات را نمی‌فروشیم. هیچ‌جا به اسم تو چیزی منتشر نمی‌کنیم. رمز اینستاگرامت را نه می‌خواهیم و نه ذخیره می‌کنیم، و از حسابت برای کس دیگری استفاده نمی‌کنیم.',
+          'داده‌ات را نمی‌فروشیم. هیچ‌وقت چیزی را به اسم تو منتشر نمی‌کنیم که خودت «انتشار» را برایش نزده باشی. رمز اینستاگرام یا تیک‌تاکت را نه می‌خواهیم و نه ذخیره می‌کنیم، و از حسابت برای کس دیگری استفاده نمی‌کنیم.',
         ],
       },
       {
@@ -583,8 +660,20 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'Was Diwche ist',
         body: [
-          'Diwche ist ein Content-Studio für dein Handy, betrieben von Helabyte. Es hilft dir, Ideen zu finden, Skripte zu schreiben, Fotos und Videos zu bearbeiten und Untertitel hinzuzufügen. Was du machst, veröffentlichst du selbst: Diwche verbindet sich nicht mit deinem Instagram und postet dort nichts.',
+          'Diwche ist ein Content-Studio für dein Handy, betrieben von Helabyte. Es hilft dir, Ideen zu finden, Skripte zu schreiben, Fotos und Videos zu bearbeiten und Untertitel hinzuzufügen. Wenn du willst, verbindet sich die Handy-App mit deinem Instagram und TikTok, um dir zu zeigen, wie deine Beiträge gelaufen sind, und um die Beiträge zu veröffentlichen, bei denen du auf Veröffentlichen tippst; siehe „Verbundene Plattformen“ unten.',
           'Einige Konten wurden früher über unser Web-Dashboard mit Instagram verbunden. Für sie veröffentlicht Diwche nur, was du geplant hast, nach den Regeln, die du gesetzt hast, und du kannst die Verbindung jederzeit in deinen Instagram-Einstellungen widerrufen.',
+        ],
+      },
+      {
+        title: 'Verbundene Plattformen',
+        body: [
+          'Instagram oder TikTok zu verbinden ist freiwillig. Nutzt du sie über Diwche, gelten neben diesen Bedingungen auch deren eigene Bedingungen und Regeln.',
+          'Diwche veröffentlicht nur, wenn du handelst: Ein Beitrag geht zu Instagram, wenn du auf Veröffentlichen tippst, und ein Video geht nur dann zu TikTok, wenn du auf TikToks Veröffentlichungsbildschirm auf Veröffentlichen tippst, mit den Einstellungen, die du dort gewählt hast. Trennen kannst du jederzeit in der App unter Your plan ▸ Where you post.',
+          'Was du auf TikTok veröffentlichst, muss TikToks Music Usage Confirmation und seiner Branded Content Policy entsprechen.',
+        ],
+        links: [
+          { label: 'TikTok Music Usage Confirmation', href: 'https://www.tiktok.com/legal/page/global/music-usage-confirmation/en' },
+          { label: 'TikTok Branded Content Policy', href: 'https://www.tiktok.com/legal/page/global/bc-policy/en' },
         ],
       },
       {
@@ -605,7 +694,7 @@ export const TERMS: Record<string, LegalDoc> = {
       {
         title: 'Was wir nicht tun',
         body: [
-          'Wir verkaufen deine Daten nicht. Wir veröffentlichen nirgends etwas in deinem Namen. Wir fragen nicht nach deinem Instagram-Passwort, speichern es nicht und nutzen dein Konto für niemanden sonst.',
+          'Wir verkaufen deine Daten nicht. Wir veröffentlichen nie etwas in deinem Namen, bei dem du nicht selbst auf Veröffentlichen getippt hast. Wir fragen nicht nach deinem Instagram- oder TikTok-Passwort, speichern es nicht und nutzen dein Konto für niemanden sonst.',
         ],
       },
       {
