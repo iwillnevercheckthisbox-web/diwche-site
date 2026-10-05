@@ -23,16 +23,7 @@ interface Props {
 
 const { copy, locale } = Astro.props;
 
-/**
- * The read is only offered when there is something behind it.
- *
- * Pointing the hero at a walk that cannot finish would put a call to action on
- * the live site whose only outcome is an apology, so this defaults to off and
- * the CTA falls back to the section below.
- */
-const readEnabled = import.meta.env.PUBLIC_READ === 'on';
-const readHref = locale === 'en' ? '/read' : `/${locale}/read`;
-const artOf = ['studio-writing', 'replies-mailbox', 'analytics-robot'] as const;
+const artOf = ['studio-writing', 'pilot-thinking', 'analytics-robot'] as const;
 // The approach drawing is still to arrive (build-art.py PENDING); until it does the section is
 // the plain header it always was, rather than a two-column row with a hole in it.
 const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
@@ -49,9 +40,7 @@ const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
     <p class="hero__app running-text">{copy.hero.app}</p>
 
     <div class="hero__actions">
-      <a class="btn" href={readEnabled ? readHref : '#pilot'}>
-        {readEnabled ? copy.hero.cta : copy.hero.ctaOff}
-      </a>
+      <a class="btn" href="#product">{copy.hero.cta}</a>
     </div>
 
     <figure class="hero__art">
@@ -62,32 +51,6 @@ const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
 
 <!-- ========================================================= PERSONA BAND -->
 <PersonaBand copy={copy} />
-
-<!-- ================================================================= PILOT -->
-<section class="section pilot" id="pilot">
-  <div class="wrap pilot__inner">
-    <div class="reveal">
-      <SectionHeader eyebrow={copy.pilot.eyebrow} title={copy.pilot.title} lead={copy.pilot.lead} />
-    </div>
-
-    <div class="pilot__art reveal" style="--reveal-delay: 60ms">
-      <Art name="pilot-thinking" />
-    </div>
-
-    <ul class="pilot__paths reveal" style="--reveal-delay: 100ms">
-      {
-        copy.pilot.paths.map((p, i) => (
-          <li style={`--reveal-delay: ${i * 50}ms`}>
-            <Card class="path">
-              <h3 class="path__title">{p.title}</h3>
-              <p class="path__text running-text">{p.text}</p>
-            </Card>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-</section>
 
 <!-- =============================================================== PILLARS -->
 {
@@ -145,33 +108,6 @@ const approachDrawn = artManifest.some((m) => m.slug === 'approach-thinking');
       />
     </div>
   )}
-</section>
-
-<!-- =========================================================== RELIABILITY -->
-<section class="section" id="reliability">
-  <div class="wrap">
-    <div class="reveal">
-      <SectionHeader
-        align="left"
-        eyebrow={copy.reliability.eyebrow}
-        title={copy.reliability.title}
-        lead={copy.reliability.lead}
-      />
-    </div>
-
-    <ul class="grid-3">
-      {
-        copy.reliability.items.map((t, i) => (
-          <li class="reveal" style={`--reveal-delay: ${i * 50}ms`}>
-            <Card class="trust">
-              <h3 class="trust__title">{t.title}</h3>
-              <p class="trust__text running-text">{t.text}</p>
-            </Card>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
 </section>
 
 <!-- =================================================================== FAQ -->
