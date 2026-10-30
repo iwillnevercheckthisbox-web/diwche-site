@@ -10,11 +10,11 @@
 
   const PHOTOS = {
     mona: { handle: '@oldmasters.daily', title: 'She’s not smiling at you.', word: 'Smile' },
-    coffee: { handle: '@pikolo.corner', title: 'New on the menu: oat flat white.', word: 'Fresh' },
-    apples: { handle: '@eat.with.mina', title: 'Five apples, zero guilt.', word: 'Crunch' },
-    chelsea: { handle: '@lotte.treats', title: 'Taste-tested by Chelsea.', word: 'Tested' },
-    nowruz: { handle: '@ashpazkhane.shirin', title: 'Our Nowruz table, step by step.', word: 'Nowruz' },
-    rowers: { handle: '@ten.min.amir', title: 'Row. Rest. Repeat.', word: 'Row' },
+    latte: { handle: '@pikolo.corner', title: 'New on the menu: oat flat white.', word: 'Fresh' },
+    tahdig: { handle: '@ashpazkhane.shirin', title: 'Real tahdig takes patience.', word: 'Tahdig' },
+    breakfast: { handle: '@eat.with.mina', title: 'Breakfast in three minutes.', word: 'Morning' },
+    treats: { handle: '@lotte.treats', title: 'Taste-tested by the boss.', word: 'Crunch' },
+    pushups: { handle: '@ten.min.amir', title: 'Ten minutes. No excuses.', word: 'Move' },
     pearl: { handle: '@oldmasters.daily', title: 'The pearl is probably not a pearl.', word: 'Pearl' },
     agnew: { handle: '@oldmasters.daily', title: 'Sargent painted her in one sitting.', word: 'Sargent' },
   };
@@ -33,7 +33,7 @@
     { k: 'stacked', name: 'Stacked word', title: ['tl', 'tr', 'bl'], handle: ['br', 'bl', 'tr'], big: true },
     { k: 'bubble', name: 'Speech bubble', title: ['tl', 'tr', 'bl'], handle: ['br', 'bl', 'tr'] },
   ];
-  const st = { photo: 'coffee', tpl: 0, spot: { title: 0, handle: 0 } };
+  const st = { photo: 'tahdig', tpl: 0, spot: { title: 0, handle: 0 } };
 
   // Persian mirrors the page, so a spot on the left becomes the same spot on the right.
   const side = (s) => I.lang === 'fa' ? s.replace(/l$/, 'R').replace(/r$/, 'l').replace('R', 'r') : s;

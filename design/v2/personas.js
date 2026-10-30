@@ -1,9 +1,9 @@
 /* Use cases: six pages, each drawn with a real carousel design family and brand palette from the app
    (backend layouts/{family}, brand/palettes.json) and the app's real looks, recipes and caption looks.
-   People and handles are invented. Images are public-domain paintings or CC0 photos (assets/CREDITS.md). */
+   People and handles are invented. Images are Unsplash photos or public-domain paintings (assets/CREDITS.md). */
 window.PERSONAS = [
   {
-    id: 'nutritionist', family: 'sage', img: 'assets/apples.jpg',
+    id: 'nutritionist', family: 'sage', img: 'assets/breakfast.jpg',
     pal: { bg: '#F3F5EF', ink: '#1E2A22', accent: '#4A7353', soft: '#DFE8DA', pop: '#C9783E' },
     handle: '@eat.with.mina',
     en: {
@@ -42,46 +42,46 @@ window.PERSONAS = [
     kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
-    id: 'shop', family: 'editorial', img: 'assets/chelsea.jpg',
+    id: 'shop', family: 'editorial', img: 'assets/treats.jpg',
     pal: { bg: '#FAFAF7', ink: '#111111', accent: '#D2491F', soft: '#ECECE6', pop: '#2B59C3' },
     handle: '@lotte.treats',
     en: {
       role: 'Product shop', name: 'Lotte’s pet treats',
-      line: 'A two-person shop selling handmade cat treats online. Every new flavour needs a launch, and launches used to stall for a week.',
+      line: 'A two-person shop selling handmade dog treats online. Every new flavour needs a launch, and launches used to stall for a week.',
       story: 'As a small shop owner, I want every new product to become a carousel, a reel and a story on the same day, so launches never wait for me.',
       stories: ['She snaps one photo; the Post screen gives it a Film look and a “NEW DROP” label.',
         'The script turns the product sheet into a before-and-after reel and a price carousel.',
         'Posts go out when her buyers are online, and the results say which flavour to restock.'],
-      hook: 'Taste-tested by <em>Chelsea</em>.', s2: 'NEW DROP · Salmon crunch', s3: 'Before / after',
+      hook: 'Taste-tested by <em>Bruno</em>.', s2: 'NEW DROP · Salmon crunch', s3: 'Before / after',
       week: [['Post', 'New flavour: salmon crunch'], ['Story', 'Countdown sticker'], ['Reel', 'Before and after'], null, ['Carousel', 'Ingredients, one per slide'], ['Story', 'Customer photos'], null],
       tags: ['Editorial family', 'Film Glow', 'Marker captions'],
     },
     de: {
-      role: 'Produkt-Shop', name: 'Lottes Katzenleckerlis',
-      line: 'Ein Zwei-Personen-Shop, der handgemachte Katzenleckerlis online verkauft. Jede neue Sorte braucht einen Launch, und Launches hingen früher eine Woche fest.',
+      role: 'Produkt-Shop', name: 'Lottes Hundeleckerlis',
+      line: 'Ein Zwei-Personen-Shop, der handgemachte Hundeleckerlis online verkauft. Jede neue Sorte braucht einen Launch, und Launches hingen früher eine Woche fest.',
       story: 'Als kleine Shop-Inhaberin will ich, dass jedes neue Produkt am selben Tag zu Karussell, Reel und Story wird, damit kein Launch auf mich warten muss.',
       stories: ['Sie macht ein Foto; der Beitrags-Screen gibt ihm einen Film-Look und ein „NEW DROP“-Label.',
         'Das Skript macht aus dem Produktblatt ein Vorher-nachher-Reel und ein Preis-Karussell.',
         'Beiträge gehen raus, wenn ihre Kundschaft online ist, und die Ergebnisse zeigen, welche Sorte nachproduziert wird.'],
-      hook: 'Getestet von <em>Chelsea</em>.', s2: 'NEW DROP · Lachs-Crunch', s3: 'Vorher / nachher',
+      hook: 'Getestet von <em>Bruno</em>.', s2: 'NEW DROP · Lachs-Crunch', s3: 'Vorher / nachher',
       week: [['Beitrag', 'Neue Sorte: Lachs-Crunch'], ['Story', 'Countdown-Sticker'], ['Reel', 'Vorher und nachher'], null, ['Karussell', 'Zutaten, eine pro Folie'], ['Story', 'Fotos von Kundschaft'], null],
       tags: ['Familie Editorial', 'Film Glow', 'Untertitel Marker'],
     },
     fa: {
-      role: 'فروشگاه محصول', name: 'تشویقی‌های گربه‌ی لوته',
-      line: 'یه فروشگاه دونفره که تشویقی دست‌ساز گربه آنلاین می‌فروشه. هر طعم جدید یه معرفی لازم داره، و قبلاً هر معرفی یه هفته عقب می‌افتاد.',
+      role: 'فروشگاه محصول', name: 'تشویقی‌های سگ لوته',
+      line: 'یه فروشگاه دونفره که تشویقی دست‌ساز سگ آنلاین می‌فروشه. هر طعم جدید یه معرفی لازم داره، و قبلاً هر معرفی یه هفته عقب می‌افتاد.',
       story: 'به عنوان صاحب یه فروشگاه کوچیک، می‌خوام هر محصول جدید همون روز بشه کاروسل و ریلز و استوری، تا هیچ معرفی‌ای منتظر من نمونه.',
       stories: ['یه عکس می‌گیره؛ صفحه‌ی پست بهش یه جلوه‌ی فیلم و برچسب «NEW DROP» می‌ده.',
         'متن، برگه‌ی محصول رو می‌کنه یه ریلز قبل‌وبعد و یه کاروسل قیمت.',
         'پست‌ها وقتی می‌رن که خریدارهاش آنلاین‌ان، و نتیجه‌ها می‌گن کدوم طعم رو دوباره بسازه.'],
-      hook: 'تست‌شده توسط <em>چلسی</em>.', s2: 'NEW DROP · ترد ماهی سالمون', s3: 'قبل / بعد',
+      hook: 'تست‌شده توسط <em>برونو</em>.', s2: 'NEW DROP · ترد ماهی سالمون', s3: 'قبل / بعد',
       week: [['پست', 'طعم جدید: ترد سالمون'], ['استوری', 'استیکر شمارش معکوس'], ['ریلز', 'قبل و بعد'], null, ['کاروسل', 'مواد، هر اسلاید یکی'], ['استوری', 'عکس‌های مشتری‌ها'], null],
       tags: ['خانواده‌ی سرمقاله', 'Film Glow', 'زیرنویس ماژیک'],
     },
     kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'In my voice'], ['Templates', 'Product · Before and after']],
   },
   {
-    id: 'cafe', family: 'linen', img: 'assets/coffee.jpg',
+    id: 'cafe', family: 'linen', img: 'assets/latte.jpg',
     pal: { bg: '#F6F1E9', ink: '#1F1B16', accent: '#B4532A', soft: '#E9DFD0', pop: '#2F5D50' },
     handle: '@pikolo.corner',
     en: {
@@ -120,7 +120,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Linen'], ['Palette', 'Linen'], ['Look', 'Golden hour'], ['Recipe', 'Golden Hour'], ['Caption look', 'Editorial'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
-    id: 'coach', family: 'poster', img: 'assets/rowers.jpg',
+    id: 'coach', family: 'poster', img: 'assets/pushups.jpg',
     pal: { bg: '#14171A', ink: '#F2EFE8', accent: '#E3B23C', soft: '#22282E', pop: '#6FB7A0' },
     handle: '@ten.min.amir',
     en: {
@@ -159,7 +159,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'In my voice'], ['Templates', 'Fitness · Beat cuts']],
   },
   {
-    id: 'persian', family: 'saffron', img: 'assets/nowruz.jpg',
+    id: 'persian', family: 'saffron', img: 'assets/tahdig.jpg',
     pal: { bg: '#FFF8EC', ink: '#2A1E12', accent: '#B35F00', soft: '#F7E6C4', pop: '#7A2E3A' },
     handle: '@ashpazkhane.shirin',
     en: {

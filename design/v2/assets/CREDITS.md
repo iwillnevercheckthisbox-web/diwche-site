@@ -16,13 +16,15 @@ example folder of the MIT-licensed KwaiVGI/LivePortrait repository, cropped to 4
 
 No living person appears anywhere on the page. The reels were made here with ffmpeg: a slow camera
 move over the painting, graded with one of the app's looks.
-| `coffee.jpg` | Coffee cup, Rachel Michetti (via scikit-image data) | CC0 |
-| `chelsea.jpg` | Chelsea the cat, Stefan van der Walt (via scikit-image data) | CC0 |
 | `looks/*.cube` (67) | The app's full look library (`backend/src/main/resources/looks/cube/`) | Ours |
 | `looks-sprite.jpg`, `shuffle/*.jpg` | Rendered here from the paintings with those looks | Ours |
-| `apples.jpg` | Paul Cézanne, *The Basket of Apples* (c. 1893), Art Institute of Chicago | Public domain |
-| `rowers.jpg` | Thomas Eakins, *The Biglin Brothers Racing* (1872), National Gallery of Art | CC0 / public domain |
-| `nowruz.jpg` | *A Nowruz still life*, Persia, Qajar, 19th century | Public domain |
 | `brand/horns.png`, `brand/thinking.svg`, `brand/working-hard.svg` | The live site's logo and mascot (`public/brand/`, `public/mascot/v2/`) | Ours |
+| `tahdig.jpg` | Tahdig with barberries and pistachio, Shiva Mardahi (unsplash.com/photos/Oe3eYUSwkGU) | Unsplash License |
+| `breakfast.jpg` | Two bowls of oatmeal with fruits, Brooke Lark (unsplash.com/photos/W9OKrxBqiZA) | Unsplash License |
+| `treats.jpg` | Dog catching treats from a bag, Dogfluence.com (unsplash.com/photos/xZsxkBtyD8A) | Unsplash License |
+| `latte.jpg` | Person making latte art, Fahmi Fakhrudin (unsplash.com/photos/nzyzAUsbV0M) | Unsplash License |
+| `pushups.jpg` | Man doing push-ups in a sunlit living room, Rahul Gupta (unsplash.com/photos/2rZ4nhCdQNc) | Unsplash License |
 
-The three paintings above come from Wikimedia Commons, cropped to 4:5 and resized to 720 × 900.
+The Unsplash photos are free photos (not Unsplash+), cropped to 4:5 at 720 × 900. The Unsplash License allows
+commercial use without permission; the photographers are credited on the page anyway.
+

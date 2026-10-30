@@ -160,7 +160,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
     const PHOTOS = [
       ['mona', "She's not smiling at you."], ['pearl', 'The pearl is probably not a pearl.'], ['agnew', 'Painted in one sitting. Still judging you.'],
       ['hammersley', 'Main character energy, 1892.'], ['velata', 'Raphael’s girlfriend, probably.'], ['shepherd', 'POV: you skipped art class.'],
-      ['coffee', 'Why our flat white tastes better at 9am.'], ['chelsea', 'Taste-tested by Chelsea.'] ];
+      ['latte', 'Why our flat white tastes better at 9am.'], ['tahdig', 'Real tahdig takes patience.'], ['treats', 'Taste-tested by the boss.'] ];
     Object.assign(I.dict, {
       'Painted in one sitting. Still judging you.': ['In einer Sitzung gemalt. Urteilt immer noch über dich.', 'تو یه جلسه کشیده شد. هنوز داره قضاوتت می‌کنه.'],
       'Main character energy, 1892.': ['Hauptfiguren-Energie, 1892.', 'انرژی شخصیت اصلی، ۱۸۹۲.'],
@@ -175,7 +175,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
       'Shuffling': ['Ich mische', 'دارم می‌چینم'],
     });
     const ALT = { mona: 'Mona Lisa, Leonardo', pearl: 'Girl with a Pearl Earring, Vermeer', agnew: 'Lady Agnew, Sargent', hammersley: 'Mrs Hammersley, Sargent',
-      velata: 'La Velata, Raphael', shepherd: 'A shepherd girl, Bouguereau', coffee: 'A flat white, CC0 photo', chelsea: 'Chelsea the cat, CC0 photo' };
+      velata: 'La Velata, Raphael', shepherd: 'A shepherd girl, Bouguereau', latte: 'Latte art being poured', tahdig: 'Tahdig with barberries and pistachio', treats: 'A dog catching treats' };
     const RECIPES = [['Film Glow', 'portra', 85], ['Y2K Flash', 'cool', 60], ['Teal & Orange', 'tealorange', 90], ['Soft Portrait', 'softskin', 80], ['Moody Natural', 'matte', 70],
       ['Golden Hour', 'golden', 85], ['Photo Dump', 'faded70s', 75], ['Mono Classic', 'silver', 100], ['Food Pop', 'fresh', 80], ['Night Neon', 'neonnight', 85]];
     const st = { photo: 'mona', hook: PHOTOS[0][1], look: 'tealorange', strength: 100, cap: 'pop-karaoke-gold', fam: 'suggested', shelf: 'Popular', recipe: null, word: 0 };
