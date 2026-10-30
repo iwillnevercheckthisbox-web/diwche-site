@@ -1,11 +1,30 @@
+<!doctype html>
+<html lang="%LANG%" dir="%DIR%" data-lang="%DATALANG%">
+<head>
 <meta charset="utf-8">
-<title>Diwche</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;700&family=Gabarito:wght@700&family=Manrope:wght@400;600;700&family=Unbounded:wght@700&family=Space+Grotesk:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Instrument+Serif:ital@0;1&family=Anton&family=Caveat:wght@600&family=Bricolage+Grotesque:wght@700&family=Archivo+Black&family=DM+Serif+Display:ital@1&display=swap">
-<link rel="stylesheet" href="site.css?v=7">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>%TITLE%</title>
+<meta name="description" content="%DESC%">
+<link rel="canonical" href="%URL%">
+%ALTERNATES%
+<meta name="theme-color" content="#16171B" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F7F6F2" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/icon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/brand/icon-512.png">
+<link rel="apple-touch-icon" href="/brand/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Diwche">
+<meta property="og:title" content="%TITLE%">
+<meta property="og:description" content="%DESC%">
+<meta property="og:url" content="%URL%">
+<meta property="og:image" content="https://diwche.com/brand/og-%OG%.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/v2/fonts.css?v=8">
+<link rel="stylesheet" href="/v2/site.css?v=8">
+</head>
+<body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></symbol>
@@ -20,12 +39,12 @@
 
 <div class="wrap">
   <nav class="nav" aria-label="Main">
-    <a class="mark" href="#top"><img class="mark-horns" src="assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
+    <a class="mark" href="#top"><img class="mark-horns" src="/v2/assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
     <div class="nav-links">
       <a href="#story">How it works</a>
       <a href="#tools">Tools</a>
       <a href="#templates">Templates</a>
-      <a href="usecases.html">Who it’s for</a>
+      <a href="/use-cases/">Who it’s for</a>
       <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">EN</button><button type="button" data-l="de">DE</button><button type="button" data-l="fa">فا</button></div>
       <a class="btn btn-primary" href="#contact">Get early access</a>
     </div>
@@ -50,18 +69,18 @@
   <div class="wrap">
     <div class="mx" id="mx" data-s="6" role="img" aria-label="One idea becomes a script; the script builds a post, a carousel, a story, a reel and a voiceover; the look is shuffled; everything goes out to six channels.">
       <div class="el mx-title" id="mxTitle" data-no-t></div>
-      <div class="el mx-card mx-idea"><div><div class="t">Myth</div><div class="h">She's not smiling at you.</div><div class="y">Smile questions get the most saves on your page.</div></div><img src="assets/mona.jpg" alt=""></div>
+      <div class="el mx-card mx-idea"><div><div class="t">Myth</div><div class="h">She's not smiling at you.</div><div class="y">Smile questions get the most saves on your page.</div></div><img src="/v2/assets/mona.jpg" alt=""></div>
       <div class="el mx-card mx-script" style="--d:1"><div class="hd">Script</div>
         <div class="ln"><span class="blk h">Hook</span><p>She's not smiling at you.</p></div>
         <div class="ln"><span class="blk b">Body</span><p>Leonardo blurred the corners of her mouth on purpose.</p></div>
         <div class="ln"><span class="blk a">Ask</span><p>Follow for one painting a day.</p></div>
       </div>
-      <div class="el mx-f pst" data-r="1.25" style="--d:0"><div class="frame"><img src="assets/mona.jpg" alt=""><span class="cap">She's not smiling at you.</span></div><span class="lb">Post</span></div>
-      <div class="el mx-f car" data-r="1.25" style="--d:1"><div class="frame"><img src="assets/velata.jpg" alt=""><img src="assets/hammersley.jpg" alt=""><img src="assets/pearl.jpg" alt=""></div><span class="lb">Carousel</span></div>
-      <div class="el mx-f stry" data-r="1.777" style="--d:2"><div class="frame"><img src="assets/agnew.jpg" alt=""><span class="bars"><i></i><i></i><i></i></span><span class="cap">Leonardo blurred the corners of her mouth on purpose.</span></div><span class="lb">Story</span></div>
-      <div class="el mx-f reel" data-r="1.777" style="--d:3"><div class="frame"><video src="assets/reels/mona.mp4" poster="assets/reels/mona.jpg" muted loop playsinline preload="metadata"></video><span class="cap live-cc" data-no-t data-video data-key="2" data-words="She’s|not|smiling|at|you."></span></div><span class="lb">Reel</span></div>
+      <div class="el mx-f pst" data-r="1.25" style="--d:0"><div class="frame"><img src="/v2/assets/mona.jpg" alt=""><span class="cap">She's not smiling at you.</span></div><span class="lb">Post</span></div>
+      <div class="el mx-f car" data-r="1.25" style="--d:1"><div class="frame"><img src="/v2/assets/velata.jpg" alt=""><img src="/v2/assets/hammersley.jpg" alt=""><img src="/v2/assets/pearl.jpg" alt=""></div><span class="lb">Carousel</span></div>
+      <div class="el mx-f stry" data-r="1.777" style="--d:2"><div class="frame"><img src="/v2/assets/agnew.jpg" alt=""><span class="bars"><i></i><i></i><i></i></span><span class="cap">Leonardo blurred the corners of her mouth on purpose.</span></div><span class="lb">Story</span></div>
+      <div class="el mx-f reel" data-r="1.777" style="--d:3"><div class="frame"><video src="/v2/assets/reels/mona.mp4" poster="/v2/assets/reels/mona.jpg" muted loop playsinline preload="metadata"></video><span class="cap live-cc" data-no-t data-video data-key="2" data-words="She’s|not|smiling|at|you."></span></div><span class="lb">Reel</span></div>
       <div class="el mx-f voice" data-r="1" style="--d:4"><div class="frame"><span class="mx-wave"><i style="--h:.4;--j:0"></i><i style="--h:.8;--j:1"></i><i style="--h:.55;--j:2"></i><i style="--h:1;--j:3"></i><i style="--h:.65;--j:4"></i><i style="--h:.35;--j:5"></i><i style="--h:.75;--j:6"></i><i style="--h:.5;--j:7"></i><i style="--h:.9;--j:8"></i></span></div><span class="lb">Voiceover</span></div>
-      <div class="el mx-shuf"><div class="frame"><img id="mxShufImg" src="assets/shuffle/kodachrome.jpg" alt=""><span class="cl" id="mxShufCap" data-no-t>She's not smiling at you.</span></div></div>
+      <div class="el mx-shuf"><div class="frame"><img id="mxShufImg" src="/v2/assets/shuffle/kodachrome.jpg" alt=""><span class="cl" id="mxShufCap" data-no-t>She's not smiling at you.</span></div></div>
       <div class="el mx-badge" style="--d:2"><span class="k">Look</span><span class="row"><span class="code" id="mxCode" data-no-t>F8</span><span class="nm" id="mxName" data-no-t>Kodachrome</span></span>
         <span class="k">Caption look</span><span class="row"><span class="nm" id="mxCapName" data-no-t>Gold fill</span></span>
         <span class="mx-shufbtn" id="mxShufBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span>Shuffle</span></span></div>
@@ -151,7 +170,7 @@
             <section class="screen" data-screen="1">
               <span class="s-label" data-in>Thursday</span>
               <span class="s-title" data-in style="--d:1">Today's ideas</span>
-              <div class="icard pick" data-in style="--d:2; background: var(--idea-1)"><img class="ithumb" src="assets/mona.jpg" alt=""><span class="topic">Myth</span><span class="hook">She's not smiling at you.</span><span class="why">Smile questions get the most saves on your page.</span></div>
+              <div class="icard pick" data-in style="--d:2; background: var(--idea-1)"><img class="ithumb" src="/v2/assets/mona.jpg" alt=""><span class="topic">Myth</span><span class="hook">She's not smiling at you.</span><span class="why">Smile questions get the most saves on your page.</span></div>
               <div class="icard" data-in style="--d:3; background: var(--idea-2)"><span class="topic">Behind the paint</span><span class="hook">Why everyone in old portraits looks tired.</span></div>
               <div class="icard" data-in style="--d:4; background: var(--idea-3)"><span class="topic">Series</span><span class="hook">Three paintings that are secretly memes.</span></div>
             </section>
@@ -187,9 +206,9 @@
             <section class="screen" data-screen="4">
               <span class="idea-pill" data-in>She's not smiling at you.</span>
               <div class="make">
-                <div class="mk" data-in style="--d:1"><div class="art post"><img src="assets/mona.jpg" alt=""><b>She's not smiling at you.</b></div><span class="nm">Post <span>Ready</span></span></div>
-                <div class="mk" data-in style="--d:2"><div class="art car"><img src="assets/velata.jpg" alt=""><img src="assets/hammersley.jpg" alt=""><img src="assets/pearl.jpg" alt=""></div><span class="nm">Carousel <span>5 slides</span></span></div>
-                <div class="mk" data-in style="--d:3"><div class="art reel"><video src="assets/reels/mona.mp4" poster="assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><b class="live-cc" data-no-t data-video data-words="She’s|not|smiling|at|you." data-key="2"></b></div><span class="nm">Reel <span>0:24</span></span></div>
+                <div class="mk" data-in style="--d:1"><div class="art post"><img src="/v2/assets/mona.jpg" alt=""><b>She's not smiling at you.</b></div><span class="nm">Post <span>Ready</span></span></div>
+                <div class="mk" data-in style="--d:2"><div class="art car"><img src="/v2/assets/velata.jpg" alt=""><img src="/v2/assets/hammersley.jpg" alt=""><img src="/v2/assets/pearl.jpg" alt=""></div><span class="nm">Carousel <span>5 slides</span></span></div>
+                <div class="mk" data-in style="--d:3"><div class="art reel"><video src="/v2/assets/reels/mona.mp4" poster="/v2/assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><b class="live-cc" data-no-t data-video data-words="She’s|not|smiling|at|you." data-key="2"></b></div><span class="nm">Reel <span>0:24</span></span></div>
                 <div class="mk" data-in style="--d:4"><div class="art voice"><div class="bars"><i style="--h:.4;--j:0"></i><i style="--h:.8;--j:1"></i><i style="--h:.55;--j:2"></i><i style="--h:1;--j:3"></i><i style="--h:.65;--j:4"></i><i style="--h:.35;--j:5"></i><i style="--h:.75;--j:6"></i><i style="--h:.5;--j:7"></i></div></div><span class="nm">Voice <span>0:31</span></span></div>
               </div>
               <div class="diw" data-in style="--d:5"><div style="flex:1"><p><span class="diw-tag">Diw at work</span>Burning the captions in</p><div class="gold-bar"><i></i></div></div></div>
@@ -237,32 +256,32 @@
     </div>
     <div class="tool-grid">
       <article class="tool">
-        <div class="tv tv-photo" aria-hidden="true"><img src="assets/pearl.jpg" alt=""><span class="cut"></span><span class="txt">The pearl is probably not a pearl.</span></div>
+        <div class="tv tv-photo" aria-hidden="true"><img src="/v2/assets/pearl.jpg" alt=""><span class="cut"></span><span class="txt">The pearl is probably not a pearl.</span></div>
         <h3>Photo Studio</h3>
         <p>Crop, retouch, lift the subject off the background, add text and stickers. Persian text runs right to left on its own.</p>
       </article>
       <article class="tool">
-        <div class="tv tv-video" aria-hidden="true"><video src="assets/reels/agnew.mp4" poster="assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video>
+        <div class="tv tv-video" aria-hidden="true"><video src="/v2/assets/reels/agnew.mp4" poster="/v2/assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video>
           <span class="tl"><i style="--w:28"></i><i style="--w:18"></i><i style="--w:34"></i><i style="--w:20"></i><b></b></span></div>
         <h3>Video Studio</h3>
         <p>One timeline for cuts, music, word-by-word captions, text, looks and your own voice.</p>
       </article>
       <article class="tool">
         <div class="tv tv-d1" aria-hidden="true">
-          <span class="clips"><img src="assets/pushups.jpg" alt=""><img src="assets/latte.jpg" alt=""><img src="assets/tahdig.jpg" alt=""></span>
+          <span class="clips"><img src="/v2/assets/pushups.jpg" alt=""><img src="/v2/assets/latte.jpg" alt=""><img src="/v2/assets/tahdig.jpg" alt=""></span>
           <span class="arrow"></span>
-          <span class="reel"><img src="assets/reels/pearl.jpg" alt=""><span class="beat"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+          <span class="reel"><img src="/v2/assets/reels/pearl.jpg" alt=""><span class="beat"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
         </div>
         <h3>D1</h3>
         <p>Drop in your raw clips. D1 watches them, cuts a reel to your script and the beat, and opens it in the Video Studio for you to finish.</p>
       </article>
       <a class="tool" href="#templates">
-        <div class="tv tv-tpl" aria-hidden="true"><img src="assets/latte.jpg" alt=""><span class="date"><b>30</b>OCT</span><span class="lbl">New on the menu</span></div>
+        <div class="tv tv-tpl" aria-hidden="true"><img src="/v2/assets/latte.jpg" alt=""><span class="date"><b>30</b>OCT</span><span class="lbl">New on the menu</span></div>
         <h3>Make a post</h3>
         <p>Your photo in a template that moves. Shuffle until one feels right.</p>
       </a>
       <a class="tool" href="#post">
-        <div class="tv tv-looks" aria-hidden="true"><img src="assets/shuffle/kodachrome.jpg" alt=""><img src="assets/shuffle/noir.jpg" alt=""><img src="assets/shuffle/tealorange.jpg" alt=""></div>
+        <div class="tv tv-looks" aria-hidden="true"><img src="/v2/assets/shuffle/kodachrome.jpg" alt=""><img src="/v2/assets/shuffle/noir.jpg" alt=""><img src="/v2/assets/shuffle/tealorange.jpg" alt=""></div>
         <h3>Looks</h3>
         <p>A huge library of looks and caption styles, the same in every tool.</p>
       </a>
@@ -330,7 +349,7 @@
       <div class="never"><span>No spinners</span><span>No fake progress</span><span>Leave any time</span><span>English and Tehrani Persian</span></div>
     </div>
     <div class="diw-side">
-    <img class="diw-mascot" src="assets/brand/working-hard.svg" alt="Diw at a desk under a lamp, writing in a ledger" width="840" height="803" loading="lazy" decoding="async">
+    <img class="diw-mascot" src="/v2/assets/brand/working-hard.svg" alt="Diw at a desk under a lamp, writing in a ledger" width="840" height="803" loading="lazy" decoding="async">
     <div class="ticker" id="ticker" aria-live="polite">
       <div class="row"><span class="eyebrow">Diw at work</span><span class="eyebrow" id="tickJob" data-no-t style="color:var(--ink3)">Your reel</span></div>
       <div class="now"><span id="tickEn" data-no-t>Opening the video</span></div>
@@ -352,12 +371,12 @@
       <p>Each channel gets its own cut: the right size, length, caption and hour. Nothing is copied and pasted between them.</p>
     </div>
     <div class="proj-row" id="projRow">
-      <div class="pj" style="--i:0"><div class="frame f-ig"><div class="img"><img src="assets/pearl.jpg" alt="Girl with a Pearl Earring, Vermeer, as an Instagram carousel slide"><b>The pearl is probably not a pearl.</b><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bar">oldmasters.daily · Swipe for the proof</div></div><span class="cap">Instagram<small>Carousel, 4:5</small></span></div>
-      <div class="pj" style="--i:1"><div class="frame f-tt"><video src="assets/reels/mona.mp4" poster="assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc live-cc" data-no-t data-video data-words="She’s|not|smiling|at|you." data-key="2"></span><span class="u">@oldmasters.daily · original sound</span></div><span class="cap">TikTok<small>Reel, 9:16, Teal &amp; orange look</small></span></div>
-      <div class="pj" style="--i:2"><div class="frame f-yt"><video src="assets/reels/agnew.mp4" poster="assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc box live-cc" data-no-t data-video data-words="Sargent|painted|her|in|one|sitting" data-key="4"></span><span class="yt-bar"><i></i></span></div><span class="cap">YouTube<small>Short, Mono look</small></span></div>
-      <div class="pj" style="--i:3"><div class="frame f-tg"><div class="photo"><img src="assets/velata.jpg" alt=""></div><div class="vn"><span class="pl"></span><span class="w"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:60"></i><i style="--h:30"></i><i style="--h:70"></i><i style="--h:45"></i><i style="--h:85"></i><i style="--h:50"></i></span><small>0:31</small></div><div class="msg">Raphael’s girlfriend, probably. Tell us who you see 👀</div></div><span class="cap">Telegram<small>Photo, voice note and post</small></span></div>
-      <div class="pj" style="--i:4"><div class="frame f-blog"><img class="pic" src="assets/hammersley.jpg" alt=""><span class="k">Myths · 3 min read</span><h4>Why she isn’t smiling at you</h4><span class="ln"></span><span class="ln"></span><span class="ln s"></span></div><span class="cap">Blog<small>Article from the script</small></span></div>
-      <div class="pj" style="--i:5"><div class="frame f-x"><div class="tw"><span class="h"><i></i>Old Masters <small>@oldmasters_daily</small></span><p>She’s not smiling at you. A thread on the most famous mouth in art 🧵</p><img src="assets/mona.jpg" alt=""></div><div class="tw"><p>1/ Leonardo blurred the corners of her mouth on purpose.</p></div></div><span class="cap">X<small>Thread, 5 posts</small></span></div>
+      <div class="pj" style="--i:0"><div class="frame f-ig"><div class="img"><img src="/v2/assets/pearl.jpg" alt="Girl with a Pearl Earring, Vermeer, as an Instagram carousel slide"><b>The pearl is probably not a pearl.</b><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bar">oldmasters.daily · Swipe for the proof</div></div><span class="cap">Instagram<small>Carousel, 4:5</small></span></div>
+      <div class="pj" style="--i:1"><div class="frame f-tt"><video src="/v2/assets/reels/mona.mp4" poster="/v2/assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc live-cc" data-no-t data-video data-words="She’s|not|smiling|at|you." data-key="2"></span><span class="u">@oldmasters.daily · original sound</span></div><span class="cap">TikTok<small>Reel, 9:16, Teal &amp; orange look</small></span></div>
+      <div class="pj" style="--i:2"><div class="frame f-yt"><video src="/v2/assets/reels/agnew.mp4" poster="/v2/assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc box live-cc" data-no-t data-video data-words="Sargent|painted|her|in|one|sitting" data-key="4"></span><span class="yt-bar"><i></i></span></div><span class="cap">YouTube<small>Short, Mono look</small></span></div>
+      <div class="pj" style="--i:3"><div class="frame f-tg"><div class="photo"><img src="/v2/assets/velata.jpg" alt=""></div><div class="vn"><span class="pl"></span><span class="w"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:60"></i><i style="--h:30"></i><i style="--h:70"></i><i style="--h:45"></i><i style="--h:85"></i><i style="--h:50"></i></span><small>0:31</small></div><div class="msg">Raphael’s girlfriend, probably. Tell us who you see 👀</div></div><span class="cap">Telegram<small>Photo, voice note and post</small></span></div>
+      <div class="pj" style="--i:4"><div class="frame f-blog"><img class="pic" src="/v2/assets/hammersley.jpg" alt=""><span class="k">Myths · 3 min read</span><h4>Why she isn’t smiling at you</h4><span class="ln"></span><span class="ln"></span><span class="ln s"></span></div><span class="cap">Blog<small>Article from the script</small></span></div>
+      <div class="pj" style="--i:5"><div class="frame f-x"><div class="tw"><span class="h"><i></i>Old Masters <small>@oldmasters_daily</small></span><p>She’s not smiling at you. A thread on the most famous mouth in art 🧵</p><img src="/v2/assets/mona.jpg" alt=""></div><div class="tw"><p>1/ Leonardo blurred the corners of her mouth on purpose.</p></div></div><span class="cap">X<small>Thread, 5 posts</small></span></div>
     </div>
   </div>
 </section>
@@ -367,13 +386,13 @@
     <div class="sec-head"><div><p class="eyebrow">Who it’s for</p><h2>Different pages, the same engine.</h2></div>
       <p>A nutritionist, a small shop, a café, a coach, a Persian page, a meme account. Each gets its own ideas, its own look and its own week.</p></div>
     <div class="who-grid" id="whoGrid" data-no-t></div>
-    <a class="btn btn-quiet more" href="usecases.html">See every use case</a>
+    <a class="btn btn-quiet more" href="/use-cases/">See every use case</a>
   </div>
 </section>
 
 <div class="wrap" id="start">
   <section class="final">
-    <img class="final-mascot" src="assets/brand/thinking.svg" alt="" width="599" height="840" loading="lazy" decoding="async">
+    <img class="final-mascot" src="/v2/assets/brand/thinking.svg" alt="" width="599" height="840" loading="lazy" decoding="async">
     <div>
       <h2>Your page, from 0 to 100.</h2>
       <p data-tk="final3">Launching soon on the App Store and Google Play, in English, Deutsch and <span lang="fa">فارسی</span>.</p>
@@ -404,7 +423,7 @@
 <footer class="foot">
   <div class="wrap foot-in">
     <div class="foot-brand">
-      <a class="mark" href="pipeline.html#top"><img class="mark-horns" src="assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
+      <a class="mark" href="/#top"><img class="mark-horns" src="/v2/assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
       <p>Your content from 0 to 100, on your phone.</p>
     </div>
     <div class="foot-col">
@@ -414,15 +433,15 @@
     </div>
     <div class="foot-col">
       <h3 class="eyebrow">Diwche</h3>
-      <a href="pipeline.html#story">How it works</a>
-      <a href="pipeline.html#tools">Tools</a>
-      <a href="usecases.html">Who it’s for</a>
+      <a href="/#story">How it works</a>
+      <a href="/#tools">Tools</a>
+      <a href="/use-cases/">Who it’s for</a>
       <a href="#contact">Contact</a>
     </div>
     <div class="foot-col">
       <h3 class="eyebrow">Legal</h3>
-      <a href="https://diwche.com/privacy">Privacy</a>
-      <a href="https://diwche.com/terms">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
     </div>
   </div>
   <div class="wrap foot-base"><span>© 2026 Diwche</span><span dir="ltr">diwche.com</span></div>
@@ -464,9 +483,10 @@
   }
 })();
 </script>
-<script src="i18n.js?v=7"></script>
-<script src="personas.js?v=7"></script>
-<script src="contact.js?v=7"></script>
-<script src="home.js?v=7"></script>
-<script src="templates.js?v=7"></script>
-
+<script src="/v2/i18n.js?v=8"></script>
+<script src="/v2/personas.js?v=8"></script>
+<script src="/v2/contact.js?v=8"></script>
+<script src="/v2/home.js?v=8"></script>
+<script src="/v2/templates.js?v=8"></script>
+</body>
+</html>

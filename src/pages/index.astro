@@ -1,19 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import Home from '../components/Home.astro';
-import { HOME_EN } from '../content/home';
-import { allLocaleAlternates, softwareApplication } from '../lib/seo';
-
-const schema = [softwareApplication('en', HOME_EN.meta.title, HOME_EN.meta.description)];
+// The v2 home and use-cases pages: plain HTML from src/v2/, translated in the browser (see src/v2/page.ts).
+import { v2Page } from '../v2/page';
+const html = v2Page('home', 'en');
 ---
-
-<Base
-  locale="en"
-  copy={HOME_EN}
-  title={HOME_EN.meta.title}
-  description={HOME_EN.meta.description}
-  alternates={allLocaleAlternates(Astro.url.pathname)}
-  schema={schema}
->
-  <Home copy={HOME_EN} locale="en" />
-</Base>
+<Fragment set:html={html} />

@@ -114,7 +114,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
     const SHUF_CAPS = ['pop-karaoke-gold', 'words-caps', 'pop-pop', 'x-marker', 'simple-editorial', 'bold-sapphire-box', 'x-twotone', 'bold-black-yellow'];
     function shuffleTick(i) {
       const l = byId[SHUF[i % SHUF.length]], c = capById[SHUF_CAPS[i % SHUF_CAPS.length]];
-      $('#mxShufImg').src = `assets/shuffle/${l.id}.jpg`;
+      $('#mxShufImg').src = `/v2/assets/shuffle/${l.id}.jpg`;
       $('#mxCode').textContent = l.code; $('#mxName').textContent = l.label; $('#mxCapName').textContent = t(c.n);
       const cap = $('#mxShufCap'), frameW = cap.parentElement.clientWidth, k = frameW / 1080, words = t("She's not smiling at you.").split(' ');
       cap.setAttribute('style', capStyle(c, k * .9, I.lang === 'fa'));
@@ -186,7 +186,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
 
     async function cube(file) {
       if (cubes[file]) return cubes[file];
-      const txt = await (await fetch('assets/looks/' + file)).text();
+      const txt = await (await fetch('/v2/assets/looks/' + file)).text();
       let N = 0; const d = [];
       for (const line of txt.split('\n')) { const l = line.trim(); if (!l || l[0] === '#') continue;
         if (l.startsWith('LUT_3D_SIZE')) { N = +l.split(/\s+/)[1]; continue; } if (/^[A-Z_]/.test(l)) continue;
@@ -199,7 +199,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
     }
     async function base(key) {
       if (bases[key]) return bases[key];
-      const img = new Image(); img.src = `assets/${key}.jpg`; await img.decode(); return (bases[key] = cover(img));
+      const img = new Image(); img.src = `/v2/assets/${key}.jpg`; await img.decode(); return (bases[key] = cover(img));
     }
     function grade(srcC, { N, d }) {
       const g = srcC.getContext('2d'), im = g.getImageData(0, 0, W, H), p = im.data, M = N - 1, out = mk(W, H);
@@ -249,7 +249,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
     // Photos
     const photosEl = $('#psPhotos');
     function photos() {
-      photosEl.innerHTML = PHOTOS.map(([k]) => `<button type="button" class="ptile${st.photo === k ? ' on' : ''}" data-p="${k}" aria-label="${t(ALT[k])}"><img src="assets/${k}.jpg" alt=""></button>`).join('')
+      photosEl.innerHTML = PHOTOS.map(([k]) => `<button type="button" class="ptile${st.photo === k ? ' on' : ''}" data-p="${k}" aria-label="${t(ALT[k])}"><img src="/v2/assets/${k}.jpg" alt=""></button>`).join('')
         + `<label class="ptile up${st.photo === 'own' ? ' on' : ''}">${t('Your photo')}<input type="file" id="psOwn" accept="image/*"></label>`;
       $('#psOwn').addEventListener('change', async e => {
         const f = e.target.files && e.target.files[0]; if (!f) return; say('Reading your photo', true);
@@ -340,7 +340,7 @@ const CAPS = [{"id":"pop-clean","n":"Clean","sh":"Popular","w":3,"f":"DM Sans","
     const draw = () => {
       const lang = I.lang;
       grid.innerHTML = PERSONAS.map(p => { const L = p[lang] || p.en;
-        return `<a class="who-card" href="usecases.html#${p.id}"><div class="vis">${personaSlide(p, L, 'cover')}</div><h3>${L.name}</h3><p>${L.line}</p><div class="tags">${L.tags.map(x => `<span>${x}</span>`).join('')}</div></a>`; }).join('');
+        return `<a class="who-card" href="/use-cases/#${p.id}"><div class="vis">${personaSlide(p, L, 'cover')}</div><h3>${L.name}</h3><p>${L.line}</p><div class="tags">${L.tags.map(x => `<span>${x}</span>`).join('')}</div></a>`; }).join('');
     };
     draw(); document.addEventListener('langchange', draw);
   }

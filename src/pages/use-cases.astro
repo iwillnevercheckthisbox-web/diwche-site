@@ -1,0 +1,6 @@
+---
+// The v2 home and use-cases pages: plain HTML from src/v2/, translated in the browser (see src/v2/page.ts).
+import { v2Page } from '../v2/page';
+const html = v2Page('usecases', 'en');
+---
+<Fragment set:html={html} />

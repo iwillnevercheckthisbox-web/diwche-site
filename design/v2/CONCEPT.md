@@ -13,7 +13,7 @@ The old site explains Diwche in paragraphs. v2 shows it: one idea travels down t
 through every step of the app and comes out the other end as a post, a carousel, a reel and
 a voiceover, shaped for six channels.
 
-Prototype: `design/v2/pipeline.html` and `design/v2/usecases.html`, sharing `site.css`, `i18n.js`, `personas.js` and `home.js`.
+Live since 2026-10-30: the pages are `src/v2/home.html` (served at `/`, `/de/`, `/fa/`) and `src/v2/usecases.html` (`/use-cases/`), filled by `src/v2/page.ts`; scripts, styles, self-hosted fonts and assets are in `public/v2/`.
 
 ## Languages
 

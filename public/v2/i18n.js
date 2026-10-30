@@ -324,8 +324,9 @@
 
   const KEY = 'diwche.lang';
   const IDX = { de: 0, fa: 1 };
-  let lang = 'en';
-  try { lang = localStorage.getItem(KEY) || ''; } catch (e) {}
+  // /de/ and /fa/ name their language in <html data-lang>; the home page follows the visitor's choice or browser.
+  let lang = document.documentElement.dataset.lang || '';
+  if (!lang) try { lang = localStorage.getItem(KEY) || ''; } catch (e) {}
   if (!['en', 'de', 'fa'].includes(lang)) {
     const n = (navigator.language || 'en').toLowerCase();
     lang = n.startsWith('fa') ? 'fa' : n.startsWith('de') ? 'de' : 'en';

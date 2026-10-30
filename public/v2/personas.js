@@ -3,7 +3,7 @@
    People and handles are invented. Images are Unsplash photos or public-domain paintings (assets/CREDITS.md). */
 window.PERSONAS = [
   {
-    id: 'nutritionist', family: 'sage', img: 'assets/breakfast.jpg',
+    id: 'nutritionist', family: 'sage', img: '/v2/assets/breakfast.jpg',
     pal: { bg: '#F3F5EF', ink: '#1E2A22', accent: '#4A7353', soft: '#DFE8DA', pop: '#C9783E' },
     handle: '@eat.with.mina',
     en: {
@@ -42,7 +42,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
-    id: 'shop', family: 'editorial', img: 'assets/treats.jpg',
+    id: 'shop', family: 'editorial', img: '/v2/assets/treats.jpg',
     pal: { bg: '#FAFAF7', ink: '#111111', accent: '#D2491F', soft: '#ECECE6', pop: '#2B59C3' },
     handle: '@lotte.treats',
     en: {
@@ -81,7 +81,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'In my voice'], ['Templates', 'Product · Before and after']],
   },
   {
-    id: 'cafe', family: 'linen', img: 'assets/latte.jpg',
+    id: 'cafe', family: 'linen', img: '/v2/assets/latte.jpg',
     pal: { bg: '#F6F1E9', ink: '#1F1B16', accent: '#B4532A', soft: '#E9DFD0', pop: '#2F5D50' },
     handle: '@pikolo.corner',
     en: {
@@ -120,7 +120,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Linen'], ['Palette', 'Linen'], ['Look', 'Golden hour'], ['Recipe', 'Golden Hour'], ['Caption look', 'Editorial'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
-    id: 'coach', family: 'poster', img: 'assets/pushups.jpg',
+    id: 'coach', family: 'poster', img: '/v2/assets/pushups.jpg',
     pal: { bg: '#14171A', ink: '#F2EFE8', accent: '#E3B23C', soft: '#22282E', pop: '#6FB7A0' },
     handle: '@ten.min.amir',
     en: {
@@ -159,7 +159,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'In my voice'], ['Templates', 'Fitness · Beat cuts']],
   },
   {
-    id: 'persian', family: 'saffron', img: 'assets/tahdig.jpg',
+    id: 'persian', family: 'saffron', img: '/v2/assets/tahdig.jpg',
     pal: { bg: '#FFF8EC', ink: '#2A1E12', accent: '#B35F00', soft: '#F7E6C4', pop: '#7A2E3A' },
     handle: '@ashpazkhane.shirin',
     en: {
@@ -198,7 +198,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Saffron'], ['Palette', 'Saffron'], ['Look', 'Amber'], ['Recipe', 'Food Pop'], ['Caption look', 'Two tone'], ['Text preset', 'تیتر · Lalezar'], ['Voice', 'In my voice'], ['Templates', 'Persian occasions']],
   },
   {
-    id: 'art', family: 'editorial', img: 'assets/mona.jpg',
+    id: 'art', family: 'editorial', img: '/v2/assets/mona.jpg',
     pal: { bg: '#F2EBE1', ink: '#3A0B0B', accent: '#9A2D17', soft: '#E6D9C8', pop: '#E0703F' },
     handle: '@oldmasters.daily',
     en: {

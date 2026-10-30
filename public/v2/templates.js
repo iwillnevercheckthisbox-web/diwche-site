@@ -43,7 +43,7 @@
     const T = TEMPLATES[st.tpl], P = PHOTOS[st.photo];
     const title = T.big ? t(P.word) : t(P.title);
     stage.className = 'tpl-stage t-' + T.k;
-    stage.innerHTML = `<img src="assets/${st.photo}.jpg" alt="">${(deco[T.k] || (() => ''))()}`
+    stage.innerHTML = `<img src="/v2/assets/${st.photo}.jpg" alt="">${(deco[T.k] || (() => ''))()}`
       + `<button type="button" class="tx title sp-${side(spotOf(T, 'title'))}${T.pinned === 'title' ? ' pinned' : ''}" data-k="title" style="--i:0">${title}</button>`
       + `<button type="button" class="tx handle sp-${side(spotOf(T, 'handle'))}" data-k="handle" style="--i:1" dir="ltr">${P.handle}</button>`;
     stage.querySelectorAll('.tx').forEach(b => b.setAttribute('aria-label', b.classList.contains('pinned') ? t('This one stays put') : t('Tap to move this text')));
@@ -73,7 +73,7 @@
   });
 
   function lists() {
-    $('#tplPhotos').innerHTML = Object.keys(PHOTOS).map(k => `<button type="button" class="ptile" data-p="${k}" aria-label="${t(PHOTOS[k].title)}"><img src="assets/${k}.jpg" alt=""></button>`).join('');
+    $('#tplPhotos').innerHTML = Object.keys(PHOTOS).map(k => `<button type="button" class="ptile" data-p="${k}" aria-label="${t(PHOTOS[k].title)}"><img src="/v2/assets/${k}.jpg" alt=""></button>`).join('');
     $('#tplList').innerHTML = TEMPLATES.map((T, i) => `<button type="button" data-t="${i}">${t(T.name)}</button>`).join('');
   }
   $('#tplPhotos').addEventListener('click', (e) => { const b = e.target.closest('[data-p]'); if (!b) return; st.photo = b.dataset.p; render(true); });
