@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diwche · Who it’s for</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700;800;900&family=Manrope:wght@400;600;700&family=Unbounded:wght@700&family=Playfair+Display:ital,wght@0,400;1,400&family=Instrument+Serif:ital@0;1&family=Anton&family=Archivo+Black&family=DM+Serif+Display:ital@1&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+  html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="mark" href="pipeline.html"><span class="mark-dot" aria-hidden="true"></span>Diwche</a>
+    <div class="nav-links">
+      <a href="pipeline.html#how">How it works</a>
+      <a href="pipeline.html#post">Post</a>
+      <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">EN</button><button type="button" data-l="de">DE</button><button type="button" data-l="fa">فا</button></div>
+      <a class="btn btn-primary" href="pipeline.html#start">Get the app</a>
+    </div>
+  </nav>
+
+  <header class="uc-hero">
+    <p class="eyebrow">Who it’s for</p>
+    <h1>Six pages. Six different weeks.</h1>
+    <p>Diwche is one engine: ideas, a script, every format, every channel. What it makes depends on who you are. Here is what a week looks like for six kinds of pages, with the real design families, looks and caption styles each one uses.</p>
+    <div class="uc-jump" id="ucJump" data-no-t></div>
+  </header>
+
+  <main id="ucList" data-no-t></main>
+
+  <section class="final" id="start">
+    <div>
+      <h2>Your page, run by someone paying attention.</h2>
+      <p data-tk="final">iPhone, iPad, Mac and Android. In English, Deutsch and <span lang="fa">فارسی</span>.</p>
+    </div>
+    <a class="btn btn-primary" href="pipeline.html#top">Get the app</a>
+  </section>
+  <p class="credits">People and handles are invented. Photos: Rachel Michetti and Stefan van der Walt, CC0. Paintings: public domain. Design families, palettes, looks, caption looks and voices are the app’s own.</p>
+</div>
+
+<script src="i18n.js"></script>
+<script src="personas.js"></script>
+<script>
+(() => {
+  const I = window.I18N;
+  Object.assign(I.dict, {
+    'Six pages. Six different weeks.': ['Sechs Seiten. Sechs verschiedene Wochen.', 'شش پیج. شش هفته‌ی متفاوت.'],
+    'Diwche is one engine: ideas, a script, every format, every channel. What it makes depends on who you are. Here is what a week looks like for six kinds of pages, with the real design families, looks and caption styles each one uses.':
+      ['Diwche ist ein Motor: Ideen, ein Skript, jedes Format, jeder Kanal. Was dabei herauskommt, hängt davon ab, wer du bist. So sieht eine Woche für sechs Arten von Seiten aus, mit den echten Designfamilien, Looks und Untertitel-Stilen, die jede nutzt.',
+       'دیوچه یه موتوره: ایده، متن، همه‌ی فرمت‌ها، همه‌ی کانال‌ها. چیزی که می‌سازه بستگی داره تو کی هستی. این‌جا می‌بینی یه هفته برای شش جور پیج چه شکلیه، با خانواده‌های طراحی، جلوه‌ها و سبک‌های زیرنویس واقعی‌ای که هرکدوم استفاده می‌کنه.'],
+    'People and handles are invented. Photos: Rachel Michetti and Stefan van der Walt, CC0. Paintings: public domain. Design families, palettes, looks, caption looks and voices are the app’s own.':
+      ['Personen und Handles sind erfunden. Fotos: Rachel Michetti und Stefan van der Walt, CC0. Gemälde: gemeinfrei. Designfamilien, Paletten, Looks, Untertitel-Looks und Stimmen stammen aus der App.',
+       'آدم‌ها و آیدی‌ها ساختگی‌ان. عکس‌ها: ریچل میچتی و اشتفان فن در والت، CC0. نقاشی‌ها: آزاد از حق نشر. خانواده‌های طراحی، پالت‌ها، جلوه‌ها، سبک‌های زیرنویس و صداها همونایی‌ان که تو اپه.'],
+  });
+  const list = document.getElementById('ucList'), jump = document.getElementById('ucJump');
+  function draw() {
+    const lang = I.lang, U = PERSONA_UI[lang];
+    jump.innerHTML = PERSONAS.map(p => `<a href="#${p.id}">${(p[lang] || p.en).role}</a>`).join('');
+    list.innerHTML = PERSONAS.map(p => {
+      const L = p[lang] || p.en;
+      const week = L.week.map((d, i) => d ? `<div class="wk"><b>${U.days[i]}</b><span>${d[0]}</span><small>${d[1]}</small></div>` : `<div class="wk off"><b>${U.days[i]}</b><small>${U.off}</small></div>`).join('');
+      const kit = p.kit.map(([k, v]) => `<div><small>${U.labels[k] || k}</small><span>${v}</span></div>`).join('');
+      return `<section class="uc" id="${p.id}">
+        <div class="uc-vis">
+          <div class="tile big">${personaSlide(p, L, 'cover')}</div>
+          <div class="tile">${personaSlide(p, L, 'point')}</div>
+          <div class="tile tall">${personaSlide(p, L, 'reel')}</div>
+        </div>
+        <div class="uc-body">
+          <p class="eyebrow">${L.role} · <span dir="ltr">${p.handle}</span></p>
+          <h2>${L.name}</h2>
+          <p class="who-line">${L.line}</p>
+          <div><p class="eyebrow" style="margin-bottom:10px">${U.story}</p><p class="story-q">${L.story}</p></div>
+          <div><p class="eyebrow" style="margin-bottom:10px">${U.how}</p><ul class="uc-stories">${L.stories.map(s => `<li>${s}</li>`).join('')}</ul></div>
+          <div><p class="eyebrow" style="margin-bottom:10px">${U.week}</p><div class="uc-week">${week}</div></div>
+          <div><p class="eyebrow" style="margin-bottom:10px">${U.kit}</p><div class="kit">${kit}</div></div>
+        </div>
+      </section>`;
+    }).join('');
+    if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el && !draw.done) { draw.done = 1; setTimeout(() => el.scrollIntoView(), 50); } }
+  }
+  draw(); document.addEventListener('langchange', draw);
+})();
+</script>
+</body>
+</html>

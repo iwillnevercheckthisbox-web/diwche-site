@@ -16,3 +16,7 @@ example folder of the MIT-licensed KwaiVGI/LivePortrait repository, cropped to 4
 
 No living person appears anywhere on the page. The reels were made here with ffmpeg: a slow camera
 move over the painting, graded with one of the app's looks.
+| `coffee.jpg` | Coffee cup, Rachel Michetti (via scikit-image data) | CC0 |
+| `chelsea.jpg` | Chelsea the cat, Stefan van der Walt (via scikit-image data) | CC0 |
+| `looks/*.cube` (67) | The app's full look library (`backend/src/main/resources/looks/cube/`) | Ours |
+| `looks-sprite.jpg`, `shuffle/*.jpg` | Rendered here from the paintings with those looks | Ours |
