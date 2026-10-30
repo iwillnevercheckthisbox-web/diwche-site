@@ -5,7 +5,6 @@ through every step of the app and comes out the other end as a post, a carousel,
 a voiceover, shaped for six channels.
 
 Prototype: `design/v2/pipeline.html` (open it in a browser; self-contained).
-Source: `design/v2/src/pipeline.src.html`. Rebuild with `python3 design/v2/build.py`.
 
 ## Style source
 
@@ -30,23 +29,14 @@ away from on their main screens. If v2 goes ahead, DNA.md should be rewritten ar
    gold progress bar from the app), publishing per channel, and results.
 3. **Shaped for the place it lands.** The same idea rendered six ways: Instagram carousel,
    TikTok reel with word captions, YouTube Short, Telegram voice note and post, blog article, X thread.
-4. **Meet Diw.** The new mascot in four states that match the app: listening, thinking, making, done.
+4. **Meet Diw.** Waits for the new mascot art (see below).
 5. **Final call.** One quiet line and the button.
 
 ## Diw v2, the new mascot
 
-Source: `design/v2/mascot/build_diw.py` writes `diw-proud.svg`, `diw-think.svg`, `diw-listen.svg`, `diw-done.svg`.
-
-- Flat 2D: one outline weight, one shade tone, no gradients. Scales from a 44 px app icon to a poster.
-- A lovable div, not a scary one, and genderless.
-- Half bare: an open gold vest over bare arms and belly, dark shorts, a small tail.
-- The head is the main mass of the figure, because Diw is the thinker with an answer for everything.
-- Big eyes and big pointed ears. Two small horns pointing up.
-- The face is a frown in the brows and lids, with a satisfied smirk and one small fang.
-- Tools: a camera on the chest, a caliper and a pencil in the pocket, a microphone in one hand, a brush in the other.
-- Colours: soft teal skin, brand gold vest, cream horns. Blinks and breathes; both stop under reduced motion.
-
-Next for Diw: a turnaround, more poses (posting, connecting, waiting), and a Lottie rig for the app.
+The brief and generation prompts live in `mascot/diw-v2/`. The art is made with an image model
+and then cut and animated by the existing `mascot/build/` pipeline. When the poses exist, a
+"Meet Diw" section showing listening, thinking, making and done goes back above the final call.
 
 ## Ideas for later
 
