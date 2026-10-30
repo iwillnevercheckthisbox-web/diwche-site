@@ -1,0 +1,680 @@
+<title>Diwche v2 Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Geist:wght@400;500;600&family=Vazirmatn:wght@400;600;700&display=swap">
+<style>
+/* Layout: one idea travels down the page. Hero = the idea splitting into formats and channels.
+   Story = a sticky phone that follows the same idea through every screen of the app.
+   Tokens are the app's Quiet style (android/shared/design/tokens.json), not a new system. */
+:root {
+  --paper: #F7F6F2; --paper2: #FDFCF9; --paper3: #EFEDE6;
+  --ink: #14171F; --ink2: #4B5468; --ink3: #7A8398;
+  --gold: #C9A668; --gold-text: #8A6A2C; --gold-on-primary: #C9A668;
+  --primary-bg: #14171F; --primary-text: #F7F6F2;
+  --done: #2F7D4F; --late: #C7772B; --rule: #E8E6DE;
+  --shadow: rgba(20, 23, 31, .12);
+  --idea-ink: #EFE6CF;
+  --idea-1: #1D2B25; --idea-2: #2B2434; --idea-3: #33261F; --idea-4: #1F2733; --idea-5: #2A2E22;
+
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fa: "Vazirmatn", "Geist", system-ui, sans-serif;
+
+  --r-card: 14px; --r-photo: 22px; --r-button: 12px; --r-pill: 99px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --fast: 160ms; --normal: 240ms; --scene: 720ms;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #16171B; --paper2: #202126; --paper3: #2C2D33;
+  --ink: #ECEAE4; --ink2: #A3A29C; --ink3: #7E7D78;
+  --gold-text: #C9A668; --gold-on-primary: #8A6A2C;
+  --primary-bg: #ECEAE4; --primary-text: #16171B;
+  --done: #5CC08A; --late: #D08A45; --rule: #2C2D33; --shadow: rgba(0, 0, 0, .4);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #16171B; --paper2: #202126; --paper3: #2C2D33;
+  --ink: #ECEAE4; --ink2: #A3A29C; --ink3: #7E7D78;
+  --gold-text: #C9A668; --gold-on-primary: #8A6A2C;
+  --primary-bg: #ECEAE4; --primary-text: #16171B;
+  --done: #5CC08A; --late: #D08A45; --rule: #2C2D33; --shadow: rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 400 16px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+.wrap {
+  max-width: 1160px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0;
+  font-variation-settings: "SOFT" 40, "WONK" 1; }
+p { margin: 0; }
+.eyebrow { font: 500 12.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+
+/* Buttons: press at 0.98 / 160 ms, same as the apps. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding-inline: 22px; border-radius: var(--r-button);
+  font: 600 15px/1 var(--sans); text-decoration: none; border: 1px solid transparent;
+  transition: transform var(--fast) var(--ease-out), background-color var(--normal) ease;
+  cursor: pointer;
+}
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--primary-bg); color: var(--primary-text); }
+.btn-quiet { color: var(--ink); border-color: var(--rule); background: var(--paper2); }
+@media (hover: hover) and (pointer: fine) { .btn-quiet:hover { background: var(--paper3); } }
+
+/* ---------- Nav ---------- */
+.nav { display: flex; align-items: center; justify-content: space-between; padding-block: 18px; gap: 16px; }
+.mark { display: flex; align-items: center; gap: 10px; font: 500 22px/1 var(--display); text-decoration: none; }
+.mark-dot { width: 26px; height: 26px; border-radius: 8px; background: var(--primary-bg); position: relative; }
+.mark-dot::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--gold); }
+.nav-links { display: flex; gap: 22px; align-items: center; font-size: 14px; color: var(--ink2); }
+.nav-links a { text-decoration: none; }
+@media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+
+/* ---------- Hero ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center;
+  padding-block: 40px 72px; }
+.hero h1 { font-size: clamp(40px, 5.6vw, 72px); line-height: .98; letter-spacing: -.035em; margin-block: 18px 22px; }
+.hero h1 em { font-style: italic; color: var(--gold-text); }
+.hero .lede { font-size: 18px; line-height: 1.55; color: var(--ink2); max-width: 30em; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+@media (max-width: 880px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 16px; } }
+
+/* The prism: one idea card becomes four formats, then six channels.
+   Every piece is placed by transform only, in container units, so it scales with the stage. */
+.prism { position: relative; container-type: inline-size; aspect-ratio: 1 / .92; max-width: 560px; width: 100%;
+  margin-inline: auto; border-radius: 28px; background: var(--paper2); border: 1px solid var(--rule); overflow: hidden; }
+.prism::before { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 45% at 50% 30%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 70%); }
+.p-item {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%) translate(calc(var(--x, 0) * 1cqw), calc(var(--y, 0) * 1cqw)) rotate(var(--r, 0deg)) scale(var(--s, 1));
+  opacity: var(--o, 1);
+  transition: transform var(--scene) var(--ease-in-out), opacity 420ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 50ms);
+}
+.p-idea { width: 40cqw; aspect-ratio: 4 / 5; border-radius: 4.4cqw; background: var(--idea-1); color: var(--idea-ink);
+  padding: 4.4cqw; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 3cqw 8cqw var(--shadow); z-index: 3; }
+.p-idea .topic { font: 600 2.2cqw/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.p-idea .hook { font: 500 5.2cqw/1.08 var(--display); letter-spacing: -.02em; font-variation-settings: "SOFT" 60, "WONK" 1; }
+.p-idea .who { font: 400 2.3cqw/1.2 var(--sans); opacity: .65; }
+.p-fmt { width: 19cqw; aspect-ratio: 4 / 5; border-radius: 3cqw; background: var(--paper); border: 1px solid var(--rule);
+  box-shadow: 0 1.6cqw 4cqw var(--shadow); display: grid; place-items: center; z-index: 2; overflow: hidden; }
+.p-fmt .lbl { position: absolute; left: 0; right: 0; bottom: 1.8cqw; text-align: center; font: 500 2.3cqw/1 var(--sans); color: var(--ink2); }
+.p-ch { display: flex; align-items: center; gap: 1.6cqw; padding: 1.5cqw 2.6cqw 1.5cqw 1.8cqw; border-radius: 99px;
+  background: var(--paper); border: 1px solid var(--rule); font: 500 2.6cqw/1 var(--sans); white-space: nowrap; z-index: 2; }
+.p-ch svg { width: 3.4cqw; height: 3.4cqw; color: var(--gold-text); }
+.p-ch .ok { width: 1.4cqw; height: 1.4cqw; border-radius: 50%; background: var(--done); }
+.p-thread { position: absolute; left: 50%; width: 1px; background: linear-gradient(var(--gold), transparent); z-index: 1;
+  transform: translateX(-50%) translateY(calc(var(--y, 0) * 1cqw)) scaleY(var(--sy, 0)); transform-origin: top;
+  transition: transform var(--scene) var(--ease-in-out), opacity 300ms ease; opacity: var(--o, 0); top: 50%; height: 14cqw; }
+.p-count { position: absolute; left: 4cqw; right: 4cqw; bottom: 3.6cqw; display: flex; justify-content: center; gap: 2.2cqw;
+  font: 500 2.5cqw/1 var(--sans); color: var(--ink3); z-index: 4; }
+.p-count span { padding: 1.2cqw 2.2cqw; border-radius: 99px; transition: background-color var(--normal) ease, color var(--normal) ease; }
+.p-count span.on { background: var(--primary-bg); color: var(--primary-text); }
+
+/* Format thumbnails, drawn not imaged */
+.mini-post { width: 70%; aspect-ratio: 1; border-radius: 1.6cqw; background: var(--idea-3); display: grid; place-items: center;
+  color: var(--idea-ink); font: 500 2.1cqw/1.1 var(--display); text-align: center; padding: 1cqw; margin-bottom: 3cqw; }
+.mini-car { position: relative; width: 62%; aspect-ratio: 4/5; margin-bottom: 3cqw; }
+.mini-car i { position: absolute; inset: 0; border-radius: 1.4cqw; background: var(--idea-2); }
+.mini-car i:nth-child(1) { transform: translateX(-22%) rotate(-8deg) scale(.86); opacity: .55; }
+.mini-car i:nth-child(2) { transform: translateX(22%) rotate(8deg) scale(.86); opacity: .55; }
+.mini-car i:nth-child(3) { background: var(--idea-4); }
+.mini-reel { width: 46%; aspect-ratio: 9/16; border-radius: 1.6cqw; background: linear-gradient(170deg, var(--idea-5), var(--idea-1));
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2cqw; margin-bottom: 3cqw; }
+.mini-reel b { font: 600 1.7cqw/1 var(--sans); color: var(--idea-ink); background: rgba(0,0,0,.35); padding: .5cqw 1cqw; border-radius: .6cqw; }
+.mini-reel b em { font-style: normal; color: var(--gold); }
+.mini-voice { display: flex; align-items: center; gap: .9cqw; height: 9cqw; margin-bottom: 3cqw; }
+.mini-voice i { width: 1cqw; border-radius: 1cqw; background: var(--gold); height: calc(var(--h) * 1%); }
+
+/* Stage states. Default (no JS, reduced motion, first frame) = the whole fan, so the still frame tells the full story. */
+.prism .p-idea { --y: -26; --s: .5; }
+.prism .p-fmt { --y: 1; --s: 1; }
+.prism .f1 { --x: -33; --r: -4deg; } .prism .f2 { --x: -11; --r: -1.5deg; }
+.prism .f3 { --x: 11; --r: 1.5deg; } .prism .f4 { --x: 33; --r: 4deg; }
+.prism .p-ch { --o: 1; --s: 1; }
+.prism .t1 { --y: -14; --sy: 1; --o: .9; } .prism .t2 { --y: 12; --sy: 1; --o: .9; }
+
+.prism[data-state="idea"] .p-idea { --y: -6; --s: 1; }
+.prism[data-state="idea"] .p-fmt { --x: 0; --y: -4; --r: 0deg; --s: .7; --o: 0; }
+.prism[data-state="idea"] .p-ch { --o: 0; --s: .92; --y: 30; }
+.prism[data-state="idea"] .t1, .prism[data-state="idea"] .t2 { --sy: 0; --o: 0; }
+
+.prism[data-state="formats"] .p-idea { --y: -22; --s: .56; }
+.prism[data-state="formats"] .p-fmt { --y: 10; }
+.prism[data-state="formats"] .p-ch { --o: 0; --s: .92; --y: 30; }
+.prism[data-state="formats"] .t2 { --sy: 0; --o: 0; }
+
+/* Channel chips: two rows of three below the formats */
+.prism .c1 { --x: -28; --y: 22; } .prism .c2 { --x: 0; --y: 22; } .prism .c3 { --x: 28; --y: 22; }
+.prism .c4 { --x: -28; --y: 30; } .prism .c5 { --x: 0; --y: 30; } .prism .c6 { --x: 28; --y: 30; }
+.prism[data-state="idea"] .p-ch { --y: 30; }
+
+/* ---------- Story ---------- */
+.story { padding-block: 64px 32px; border-top: 1px solid var(--rule); }
+.story-head { max-width: 640px; margin-bottom: 32px; }
+.story-head h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -.03em; margin-top: 14px; }
+.story-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 64px; }
+.steps { display: flex; flex-direction: column; }
+.step { min-height: 78vh; padding-block: 12vh; display: flex; flex-direction: column; gap: 12px; max-width: 30em;
+  opacity: .38; transition: opacity 400ms var(--ease-out); }
+.step.on { opacity: 1; }
+.step:first-child { padding-top: 4vh; }
+.step .n { font: 500 13px/1 var(--sans); color: var(--gold-text); font-variant-numeric: tabular-nums; display: flex; gap: 10px; align-items: center; }
+.step .n::after { content: ""; height: 1px; width: 40px; background: var(--gold); opacity: .6; }
+.step h3 { font-size: clamp(26px, 3vw, 36px); line-height: 1.1; letter-spacing: -.025em; }
+.step p { color: var(--ink2); font-size: 17px; }
+.step .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.tag { font: 500 13px/1 var(--sans); padding: 8px 12px; border-radius: 99px; border: 1px solid var(--rule); color: var(--ink2); background: var(--paper2); }
+
+.visual { position: sticky; top: max(24px, calc(50vh - 310px)); align-self: start; height: 620px; }
+.phone-wrap { --k: 1; height: calc(620px * var(--k)); display: flex; justify-content: center; }
+.phone { width: 300px; height: 620px; flex: none; transform: scale(var(--k)); transform-origin: top center;
+  border-radius: 46px; background: var(--paper); border: 9px solid #0E0F12; position: relative; overflow: hidden;
+  box-shadow: 0 30px 70px var(--shadow); }
+.phone::before { content: ""; position: absolute; top: 8px; left: 50%; width: 84px; height: 24px; border-radius: 20px; background: #0E0F12;
+  transform: translateX(-50%); z-index: 9; }
+.rail { position: absolute; left: 14px; right: 14px; top: 42px; display: flex; gap: 4px; z-index: 8; }
+.rail i { flex: 1; height: 3px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
+.rail i::after { content: ""; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left;
+  transition: transform 500ms var(--ease-out); }
+.rail i.done::after { transform: scaleX(1); }
+
+.screen { position: absolute; inset: 56px 0 0; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 12px;
+  opacity: 0; transform: translateY(14px); pointer-events: none;
+  transition: opacity 360ms var(--ease-out), transform 520ms var(--ease-out); }
+.screen.on { opacity: 1; transform: none; pointer-events: auto; }
+.screen.out { transform: translateY(-10px); }
+.s-title { font: 600 24px/1.15 var(--display); letter-spacing: -.02em; }
+.s-meta { font: 400 12.5px/1.35 var(--sans); color: var(--ink3); }
+.s-label { font: 600 10.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+.idea-pill { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--idea-1); color: var(--idea-ink);
+  font: 500 13px/1.2 var(--display); }
+.idea-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex: none; }
+
+/* Stagger inside a screen once it is on */
+.screen [data-in] { opacity: 0; transform: translateY(8px);
+  transition: opacity 360ms var(--ease-out), transform 420ms var(--ease-out); transition-delay: calc(var(--d, 0) * 60ms + 120ms); }
+.screen.on [data-in] { opacity: 1; transform: none; }
+
+/* Screen 1: Brief */
+.listen { display: grid; place-items: center; height: 150px; position: relative; }
+.listen .core { width: 72px; height: 72px; border-radius: 50%; background: var(--primary-bg); display: grid; place-items: center; z-index: 1; }
+.listen .core svg { width: 26px; height: 26px; color: var(--gold-on-primary); }
+.listen .ring { position: absolute; width: 72px; height: 72px; border-radius: 50%; border: 1.5px solid var(--gold); opacity: 0; }
+.screen.on .listen .ring { animation: ring 2.4s var(--ease-out) infinite; }
+.screen.on .listen .ring:nth-child(2) { animation-delay: .8s; } .screen.on .listen .ring:nth-child(3) { animation-delay: 1.6s; }
+@keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(2.1); opacity: 0; } }
+.said { font: 500 17px/1.35 var(--display); letter-spacing: -.01em; }
+.said em { font-style: normal; color: var(--gold-text); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 12.5px/1 var(--sans); padding: 8px 11px; border-radius: 99px; background: var(--paper2); border: 1px solid var(--rule); }
+
+/* Screen 2: Ideas */
+.icard { border-radius: var(--r-card); padding: 14px; color: var(--idea-ink); display: flex; flex-direction: column; gap: 8px; position: relative; }
+.icard .topic { font: 600 10.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.icard .hook { font: 500 19px/1.2 var(--display); letter-spacing: -.01em; }
+.icard .why { font: 400 12.5px/1.35 var(--sans); opacity: .7; }
+.icard.pick { box-shadow: 0 0 0 1.5px var(--gold); }
+.icard.pick::after { content: "Picked"; position: absolute; top: 12px; right: 12px; font: 600 10.5px/1 var(--sans);
+  background: var(--gold); color: #14171F; padding: 5px 8px; border-radius: 99px; }
+
+/* Screen 3: Plan */
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 0; border-radius: 10px; font: 500 12px/1 var(--sans); color: var(--ink2); }
+.day b { font: 600 15px/1 var(--sans); color: var(--ink); }
+.day .dots { display: flex; gap: 3px; height: 6px; }
+.day .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--done); }
+.day .dots i.pl { background: var(--ink3); }
+.day.today { background: var(--primary-bg); color: var(--primary-text); }
+.day.today b { color: var(--primary-text); }
+.day.today .dots i { background: var(--gold-on-primary); }
+.slot { display: grid; grid-template-columns: 54px 1fr; gap: 10px; padding: 12px; border-radius: var(--r-card); background: var(--paper2); border: 1px solid var(--rule); align-items: center; }
+.slot .t { font: 600 13px/1.2 var(--sans); font-variant-numeric: tabular-nums; }
+.slot .t small { display: block; font-weight: 400; color: var(--ink3); font-size: 11.5px; }
+.slot .w { font: 500 14px/1.25 var(--display); }
+.slot.new { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--paper2)); }
+.fmt-tag { display: inline-block; margin-top: 4px; font: 600 10.5px/1 var(--sans); color: var(--gold-text); letter-spacing: .06em; text-transform: uppercase; }
+
+/* Screen 4: Script */
+.script { display: flex; flex-direction: column; gap: 12px; }
+.sline { display: grid; grid-template-columns: 52px 1fr; gap: 10px; }
+.sline .k { font: 600 10.5px/1.9 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+.sline .v { font: 500 16px/1.35 var(--display); }
+.sline.hook .v { font-size: 20px; }
+.caret { display: inline-block; width: 2px; height: 1em; background: var(--gold); vertical-align: -2px; margin-left: 2px; }
+.screen.on .caret { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Screen 5: Make */
+.make { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mk { border-radius: var(--r-card); background: var(--paper2); border: 1px solid var(--rule); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.mk .art { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; overflow: hidden; position: relative; }
+.mk .nm { font: 600 12.5px/1 var(--sans); display: flex; justify-content: space-between; }
+.mk .nm span { color: var(--done); font-weight: 500; white-space: nowrap; }
+.art.post { background: var(--idea-3); color: var(--idea-ink); font: 500 15px/1.15 var(--display); padding: 12px; text-align: center; }
+.art.car { background: var(--paper3); }
+.art.car i { position: absolute; width: 52%; aspect-ratio: 4/5; border-radius: 8px; background: var(--idea-2); }
+.art.car i:nth-child(1) { transform: translateX(-34%) rotate(-7deg) scale(.88); opacity: .6; }
+.art.car i:nth-child(2) { transform: translateX(34%) rotate(7deg) scale(.88); opacity: .6; }
+.art.car i:nth-child(3) { background: var(--idea-4); }
+.art.reel { background: linear-gradient(170deg, var(--idea-5), var(--idea-1)); align-content: end; padding-bottom: 12px; }
+.art.reel b { font: 600 12px/1 var(--sans); color: var(--idea-ink); background: rgba(0,0,0,.35); padding: 5px 7px; border-radius: 6px; }
+.art.reel b em { font-style: normal; color: var(--gold); }
+.art.voice { background: var(--paper3); }
+.bars { display: flex; align-items: center; gap: 3px; height: 50%; }
+.bars i { width: 4px; border-radius: 4px; background: var(--gold); height: 100%; transform: scaleY(var(--h)); }
+.screen.on .bars i { animation: bar 1.2s var(--ease-in-out) infinite alternate; animation-delay: calc(var(--j) * -130ms); }
+@keyframes bar { from { transform: scaleY(var(--h)); } to { transform: scaleY(calc(1.1 - var(--h))); } }
+.diw { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-card); background: var(--paper2); border: 1px solid var(--rule); }
+.diw img { width: 38px; height: 52px; object-fit: contain; }
+.diw p { font: 500 13px/1.3 var(--sans); }
+.gold-bar { height: 4px; border-radius: 4px; background: var(--rule); overflow: hidden; margin-top: 6px; }
+.gold-bar i { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(.15); transition: transform 2s var(--ease-out) .3s; }
+.screen.on .gold-bar i { transform: scaleX(1); }
+
+/* Screen 6: Channels */
+.chan { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; padding: 10px 2px; border-bottom: 1px solid var(--rule); }
+.chan:last-child { border-bottom: 0; }
+.chan .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--paper3); display: grid; place-items: center; }
+.chan .ic svg { width: 18px; height: 18px; color: var(--ink); }
+.chan .nm { font: 600 14px/1.2 var(--sans); }
+.chan .nm small { display: block; font: 400 12px/1.3 var(--sans); color: var(--ink3); }
+.chan .st { font: 500 11.5px/1 var(--sans); color: var(--done); display: flex; align-items: center; gap: 5px; }
+.chan .st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chan .st.soon { color: var(--ink3); }
+
+/* Screen 7: Results */
+.res { display: flex; flex-direction: column; gap: 12px; }
+.r-row { display: grid; grid-template-columns: 84px 1fr 44px; gap: 10px; align-items: center; font: 500 12.5px/1 var(--sans); }
+.r-row .bar { height: 10px; border-radius: 10px; background: var(--paper3); overflow: hidden; }
+.r-row .bar i { display: block; height: 100%; border-radius: 10px; background: var(--ink); transform-origin: left; transform: scaleX(0);
+  transition: transform 900ms var(--ease-out); transition-delay: calc(var(--d) * 80ms + 200ms); }
+.screen.on .r-row .bar i { transform: scaleX(var(--v)); }
+.r-row.best .bar i { background: var(--gold); }
+.r-row .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink2); }
+.note { font: 400 11.5px/1.35 var(--sans); color: var(--ink3); }
+.insight { padding: 12px; border-radius: var(--r-card); background: var(--idea-4); color: var(--idea-ink); font: 500 15px/1.3 var(--display); }
+.insight small { display: block; font: 600 10.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; }
+
+@media (max-width: 880px) {
+  .story-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .visual { order: -1; top: 0; height: auto; z-index: 5; background: var(--paper); padding-block: 8px 10px;
+    border-bottom: 1px solid var(--rule); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); }
+  .phone-wrap { --k: .56; }
+  .step { min-height: 62vh; padding-block: 6vh 20vh; opacity: .3; }
+  .step:first-child { padding-top: 24px; }
+}
+
+/* ---------- Projections ---------- */
+.proj { padding-block: 72px; border-top: 1px solid var(--rule); }
+.proj-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 32px; }
+.proj-head h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -.03em; margin-top: 14px; max-width: 14em; }
+.proj-head p { color: var(--ink2); max-width: 26em; }
+.proj-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; align-items: end; }
+@media (max-width: 1000px) { .proj-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .proj-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pj { display: flex; flex-direction: column; gap: 10px; transition: transform 300ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .pj:hover { transform: translateY(-6px); } }
+.pj .frame { border-radius: 16px; overflow: hidden; background: var(--paper2); border: 1px solid var(--rule); box-shadow: 0 10px 30px var(--shadow); }
+.pj .cap { font: 600 13px/1.2 var(--sans); }
+.pj .cap small { display: block; font-weight: 400; color: var(--ink3); margin-top: 2px; }
+.pj .f-ig .img { aspect-ratio: 4/5; background: var(--idea-2); color: var(--idea-ink); display: grid; place-items: center; padding: 16px; text-align: center;
+  font: 500 clamp(15px, 1.6vw, 19px)/1.15 var(--display); position: relative; }
+.pj .f-ig .dots { position: absolute; bottom: 10px; display: flex; gap: 4px; } .f-ig .dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--idea-ink); opacity: .4; } .f-ig .dots i:first-child { opacity: 1; width: 14px; border-radius: 4px; }
+.pj .f-ig .bar, .pj .f-x .bar { padding: 8px 10px; font: 400 11.5px/1.35 var(--sans); color: var(--ink2); }
+.pj .f-tt { aspect-ratio: 9/16; background: linear-gradient(170deg, var(--idea-5), var(--idea-1)); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; gap: 6px; }
+.pj .f-tt .cc { align-self: center; font: 700 clamp(12px, 1.3vw, 15px)/1.1 var(--sans); color: var(--idea-ink); text-align: center; }
+.pj .f-tt .cc em { font-style: normal; color: var(--gold); }
+.pj .f-tt .u { font: 500 11px/1.3 var(--sans); color: var(--idea-ink); opacity: .75; }
+.pj .f-yt { aspect-ratio: 9/16; background: linear-gradient(200deg, var(--idea-3), var(--idea-1)); display: grid; place-items: center; }
+.pj .f-yt .play { width: 44px; height: 44px; border-radius: 50%; background: rgba(239, 230, 207, .9); display: grid; place-items: center; }
+.pj .f-yt .play::after { content: ""; border-left: 13px solid #1D2B25; border-block: 8px solid transparent; margin-left: 4px; }
+.pj .f-tg { padding: 12px; background: var(--paper3); display: flex; flex-direction: column; gap: 8px; min-height: 100%; aspect-ratio: 9/14; justify-content: flex-end; }
+.pj .f-tg .msg { background: var(--paper2); border-radius: 14px 14px 14px 4px; padding: 10px; font: 400 12px/1.4 var(--sans); color: var(--ink); box-shadow: 0 1px 2px var(--shadow); }
+.pj .f-tg .vn { display: flex; align-items: center; gap: 8px; background: var(--paper2); border-radius: 14px 14px 14px 4px; padding: 8px 10px; }
+.pj .f-tg .vn .pl { width: 24px; height: 24px; border-radius: 50%; background: var(--gold); flex: none; }
+.pj .f-tg .vn .w { display: flex; gap: 2px; align-items: center; height: 16px; flex: 1; }
+.pj .f-tg .vn .w i { flex: 1; background: var(--ink3); border-radius: 2px; height: calc(var(--h) * 1%); }
+.pj .f-tg .vn small { font: 400 10px/1 var(--sans); color: var(--ink3); font-variant-numeric: tabular-nums; }
+.pj .f-blog { aspect-ratio: 9/14; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.pj .f-blog .k { font: 600 9.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); }
+.pj .f-blog h4 { margin: 0; font: 500 clamp(14px, 1.4vw, 17px)/1.15 var(--display); letter-spacing: -.01em; }
+.pj .f-blog .ln { height: 6px; border-radius: 3px; background: var(--paper3); } .f-blog .ln.s { width: 70%; }
+.pj .f-blog .pic { aspect-ratio: 16/10; border-radius: 8px; background: var(--idea-3); margin-top: auto; }
+.pj .f-x { aspect-ratio: 9/14; display: flex; flex-direction: column; }
+.pj .f-x .tw { padding: 12px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--rule); }
+.pj .f-x .tw p { font: 400 12px/1.4 var(--sans); }
+.pj .f-x .tw .h { display: flex; gap: 6px; align-items: center; font: 600 11.5px/1 var(--sans); }
+.pj .f-x .tw .h i { width: 18px; height: 18px; border-radius: 50%; background: var(--idea-1); }
+.pj .f-x .tw .h small { font-weight: 400; color: var(--ink3); }
+
+/* Reveal: elements start visible; JS only arms the ones below the fold, so the page is complete at rest. */
+.armed { opacity: 0; transform: translateY(18px); }
+.armed.shown { opacity: 1; transform: none; transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--i, 0) * 60ms); }
+
+/* ---------- Close ---------- */
+.close { margin-block: 24px 64px; border-radius: 28px; background: var(--primary-bg); color: var(--primary-text);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; overflow: hidden; position: relative; }
+.close-in { padding: clamp(28px, 5vw, 56px); display: flex; flex-direction: column; gap: 18px; }
+.close h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; letter-spacing: -.03em; max-width: 13em; }
+.close p { opacity: .72; max-width: 28em; }
+.close .eyebrow { color: var(--gold-on-primary); }
+.close .btn { background: var(--primary-text); color: var(--primary-bg); align-self: start; }
+.close img { width: min(240px, 40vw); margin-right: 32px; align-self: end; }
+.fa-line { font-family: var(--fa); font-size: 18px; opacity: .8; }
+@media (max-width: 720px) { .close { grid-template-columns: minmax(0, 1fr); } .close img { margin: -24px auto 0; width: 180px; } }
+footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .p-item, .p-thread, .screen, .screen [data-in], .armed.shown, .rail i::after, .gold-bar i, .r-row .bar i, .pj {
+    transition-property: opacity !important; transition-duration: 200ms !important; }
+  .screen, .screen [data-in], .armed { transform: none !important; }
+  .screen.on .listen .ring, .screen.on .bars i, .screen.on .caret { animation: none !important; }
+  .screen.on .gold-bar i { transform: scaleX(1); }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3-3.46"/><path d="M14 3c.5 2.6 2.4 4.5 5 5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6.5 2.5L12 20l3-5.5L21 4z"/><path d="M9.5 13.5 21 4"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M5 4l14 16M19 4 5 20"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="mark" href="#top"><span class="mark-dot" aria-hidden="true"></span>Diwche</a>
+    <div class="nav-links">
+      <a href="#story">How it works</a>
+      <a href="#channels">Channels</a>
+      <a class="btn btn-primary" href="#start">Get the app</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <p class="eyebrow">For people who run a page</p>
+      <h1>One idea in.<br><em>Every channel</em> out.</h1>
+      <p class="lede">Tell Diwche about your page once. Each morning it brings you ideas, plans the week, writes the script, and makes the post, the carousel, the reel and the voiceover. Then it shapes each one for wherever your people are.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#start">Get the app</a>
+        <a class="btn btn-quiet" href="#story">Follow one idea</a>
+      </div>
+    </div>
+
+    <div class="prism" id="prism" role="img" aria-label="One idea card splits into four formats, a post, a carousel, a reel and a voiceover, which go out to six channels.">
+      <div class="p-thread t1"></div>
+      <div class="p-thread t2"></div>
+      <div class="p-item p-idea">
+        <span class="topic">Coffee · today</span>
+        <span class="hook">Your flat white is lying to you.</span>
+        <span class="who">Idea for @roastery.leipzig</span>
+      </div>
+      <div class="p-item p-fmt f1" style="--i:0"><div class="mini-post">Your flat white is lying</div><span class="lbl">Post</span></div>
+      <div class="p-item p-fmt f2" style="--i:1"><div class="mini-car"><i></i><i></i><i></i></div><span class="lbl">Carousel</span></div>
+      <div class="p-item p-fmt f3" style="--i:2"><div class="mini-reel"><b>is <em>lying</em></b></div><span class="lbl">Reel</span></div>
+      <div class="p-item p-fmt f4" style="--i:3"><div class="mini-voice"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:65"></i><i style="--h:35"></i><i style="--h:75"></i></div><span class="lbl">Voiceover</span></div>
+      <div class="p-item p-ch c1" style="--i:4"><svg><use href="#i-cam"/></svg>Instagram<span class="ok"></span></div>
+      <div class="p-item p-ch c2" style="--i:5"><svg><use href="#i-note"/></svg>TikTok<span class="ok"></span></div>
+      <div class="p-item p-ch c3" style="--i:6"><svg><use href="#i-play"/></svg>YouTube<span class="ok"></span></div>
+      <div class="p-item p-ch c4" style="--i:7"><svg><use href="#i-plane"/></svg>Telegram<span class="ok"></span></div>
+      <div class="p-item p-ch c5" style="--i:8"><svg><use href="#i-doc"/></svg>Blog<span class="ok"></span></div>
+      <div class="p-item p-ch c6" style="--i:9"><svg><use href="#i-x"/></svg>X<span class="ok"></span></div>
+      <div class="p-count" aria-hidden="true"><span data-c="idea">1 idea</span><span data-c="formats">4 formats</span><span data-c="channels" class="on">6 channels</span></div>
+    </div>
+  </header>
+</div>
+
+<section class="story" id="story">
+  <div class="wrap">
+    <div class="story-head">
+      <p class="eyebrow">Follow one idea</p>
+      <h2>From a voice note to six channels, in the app you already hold.</h2>
+    </div>
+    <div class="story-grid">
+      <div class="steps" id="steps">
+        <article class="step on" data-step="0">
+          <span class="n">01 Onboarding</span>
+          <h3>Tell it about your page, out loud.</h3>
+          <p>Talk for a minute about what you post and who for. Diwche turns it into a brief: your niche, your voice, your people, how often you want to post.</p>
+          <div class="tags"><span class="tag">Voice or text</span><span class="tag">English, Deutsch, فارسی</span></div>
+        </article>
+        <article class="step" data-step="1">
+          <span class="n">02 Ideas</span>
+          <h3>Every morning, ideas that fit your page.</h3>
+          <p>It reads what your corner of the internet is talking about today and hands you a few ideas, each with the hook and the reason it should work for you.</p>
+        </article>
+        <article class="step" data-step="2">
+          <span class="n">03 Plan</span>
+          <h3>Pick one. It finds the slot.</h3>
+          <p>The week fills itself around the rhythm you chose. Done posts turn green, planned ones wait in grey, and you can drag anything around.</p>
+        </article>
+        <article class="step" data-step="3">
+          <span class="n">04 Script</span>
+          <h3>A script in your voice.</h3>
+          <p>Hook, body, call to action. Change a line by typing or by talking, and it rewrites around you without losing the point.</p>
+        </article>
+        <article class="step" data-step="4">
+          <span class="n">05 Make</span>
+          <h3>One script, four shapes.</h3>
+          <p>The same script becomes a post, a carousel, a reel with word-by-word captions, and a voiceover. You watch Diw work through it, one honest line at a time.</p>
+          <div class="tags"><span class="tag">Post</span><span class="tag">Carousel</span><span class="tag">Reel</span><span class="tag">Voiceover</span></div>
+        </article>
+        <article class="step" data-step="5">
+          <span class="n">06 Publish</span>
+          <h3>Shaped for each channel, sent on time.</h3>
+          <p>Square for the feed, vertical for TikTok and Shorts, a voice note and a caption for Telegram, an article for your blog, a thread for X. Each goes out at its own best hour.</p>
+        </article>
+        <article class="step" data-step="6">
+          <span class="n">07 See how it did</span>
+          <h3>Then it tells you what worked.</h3>
+          <p>Results come back per channel, in plain words, and the next morning's ideas lean toward what your people actually watched.</p>
+        </article>
+      </div>
+
+      <div class="visual" aria-hidden="true">
+        <div class="phone-wrap">
+          <div class="phone" id="phone">
+            <div class="rail" id="rail"><i class="done"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+            <section class="screen on" data-screen="0">
+              <span class="s-label" data-in>New page</span>
+              <span class="s-title" data-in style="--d:1">Tell me about your page</span>
+              <div class="listen" data-in style="--d:2"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="core"><svg><use href="#i-mic"/></svg></span></div>
+              <p class="said" data-in style="--d:3">“We roast coffee in Leipzig. I want people to <em>stop drinking burnt beans</em>, without sounding snobby.”</p>
+              <div class="chips" data-in style="--d:4"><span class="chip">Specialty coffee</span><span class="chip">Warm, a bit nerdy</span><span class="chip">Locals 25–40</span><span class="chip">3 posts a week</span></div>
+            </section>
+
+            <section class="screen" data-screen="1">
+              <span class="s-label" data-in>Thursday</span>
+              <span class="s-title" data-in style="--d:1">Today's ideas</span>
+              <div class="icard pick" data-in style="--d:2; background: var(--idea-1)"><span class="topic">Taste</span><span class="hook">Your flat white is lying to you.</span><span class="why">Milk hides roast. People in Leipzig are talking about it this week.</span></div>
+              <div class="icard" data-in style="--d:3; background: var(--idea-2)"><span class="topic">Behind the bar</span><span class="hook">What 4 seconds does to an espresso.</span></div>
+              <div class="icard" data-in style="--d:4; background: var(--idea-3)"><span class="topic">Local</span><span class="hook">Three cafés that grind to order.</span></div>
+            </section>
+
+            <section class="screen" data-screen="2">
+              <span class="s-title" data-in>This week</span>
+              <div class="week" data-in style="--d:1">
+                <div class="day">M<b>27</b><span class="dots"><i></i></span></div>
+                <div class="day">T<b>28</b><span class="dots"></span></div>
+                <div class="day">W<b>29</b><span class="dots"><i></i></span></div>
+                <div class="day today">T<b>30</b><span class="dots"><i></i></span></div>
+                <div class="day">F<b>31</b><span class="dots"></span></div>
+                <div class="day">S<b>1</b><span class="dots"><i class="pl"></i></span></div>
+                <div class="day">S<b>2</b><span class="dots"></span></div>
+              </div>
+              <span class="s-label" data-in style="--d:2">Thursday 30</span>
+              <div class="slot" data-in style="--d:3"><span class="t">09:00<small>Done</small></span><span class="w">Our new Ethiopian, in one sip</span></div>
+              <div class="slot new" data-in style="--d:4"><span class="t">18:30<small>Planned</small></span><span class="w">Your flat white is lying to you.<br><span class="fmt-tag">Reel · Carousel · Voice</span></span></div>
+              <span class="s-meta" data-in style="--d:5">Fits your 3 a week. Evenings do best for you.</span>
+            </section>
+
+            <section class="screen" data-screen="3">
+              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="s-title" data-in style="--d:1">Script</span>
+              <div class="script">
+                <div class="sline hook" data-in style="--d:2"><span class="k">Hook</span><span class="v">Your flat white is lying to you.</span></div>
+                <div class="sline" data-in style="--d:3"><span class="k">Body</span><span class="v">Milk is sweet. It covers a dark roast the way a filter covers a photo.</span></div>
+                <div class="sline" data-in style="--d:4"><span class="k"></span><span class="v">Try one shot black, then the same beans with milk. Taste the difference.</span></div>
+                <div class="sline" data-in style="--d:5"><span class="k">Ask</span><span class="v">Bring this post to the bar for a free tasting<span class="caret"></span></span></div>
+              </div>
+            </section>
+
+            <section class="screen" data-screen="4">
+              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <div class="make">
+                <div class="mk" data-in style="--d:1"><div class="art post">Your flat white is lying to you.</div><span class="nm">Post <span>Ready</span></span></div>
+                <div class="mk" data-in style="--d:2"><div class="art car"><i></i><i></i><i></i></div><span class="nm">Carousel <span>5 slides</span></span></div>
+                <div class="mk" data-in style="--d:3"><div class="art reel"><b>is <em>lying</em> to you</b></div><span class="nm">Reel <span>0:24</span></span></div>
+                <div class="mk" data-in style="--d:4"><div class="art voice"><div class="bars"><i style="--h:.4;--j:0"></i><i style="--h:.8;--j:1"></i><i style="--h:.55;--j:2"></i><i style="--h:1;--j:3"></i><i style="--h:.65;--j:4"></i><i style="--h:.35;--j:5"></i><i style="--h:.75;--j:6"></i><i style="--h:.5;--j:7"></i></div></div><span class="nm">Voice <span>0:31</span></span></div>
+              </div>
+              <div class="diw" data-in style="--d:5"><img src="__MASCOT__" alt=""><div style="flex:1"><p>Cutting the reel to your voice</p><div class="gold-bar"><i></i></div></div></div>
+            </section>
+
+            <section class="screen" data-screen="5">
+              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="s-title" data-in style="--d:1">Going out</span>
+              <div>
+                <div class="chan" data-in style="--d:2"><span class="ic"><svg><use href="#i-cam"/></svg></span><span class="nm">Instagram<small>Reel · Carousel</small></span><span class="st">18:30</span></div>
+                <div class="chan" data-in style="--d:3"><span class="ic"><svg><use href="#i-note"/></svg></span><span class="nm">TikTok<small>Reel</small></span><span class="st">19:00</span></div>
+                <div class="chan" data-in style="--d:4"><span class="ic"><svg><use href="#i-play"/></svg></span><span class="nm">YouTube Shorts<small>Reel</small></span><span class="st">19:00</span></div>
+                <div class="chan" data-in style="--d:5"><span class="ic"><svg><use href="#i-plane"/></svg></span><span class="nm">Telegram<small>Voice note · Post</small></span><span class="st">20:00</span></div>
+                <div class="chan" data-in style="--d:6"><span class="ic"><svg><use href="#i-doc"/></svg></span><span class="nm">Blog<small>Article from the script</small></span><span class="st soon">Coming soon</span></div>
+                <div class="chan" data-in style="--d:7"><span class="ic"><svg><use href="#i-x"/></svg></span><span class="nm">X<small>Thread</small></span><span class="st soon">Coming soon</span></div>
+              </div>
+            </section>
+
+            <section class="screen" data-screen="6">
+              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="s-title" data-in style="--d:1">How it did</span>
+              <div class="res">
+                <div class="r-row best" data-in style="--d:2"><span>TikTok</span><span class="bar"><i style="--v:.92;--d:0"></i></span><span class="num">8.4k</span></div>
+                <div class="r-row" data-in style="--d:3"><span>Instagram</span><span class="bar"><i style="--v:.64;--d:1"></i></span><span class="num">5.9k</span></div>
+                <div class="r-row" data-in style="--d:4"><span>Shorts</span><span class="bar"><i style="--v:.38;--d:2"></i></span><span class="num">3.5k</span></div>
+                <div class="r-row" data-in style="--d:5"><span>Telegram</span><span class="bar"><i style="--v:.16;--d:3"></i></span><span class="num">1.4k</span></div>
+              </div>
+              <span class="note" data-in style="--d:6">Views after 48 hours. Example numbers.</span>
+              <div class="insight" data-in style="--d:7"><small>For tomorrow</small>Taste tests worked. Three more ideas like this are waiting.</div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proj" id="channels">
+  <div class="wrap">
+    <div class="proj-head">
+      <div>
+        <p class="eyebrow">Same idea, six places</p>
+        <h2>Shaped for the place it lands.</h2>
+      </div>
+      <p>Each channel gets its own cut: the right size, length, caption and hour. Nothing is copied and pasted between them.</p>
+    </div>
+    <div class="proj-row" id="projRow">
+      <div class="pj" style="--i:0"><div class="frame f-ig"><div class="img">Your flat white is lying to you.<span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bar">roastery.leipzig · Swipe for the taste test</div></div><span class="cap">Instagram<small>Carousel, 4:5</small></span></div>
+      <div class="pj" style="--i:1"><div class="frame f-tt"><span class="cc">your flat white<br>is <em>lying</em></span><span class="u">@roastery.leipzig · original sound</span></div><span class="cap">TikTok<small>Reel, 9:16, word captions</small></span></div>
+      <div class="pj" style="--i:2"><div class="frame f-yt"><span class="play"></span></div><span class="cap">YouTube<small>Short, 0:24</small></span></div>
+      <div class="pj" style="--i:3"><div class="frame f-tg"><div class="vn"><span class="pl"></span><span class="w"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:60"></i><i style="--h:30"></i><i style="--h:70"></i><i style="--h:45"></i><i style="--h:85"></i><i style="--h:50"></i></span><small>0:31</small></div><div class="msg">Try one shot black, then with milk. Tell us what you taste ☕</div></div><span class="cap">Telegram<small>Voice note and post</small></span></div>
+      <div class="pj" style="--i:4"><div class="frame f-blog"><span class="k">Taste · 3 min read</span><h4>Why your flat white is lying to you</h4><span class="ln"></span><span class="ln"></span><span class="ln s"></span><span class="pic"></span></div><span class="cap">Blog<small>Article from the script</small></span></div>
+      <div class="pj" style="--i:5"><div class="frame f-x"><div class="tw"><span class="h"><i></i>Roastery <small>@roastery_lpz</small></span><p>Your flat white is lying to you. A thread on what milk hides 🧵</p></div><div class="tw"><p>1/ Milk is sweet. It covers a dark roast the way a filter covers a photo.</p></div></div><span class="cap">X<small>Thread, 5 posts</small></span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" id="start">
+  <section class="close">
+    <div class="close-in">
+      <p class="eyebrow">iPhone, iPad, Mac and Android</p>
+      <h2>Your page, run by someone paying attention.</h2>
+      <p>Plan it, make it, see how it did. All from your phone, in English, Deutsch or فارسی.</p>
+      <p class="fa-line" lang="fa" dir="rtl">یک ایده، همه‌ی کانال‌ها.</p>
+      <a class="btn" href="#top">Get the app</a>
+    </div>
+    <img src="__MASCOT__" alt="Diw, the Diwche imp, thinking with a hand on his chin">
+  </section>
+  <footer><span>Diwche · v2 design prototype</span><span>Quiet style tokens, shared with the apps</span></footer>
+</div>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Hero prism: idea, then formats, then channels. Class changes only; CSS transitions do the motion,
+     so a state change mid-flight retargets instead of restarting. Paused offscreen and under reduced motion. */
+  const prism = document.getElementById('prism');
+  const counts = prism.querySelectorAll('.p-count span');
+  const states = [['idea', 1800], ['formats', 2400], ['channels', 3600]];
+  let k = 2, timer = null, visible = true;
+  const show = (name) => {
+    prism.dataset.state = name;
+    counts.forEach(c => c.classList.toggle('on', c.dataset.c === name));
+  };
+  const tick = () => {
+    k = (k + 1) % states.length;
+    show(states[k][0]);
+    timer = setTimeout(tick, states[k][1]);
+  };
+  if (!reduce) {
+    show('channels');
+    timer = setTimeout(tick, 2600);
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !visible) { visible = true; timer = setTimeout(tick, 600); }
+      if (!e.isIntersecting && visible) { visible = false; clearTimeout(timer); }
+    }).observe(prism);
+  }
+
+  /* Story: the step crossing the reading line drives the phone screen. */
+  const steps = [...document.querySelectorAll('.step')];
+  const screens = [...document.querySelectorAll('.screen')];
+  const rail = [...document.querySelectorAll('#rail i')];
+  let current = 0;
+  const go = (n) => {
+    if (n === current) return;
+    screens[current].classList.add('out');
+    screens.forEach((s, i) => { s.classList.toggle('on', i === n); if (i !== current) s.classList.remove('out'); });
+    setTimeout(() => screens.forEach((s, i) => i !== n && s.classList.remove('out')), 520);
+    steps.forEach((s, i) => s.classList.toggle('on', i === n));
+    rail.forEach((r, i) => r.classList.toggle('done', i <= n));
+    current = n;
+  };
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) go(+e.target.dataset.step); });
+  }, { rootMargin: '-58% 0px -38% 0px' });
+  steps.forEach(s => io.observe(s));
+
+  /* Projections: arm only what is below the fold at load, so the first frame is complete. */
+  if (!reduce) {
+    const cards = [...document.querySelectorAll('.pj')];
+    const below = cards.filter(c => c.getBoundingClientRect().top > innerHeight);
+    below.forEach(c => c.classList.add('armed'));
+    const ro = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { const t = e.target; t.classList.add('shown'); ro.unobserve(t);
+        setTimeout(() => t.classList.remove('armed', 'shown'), 1200); } });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    below.forEach(c => ro.observe(c));
+  }
+})();
+</script>
