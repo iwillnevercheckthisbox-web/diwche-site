@@ -39,7 +39,7 @@ window.PERSONAS = [
       week: [['کاروسل', 'افسانه: شب کربوهیدرات نخور'], null, ['ریلز', 'صبحونه در ۳ دقیقه'], ['استوری', 'نظرسنجی: چی خوردی؟'], ['پست', 'سؤال هفته'], null, ['صداگذاری', 'لیست خرید آخر هفته']],
       tags: ['خانواده‌ی مریم‌گلی', 'Food Pop', 'زیرنویس تمیز'],
     },
-    kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'D1 · Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'In my voice'], ['Templates', 'Food']],
+    kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
     id: 'shop', family: 'editorial', img: 'assets/chelsea.jpg',
@@ -78,7 +78,7 @@ window.PERSONAS = [
       week: [['پست', 'طعم جدید: ترد سالمون'], ['استوری', 'استیکر شمارش معکوس'], ['ریلز', 'قبل و بعد'], null, ['کاروسل', 'مواد، هر اسلاید یکی'], ['استوری', 'عکس‌های مشتری‌ها'], null],
       tags: ['خانواده‌ی سرمقاله', 'Film Glow', 'زیرنویس ماژیک'],
     },
-    kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'F9 · Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'In my voice'], ['Templates', 'Product · Before and after']],
+    kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'In my voice'], ['Templates', 'Product · Before and after']],
   },
   {
     id: 'cafe', family: 'linen', img: 'assets/coffee.jpg',
@@ -117,7 +117,7 @@ window.PERSONAS = [
       week: [['ریلز', 'لاته‌آرت، آهسته'], ['پست', 'دونه‌های جدید'], null, ['استوری', 'کیک امروز'], ['کاروسل', 'پنج نوشیدنی، پنج حال'], ['صداگذاری', 'ساعت کاری آخر هفته'], null],
       tags: ['خانواده‌ی کتان', 'Golden Hour', 'زیرنویس مجله‌ای'],
     },
-    kit: [['Design family', 'Linen'], ['Palette', 'Linen'], ['Look', 'W3 · Golden hour'], ['Recipe', 'Golden Hour'], ['Caption look', 'Editorial'], ['Voice', 'In my voice'], ['Templates', 'Food']],
+    kit: [['Design family', 'Linen'], ['Palette', 'Linen'], ['Look', 'Golden hour'], ['Recipe', 'Golden Hour'], ['Caption look', 'Editorial'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
     id: 'coach', family: 'poster', img: 'assets/rowers.jpg',
@@ -156,7 +156,7 @@ window.PERSONAS = [
       week: [['ریلز', 'ست ده‌دقیقه‌ای'], ['استوری', 'تمرین کردی؟'], ['کاروسل', 'پنج حرکت، هر اسلاید یکی'], ['ریلز', 'اصلاح فرم'], null, ['پست', 'شاگرد هفته'], ['استوری', 'روز استراحت، واقعی']],
       tags: ['خانواده‌ی پوستر', 'Noir', 'زیرنویس حروف بزرگ'],
     },
-    kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'M4 · Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'In my voice'], ['Templates', 'Fitness · Beat cuts']],
+    kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'In my voice'], ['Templates', 'Fitness · Beat cuts']],
   },
   {
     id: 'persian', family: 'saffron', img: 'assets/nowruz.jpg',
@@ -195,7 +195,7 @@ window.PERSONAS = [
       week: [['ریلز', 'برگردوندن ته‌دیگ، زنده'], null, ['کاروسل', 'زعفرون، قدم به قدم'], ['استوری', 'شب یلدا چی می‌پزی؟'], ['صداگذاری', 'نسخه‌ی مادربزرگ، به فارسی'], ['پست', 'کارت دستور'], null],
       tags: ['خانواده‌ی زعفران', 'اول فارسی', 'زیرنویس دو رنگ'],
     },
-    kit: [['Design family', 'Saffron'], ['Palette', 'Saffron'], ['Look', 'W4 · Amber'], ['Recipe', 'Food Pop'], ['Caption look', 'Two tone'], ['Text preset', 'تیتر · Lalezar'], ['Voice', 'In my voice'], ['Templates', 'Persian occasions']],
+    kit: [['Design family', 'Saffron'], ['Palette', 'Saffron'], ['Look', 'Amber'], ['Recipe', 'Food Pop'], ['Caption look', 'Two tone'], ['Text preset', 'تیتر · Lalezar'], ['Voice', 'In my voice'], ['Templates', 'Persian occasions']],
   },
   {
     id: 'art', family: 'editorial', img: 'assets/mona.jpg',
@@ -234,7 +234,7 @@ window.PERSONAS = [
       week: [['کاروسل', 'افسانه‌ی هفته'], ['ریلز', 'زوم روی جزئیات'], ['پست', 'مسابقه‌ی کپشن'], ['ریلز', 'به تو لبخند نمی‌زنه'], ['استوری', 'نقاشش رو حدس بزن'], ['کاروسل', 'نقاشی‌هایی که میم‌ان'], ['صداگذاری', 'قصه‌ی پشتش']],
       tags: ['خانواده‌ی سرمقاله', 'Teal & orange', 'زیرنویس پر طلایی'],
     },
-    kit: [['Design family', 'Editorial'], ['Palette', 'Editorial'], ['Look', 'X2 · Teal & orange'], ['Recipe', 'Teal & Orange'], ['Caption look', 'Gold fill'], ['Voice', 'In my voice'], ['Templates', 'Slideshow · Quote']],
+    kit: [['Design family', 'Editorial'], ['Palette', 'Editorial'], ['Look', 'Teal & orange'], ['Recipe', 'Teal & Orange'], ['Caption look', 'Gold fill'], ['Voice', 'In my voice'], ['Templates', 'Slideshow · Quote']],
   },
 ];
 window.PERSONA_UI = {
@@ -255,11 +255,11 @@ window.personaSlide = function (p, L, kind) {
     inner += `<span class="hk" style="font:800 9cqw/1.05 ${p.family === 'saffron' ? 'Vazirmatn' : 'Anton'},sans-serif;text-transform:uppercase;color:${p.img ? '#fff' : c.accent};text-align:center;left:6cqw;right:6cqw;bottom:20cqw">${L.s3}</span>`;
     return `<div class="slide ${fam}" style="${v};${p.img ? '' : 'background:' + c.ink}">${inner}</div>`;
   }
-  if (kind === 'cover' && p.img) inner += `<img src="${p.img}" alt=""><span class="shade"></span>`;
-  if (p.family === 'sage') inner += '<span class="blob"></span>';
-  if (p.family === 'saffron') inner += '<span class="sun"></span>';
+  if (p.img) inner += `<img src="${p.img}" alt=""${kind === 'point' ? ' style="object-position:50% 20%"' : ''}><span class="shade"></span>`;
+  if (!p.img && p.family === 'sage') inner += '<span class="blob"></span>';
+  if (!p.img && p.family === 'saffron') inner += '<span class="sun"></span>';
   const text = kind === 'cover' ? L.hook : L.s2;
-  const onPhoto = kind === 'cover' && p.img;
+  const onPhoto = !!p.img;
   inner += `<span class="hd" style="${onPhoto ? 'color:#fff' : ''}">${p.handle}</span><span class="pg" style="${onPhoto ? 'color:#fff' : ''}">${pg}</span>`;
   inner += `<span class="hk" style="${onPhoto ? 'color:#fff;--accent:' + c.soft : ''}${kind === 'point' ? ';font-size:' + (p.family === 'poster' ? '12cqw' : '8cqw') : ''}">${text}</span>`;
   return `<div class="slide ${fam}" style="${v}">${inner}</div>`;

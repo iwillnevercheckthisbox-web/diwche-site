@@ -46,7 +46,7 @@
     stage.innerHTML = `<img src="assets/${st.photo}.jpg" alt="">${(deco[T.k] || (() => ''))()}`
       + `<button type="button" class="tx title sp-${side(spotOf(T, 'title'))}${T.pinned === 'title' ? ' pinned' : ''}" data-k="title" style="--i:0">${title}</button>`
       + `<button type="button" class="tx handle sp-${side(spotOf(T, 'handle'))}" data-k="handle" style="--i:1" dir="ltr">${P.handle}</button>`;
-    stage.querySelectorAll('.tx').forEach(b => b.setAttribute('aria-label', b.classList.contains('pinned') ? t('Pinned by the look') : t('Tap to move this text')));
+    stage.querySelectorAll('.tx').forEach(b => b.setAttribute('aria-label', b.classList.contains('pinned') ? t('This one stays put') : t('Tap to move this text')));
     if (enter && !reduce) { stage.classList.remove('in'); void stage.offsetWidth; stage.classList.add('in'); }
     $('#tplName').textContent = t(T.name);
     meta();
@@ -55,8 +55,7 @@
   }
   function meta(key = 'title') {
     const T = TEMPLATES[st.tpl];
-    $('#tplSpot').textContent = T.pinned === key ? t('Pinned by the look')
-      : I.digits(I.tf('Spot {n} of {m}', { n: st.spot[key] % T[key].length + 1, m: T[key].length }));
+    $('#tplSpot').textContent = T.pinned === key ? t('This one stays put') : t('Tap a text to move it');
   }
 
   stage.addEventListener('click', (e) => {

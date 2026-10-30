@@ -692,7 +692,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
 
 /* ---------- v3: logo, tools, templates, mascot, footer ---------- */
 /* The live site's mark: the horns beside the wordmark (public/brand/horns.png). */
-.mark-horns { width: 30px; height: auto; display: block; }
+.mark-horns { width: 38px; height: auto; display: block; }
 
 .tools { padding-block: 80px; border-top: 1px solid var(--rule); }
 .tool-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
@@ -834,3 +834,25 @@ a.tool:active { transform: scale(.98); }
 }
 
 .foot { display: block; }
+
+/* Contact: the form is the way in before the stores. */
+.contact { padding-block: 80px; border-top: 1px solid var(--rule); }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px 64px; align-items: start; }
+@media (max-width: 860px) { .contact-grid { grid-template-columns: minmax(0, 1fr); } }
+.contact-copy { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.contact-copy h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -.03em; }
+.contact-copy p { color: var(--ink2); font-size: 17px; max-width: 28em; }
+.cform { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; padding: 24px; border-radius: 22px;
+  background: var(--paper2); border: 1px solid var(--rule); }
+@media (max-width: 560px) { .cform { grid-template-columns: minmax(0, 1fr); padding: 18px; } }
+.cform .wide { grid-column: 1 / -1; }
+.cform label { display: flex; flex-direction: column; gap: 6px; font: 500 13px/1.2 var(--sans); color: var(--ink2); }
+.cform input:not([type="checkbox"]), .cform textarea { font: 400 16px/1.4 var(--sans); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: var(--r-button); padding: 12px 14px; min-height: 48px; width: 100%; }
+.cform textarea { resize: vertical; min-height: 110px; }
+.cform input:focus-visible, .cform textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.cform .check { flex-direction: row; align-items: center; gap: 10px; font-size: 15px; color: var(--ink); min-height: 32px; }
+.cform .check input { width: 20px; height: 20px; accent-color: var(--gold); }
+.cform-send { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.cform-note { color: var(--ink2); font-size: 14px; }
+[dir="rtl"] .cform input[dir="ltr"] { text-align: right; }
