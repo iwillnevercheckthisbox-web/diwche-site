@@ -6,6 +6,12 @@ a voiceover, shaped for six channels.
 
 Prototype: `design/v2/pipeline.html` (open it in a browser; self-contained).
 
+## Imagery
+
+The running example is an art meme page, @oldmasters.daily. Every picture is a public-domain old master
+painting, so no living person appears and there is no GDPR or likeness risk. Three short 9:16 reels are
+made from them with ffmpeg and graded with the app's looks. Sources and status: `assets/CREDITS.md`.
+
 ## Style source
 
 The prototype uses the apps' **Quiet style** tokens, not a new system:
@@ -35,10 +41,14 @@ away from on their main screens. If v2 goes ahead, DNA.md should be rewritten ar
 2. **Follow one idea.** A sticky phone walks through the real app flow as you scroll:
    onboarding by voice, today's ideas, the week plan, the script, Make (with Diw at work and the
    gold progress bar from the app), publishing per channel, and results.
-3. **Shaped for the place it lands.** The same idea rendered six ways: Instagram carousel,
+3. **Looks.** An interactive studio: pick a painting or upload your own photo, then a look (the app's
+   real Portra, Teal & orange and Mono colour tables, applied in the browser), a caption preset (the app's
+   names: Clean, Gold word, Big word, Box, Newsline, Marker, Two tone) and a motion. Diw's line reports the work.
+4. **The idea behind Diw.** The div from Persian stories, small and working for you, shown through its
+   real live lines in English and the app's Tehrani Persian. No mascot drawing until the new art exists.
+5. **Shaped for the place it lands.** The same idea rendered six ways: Instagram carousel,
    TikTok reel with word captions, YouTube Short, Telegram voice note and post, blog article, X thread.
-4. **Meet Diw.** Waits for the new mascot art (see below).
-5. **Final call.** One quiet line and the button.
+6. **Final call.** One quiet line and the button.
 
 ## Diw v2, the new mascot
 

@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Diwche v2 Prototype</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -353,6 +354,135 @@ a { color: inherit; }
 .pj .f-x .tw .h i { width: 18px; height: 18px; border-radius: 50%; background: var(--idea-1); }
 .pj .f-x .tw .h small { font-weight: 400; color: var(--ink3); }
 
+/* ---------- Real pictures inside the drawn screens ---------- */
+.icard .ithumb { position: absolute; right: 12px; top: 40px; width: 46px; height: 58px; object-fit: cover; border-radius: 8px; box-shadow: 0 0 0 1.5px var(--gold); }
+.icard.pick .hook { padding-right: 56px; }
+.art.post { padding: 0; background: #000; }
+.art.post img, .art.reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.art.post b { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 8px 8px; font: 600 12.5px/1.15 var(--display); color: #FBF7EE;
+  background: linear-gradient(transparent, rgba(0,0,0,.7)); text-align: left; }
+.art.car img { position: absolute; width: 50%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+.art.car img:nth-child(1) { transform: translateX(-36%) rotate(-7deg) scale(.86); }
+.art.car img:nth-child(2) { transform: translateX(36%) rotate(7deg) scale(.86); }
+.art.reel { background: #000; padding: 0; }
+.art.reel .live-cc { position: absolute; left: 6px; right: 6px; bottom: 10px; text-align: center; font: 700 11px/1.15 var(--sans); color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+.live-cc span { display: inline-block; margin-inline: .12em; transition: transform 160ms var(--ease-out), color 160ms ease; }
+.live-cc span.on { color: var(--gold); transform: scale(1.12); }
+.live-cc span.wait { opacity: .0; }
+.diw-tag { display: block; font: 600 10px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); margin-bottom: 4px; }
+
+.pj .f-ig .img { position: relative; padding: 0; background: #000; overflow: hidden; }
+.pj .f-ig .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pj .f-ig .img b { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 12px 26px; background: linear-gradient(transparent, rgba(0,0,0,.65)); font: 600 clamp(15px, 1.5vw, 19px)/1.12 var(--display); color: #FBF7EE; text-align: left;
+  text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.pj .f-tt, .pj .f-yt { position: relative; background: #000; overflow: hidden; }
+.pj .f-tt video, .pj .f-yt video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pj .f-tt .cc, .pj .f-yt .cc { position: relative; z-index: 1; }
+.pj .f-tt .u { position: relative; z-index: 1; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.pj .f-tt .cc { align-self: center; margin-bottom: 30%; font: 800 clamp(13px, 1.4vw, 16px)/1.1 var(--sans); color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.6); }
+.pj .f-yt { display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
+.pj .f-yt .cc.box { align-self: center; margin-bottom: 22%; font: 600 clamp(11px, 1.15vw, 13px)/1.3 var(--sans); color: #fff; }
+.pj .f-yt .cc.box span { background: rgba(0,0,0,.78); padding: 2px 4px; margin: 0; border-radius: 3px; }
+.pj .f-yt .cc.box span.on { color: #fff; background: #B3413E; transform: none; }
+.yt-bar { position: relative; z-index: 1; height: 3px; background: rgba(255,255,255,.3); border-radius: 3px; overflow: hidden; }
+.yt-bar i { display: block; height: 100%; width: 100%; background: #fff; transform-origin: left; transform: scaleX(var(--p, 0)); }
+.pj .f-tg .photo { border-radius: 14px 14px 14px 4px; overflow: hidden; aspect-ratio: 4/3; }
+.pj .f-tg .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pj .f-blog .pic { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: 50% 20%; border-radius: 8px; margin: 0 0 4px; background: var(--paper3); }
+.pj .f-x .tw img { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: 50% 25%; border-radius: 10px; border: 1px solid var(--rule); }
+
+/* ---------- Looks ---------- */
+.looks { padding-block: 80px; border-top: 1px solid var(--rule); }
+.looks-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 48px; align-items: end; margin-bottom: 36px; }
+.looks-head h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -.03em; margin-top: 14px; }
+.looks-head p { color: var(--ink2); font-size: 17px; max-width: 32em; }
+.studio { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 40px; align-items: start; }
+@media (max-width: 860px) { .looks-head, .studio { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; aspect-ratio: 4 / 5; border-radius: var(--r-photo); overflow: hidden; background: #0E0F12; box-shadow: 0 30px 70px var(--shadow); }
+.stage .zoom { position: absolute; inset: 0; transform-origin: 50% 30%; }
+.stage canvas { width: 100%; height: 100%; display: block; }
+.stage.push .zoom { animation: push 7s var(--ease-in-out) infinite alternate; }
+@keyframes push { from { transform: scale(1); } to { transform: scale(1.1) translateY(1.5%); } }
+.stage .handle { position: absolute; top: 14px; left: 14px; display: flex; gap: 8px; align-items: center; font: 600 12.5px/1 var(--sans); color: #FBF7EE;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.stage .handle i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--gold); background: center / cover no-repeat; }
+.stage .handle small { font-weight: 400; opacity: .8; }
+
+/* Caption looks: the app's own preset names */
+.capl { position: absolute; left: 7%; right: 7%; bottom: 9%; text-align: center; font: 700 26px/1.12 var(--sans); color: #fff; }
+.capl .w { display: inline-block; margin-inline: .14em; }
+.capl[data-c="clean"] { text-shadow: 0 2px 10px rgba(0,0,0,.55); font-weight: 600; }
+.capl[data-c="gold"] { text-shadow: 0 2px 10px rgba(0,0,0,.55); font-weight: 800; }
+.capl[data-c="gold"] .w.k { color: var(--gold); }
+.capl[data-c="big"] { font-weight: 800; text-transform: uppercase; font-size: 20px; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+.capl[data-c="big"] .w.k { display: block; font-size: 58px; line-height: .95; color: #fff; letter-spacing: -.02em; }
+.capl[data-c="box"] { font-weight: 600; font-size: 22px; }
+.capl[data-c="box"] .w { background: #111; padding: 3px 7px; margin: 2px 0; border-radius: 4px; }
+.capl[data-c="news"] { left: 0; right: 0; bottom: 7%; text-align: left; font: 600 19px/1.2 var(--sans); background: rgba(14, 15, 18, .86); padding: 12px 18px 12px 18px; border-left: 5px solid #B3413E; }
+.capl[data-c="news"]::before { content: "BREAKING · LOUVRE"; display: block; font: 700 10.5px/1 var(--sans); letter-spacing: .12em; color: #F0A5A2; margin-bottom: 6px; }
+.capl[data-c="news"] .w { margin: 0 .1em 0 0; }
+.capl[data-c="marker"] { font-weight: 700; color: #14171F; font-size: 24px; }
+.capl[data-c="marker"] .w { background: linear-gradient(transparent 12%, #F4D35E 12%, #F4D35E 88%, transparent 88%); padding: 0 4px; margin: 2px 0; }
+.capl[data-c="two"] { font: 600 30px/1.05 var(--display); text-align: left; left: 8%; text-shadow: 0 2px 14px rgba(0,0,0,.5); }
+.capl[data-c="two"] .w.l2 { color: var(--gold); }
+/* Motion of the words */
+.capl.pop .w { animation: pop 420ms var(--ease-out) both; animation-delay: calc(var(--i) * 140ms); }
+@keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.92); } to { opacity: 1; transform: none; } }
+.capl.type .w { animation: type 1ms steps(1) both; animation-delay: calc(var(--i) * 220ms); }
+@keyframes type { from { opacity: 0; } to { opacity: 1; } }
+
+.worker { display: flex; align-items: center; gap: 12px; margin-top: 16px; min-height: 40px; }
+.worker .line { font: 500 14px/1.3 var(--sans); }
+.worker .line small { display: block; font: 600 10px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); margin-bottom: 4px; }
+.worker .bar { flex: 1; max-width: 160px; height: 4px; border-radius: 4px; background: var(--rule); overflow: hidden; }
+.worker .bar i { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(0); }
+.worker.busy .bar i { transition: transform 900ms var(--ease-out); transform: scaleX(.85); }
+.worker.done .bar i { transition: transform 200ms var(--ease-out); transform: scaleX(1); }
+
+.controls { display: flex; flex-direction: column; gap: 22px; }
+.ctl h3 { font: 600 11px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+.photos { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 520px) { .photos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.photos button, .photos label { all: unset; cursor: pointer; aspect-ratio: 4/5; border-radius: 10px; overflow: hidden; position: relative; background: var(--paper3);
+  box-shadow: 0 0 0 1px var(--rule); transition: transform var(--fast) var(--ease-out), box-shadow var(--normal) ease; }
+.photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photos .on { box-shadow: 0 0 0 2px var(--gold); }
+.photos :active { transform: scale(.97); }
+.photos label { display: grid; place-items: center; text-align: center; font: 500 11.5px/1.2 var(--sans); color: var(--ink2); padding: 4px; }
+.photos label:focus-within { box-shadow: 0 0 0 2px var(--gold); }
+.photos input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chiprow { display: flex; flex-wrap: wrap; gap: 8px; }
+.chiprow button { all: unset; cursor: pointer; min-height: 36px; padding-inline: 14px; border-radius: 99px; display: inline-flex; align-items: center;
+  font: 500 14px/1 var(--sans); border: 1px solid var(--rule); background: var(--paper2); color: var(--ink);
+  transition: background-color var(--normal) ease, color var(--normal) ease, transform var(--fast) var(--ease-out); }
+.chiprow button:active { transform: scale(.97); }
+.chiprow button.on { background: var(--primary-bg); color: var(--primary-text); border-color: transparent; font-weight: 600; }
+.chiprow button:focus-visible, .photos button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.fine { font: 400 12.5px/1.45 var(--sans); color: var(--ink3); max-width: 40em; }
+
+/* ---------- Diw ---------- */
+.diwband { padding-block: 72px; border-top: 1px solid var(--rule); }
+.diw-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: center; }
+@media (max-width: 860px) { .diw-grid { grid-template-columns: minmax(0, 1fr); } }
+.diw-grid h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -.03em; margin-top: 14px; }
+.diw-grid p { color: var(--ink2); font-size: 17px; margin-top: 16px; max-width: 32em; }
+.diw-grid .fa { font-family: var(--fa); }
+.ticker { border-radius: 22px; background: var(--paper2); border: 1px solid var(--rule); padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+.ticker .row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.ticker .now { font: 500 22px/1.25 var(--display); letter-spacing: -.01em; min-height: 2.5em; }
+.ticker .now span { display: inline-block; transition: opacity 260ms var(--ease-out), transform 360ms var(--ease-out); }
+.ticker .now span.out { opacity: 0; transform: translateY(-8px); }
+.ticker .fa-now { font: 500 18px/1.4 var(--fa); color: var(--ink2); direction: rtl; text-align: right; min-height: 1.4em; }
+.ticker .gb { height: 4px; border-radius: 4px; background: var(--rule); overflow: hidden; }
+.ticker .gb i { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(var(--f, .1)); transition: transform 700ms var(--ease-out); }
+.ticker .meta { font: 400 12.5px/1 var(--sans); color: var(--ink3); display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.never { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.never span { font: 500 12.5px/1 var(--sans); padding: 8px 12px; border-radius: 99px; border: 1px dashed var(--rule); color: var(--ink3); }
+.credits { font: 400 12px/1.5 var(--sans); color: var(--ink3); padding-bottom: 32px; }
+@media (prefers-reduced-motion: reduce) {
+  .stage.push .zoom, .capl.pop .w, .capl.type .w { animation: none !important; }
+}
+
 /* Reveal: elements start visible; JS only arms the ones below the fold, so the page is complete at rest. */
 .armed { opacity: 0; transform: translateY(18px); }
 .armed.shown { opacity: 1; transform: none; transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--i, 0) * 60ms); }
@@ -390,6 +520,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     <a class="mark" href="#top"><span class="mark-dot" aria-hidden="true"></span>Diwche</a>
     <div class="nav-links">
       <a href="#story">How it works</a>
+      <a href="#looks">Looks</a>
       <a href="#channels">Channels</a>
       <a class="btn btn-primary" href="#start">Get the app</a>
     </div>
@@ -491,16 +622,16 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
               <span class="s-label" data-in>New page</span>
               <span class="s-title" data-in style="--d:1">Tell me about your page</span>
               <div class="listen" data-in style="--d:2"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="core"><svg><use href="#i-mic"/></svg></span></div>
-              <p class="said" data-in style="--d:3">“We roast coffee in Leipzig. I want people to <em>stop drinking burnt beans</em>, without sounding snobby.”</p>
-              <div class="chips" data-in style="--d:4"><span class="chip">Specialty coffee</span><span class="chip">Warm, a bit nerdy</span><span class="chip">Locals 25–40</span><span class="chip">3 posts a week</span></div>
+              <p class="said" data-in style="--d:3">“I run an art meme page. I want people to <em>fall for old paintings</em> without a lecture.”</p>
+              <div class="chips" data-in style="--d:4"><span class="chip">Art history</span><span class="chip">Funny, never snobby</span><span class="chip">18–34</span><span class="chip">1 post a day</span></div>
             </section>
 
             <section class="screen" data-screen="1">
               <span class="s-label" data-in>Thursday</span>
               <span class="s-title" data-in style="--d:1">Today's ideas</span>
-              <div class="icard pick" data-in style="--d:2; background: var(--idea-1)"><span class="topic">Taste</span><span class="hook">Your flat white is lying to you.</span><span class="why">Milk hides roast. People in Leipzig are talking about it this week.</span></div>
-              <div class="icard" data-in style="--d:3; background: var(--idea-2)"><span class="topic">Behind the bar</span><span class="hook">What 4 seconds does to an espresso.</span></div>
-              <div class="icard" data-in style="--d:4; background: var(--idea-3)"><span class="topic">Local</span><span class="hook">Three cafés that grind to order.</span></div>
+              <div class="icard pick" data-in style="--d:2; background: var(--idea-1)"><img class="ithumb" src="assets/mona.jpg" alt=""><span class="topic">Myth</span><span class="hook">She's not smiling at you.</span><span class="why">Smile questions get the most saves on your page.</span></div>
+              <div class="icard" data-in style="--d:3; background: var(--idea-2)"><span class="topic">Behind the paint</span><span class="hook">Why everyone in old portraits looks tired.</span></div>
+              <div class="icard" data-in style="--d:4; background: var(--idea-3)"><span class="topic">Series</span><span class="hook">Three paintings that are secretly memes.</span></div>
             </section>
 
             <section class="screen" data-screen="2">
@@ -515,35 +646,35 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
                 <div class="day">S<b>2</b><span class="dots"></span></div>
               </div>
               <span class="s-label" data-in style="--d:2">Thursday 30</span>
-              <div class="slot" data-in style="--d:3"><span class="t">09:00<small>Done</small></span><span class="w">Our new Ethiopian, in one sip</span></div>
-              <div class="slot new" data-in style="--d:4"><span class="t">18:30<small>Planned</small></span><span class="w">Your flat white is lying to you.<br><span class="fmt-tag">Reel · Carousel · Voice</span></span></div>
+              <div class="slot" data-in style="--d:3"><span class="t">09:00<small>Done</small></span><span class="w">The pearl is probably not a pearl</span></div>
+              <div class="slot new" data-in style="--d:4"><span class="t">18:30<small>Planned</small></span><span class="w">She's not smiling at you.<br><span class="fmt-tag">Reel · Carousel · Voice</span></span></div>
               <span class="s-meta" data-in style="--d:5">Fits your 3 a week. Evenings do best for you.</span>
             </section>
 
             <section class="screen" data-screen="3">
-              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="idea-pill" data-in>She's not smiling at you.</span>
               <span class="s-title" data-in style="--d:1">Script</span>
               <div class="script">
-                <div class="sline hook" data-in style="--d:2"><span class="k">Hook</span><span class="v">Your flat white is lying to you.</span></div>
-                <div class="sline" data-in style="--d:3"><span class="k">Body</span><span class="v">Milk is sweet. It covers a dark roast the way a filter covers a photo.</span></div>
-                <div class="sline" data-in style="--d:4"><span class="k"></span><span class="v">Try one shot black, then the same beans with milk. Taste the difference.</span></div>
-                <div class="sline" data-in style="--d:5"><span class="k">Ask</span><span class="v">Bring this post to the bar for a free tasting<span class="caret"></span></span></div>
+                <div class="sline hook" data-in style="--d:2"><span class="k">Hook</span><span class="v">She's not smiling at you.</span></div>
+                <div class="sline" data-in style="--d:3"><span class="k">Body</span><span class="v">Leonardo blurred the corners of her mouth on purpose.</span></div>
+                <div class="sline" data-in style="--d:4"><span class="k"></span><span class="v">Look at her eyes and she smiles. Look at her lips and she stops.</span></div>
+                <div class="sline" data-in style="--d:5"><span class="k">Ask</span><span class="v">Follow for one painting a day<span class="caret"></span></span></div>
               </div>
             </section>
 
             <section class="screen" data-screen="4">
-              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="idea-pill" data-in>She's not smiling at you.</span>
               <div class="make">
-                <div class="mk" data-in style="--d:1"><div class="art post">Your flat white is lying to you.</div><span class="nm">Post <span>Ready</span></span></div>
-                <div class="mk" data-in style="--d:2"><div class="art car"><i></i><i></i><i></i></div><span class="nm">Carousel <span>5 slides</span></span></div>
-                <div class="mk" data-in style="--d:3"><div class="art reel"><b>is <em>lying</em> to you</b></div><span class="nm">Reel <span>0:24</span></span></div>
+                <div class="mk" data-in style="--d:1"><div class="art post"><img src="assets/mona.jpg" alt=""><b>She's not smiling at you.</b></div><span class="nm">Post <span>Ready</span></span></div>
+                <div class="mk" data-in style="--d:2"><div class="art car"><img src="assets/velata.jpg" alt=""><img src="assets/hammersley.jpg" alt=""><img src="assets/pearl.jpg" alt=""></div><span class="nm">Carousel <span>5 slides</span></span></div>
+                <div class="mk" data-in style="--d:3"><div class="art reel"><video src="assets/reels/mona.mp4" poster="assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><b class="live-cc" data-video data-words="She’s|not|smiling|at|you." data-key="2"></b></div><span class="nm">Reel <span>0:24</span></span></div>
                 <div class="mk" data-in style="--d:4"><div class="art voice"><div class="bars"><i style="--h:.4;--j:0"></i><i style="--h:.8;--j:1"></i><i style="--h:.55;--j:2"></i><i style="--h:1;--j:3"></i><i style="--h:.65;--j:4"></i><i style="--h:.35;--j:5"></i><i style="--h:.75;--j:6"></i><i style="--h:.5;--j:7"></i></div></div><span class="nm">Voice <span>0:31</span></span></div>
               </div>
-              <div class="diw" data-in style="--d:5"><div style="flex:1"><p>Cutting the reel to your voice</p><div class="gold-bar"><i></i></div></div></div>
+              <div class="diw" data-in style="--d:5"><div style="flex:1"><p><span class="diw-tag">Diw at work</span>Burning the captions in</p><div class="gold-bar"><i></i></div></div></div>
             </section>
 
             <section class="screen" data-screen="5">
-              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="idea-pill" data-in>She's not smiling at you.</span>
               <span class="s-title" data-in style="--d:1">Going out</span>
               <div>
                 <div class="chan" data-in style="--d:2"><span class="ic"><svg><use href="#i-cam"/></svg></span><span class="nm">Instagram<small>Reel · Carousel</small></span><span class="st">18:30</span></div>
@@ -556,7 +687,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
             </section>
 
             <section class="screen" data-screen="6">
-              <span class="idea-pill" data-in>Your flat white is lying to you.</span>
+              <span class="idea-pill" data-in>She's not smiling at you.</span>
               <span class="s-title" data-in style="--d:1">How it did</span>
               <div class="res">
                 <div class="r-row best" data-in style="--d:2"><span>TikTok</span><span class="bar"><i style="--v:.92;--d:0"></i></span><span class="num">8.4k</span></div>
@@ -565,11 +696,94 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
                 <div class="r-row" data-in style="--d:5"><span>Telegram</span><span class="bar"><i style="--v:.16;--d:3"></i></span><span class="num">1.4k</span></div>
               </div>
               <span class="note" data-in style="--d:6">Views after 48 hours. Example numbers.</span>
-              <div class="insight" data-in style="--d:7"><div><small>For tomorrow</small>Taste tests worked. Three more ideas like this are waiting.</div></div>
+              <div class="insight" data-in style="--d:7"><div><small>For tomorrow</small>Myths worked. Three more ideas like this are waiting.</div></div>
             </section>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="looks" id="looks">
+  <div class="wrap">
+    <div class="looks-head">
+      <div>
+        <p class="eyebrow">Looks</p>
+        <h2>Give it a picture. It gives it a look.</h2>
+      </div>
+      <p>Pick a photo, then a look, a caption style and a motion. These are the app’s own colour grades and caption presets, applied right here in your browser. Try your own photo too: it never leaves this page.</p>
+    </div>
+    <div class="studio">
+      <div>
+        <div class="stage" id="stage">
+          <div class="zoom"><canvas id="lookCanvas" width="720" height="900" aria-label="The chosen painting with the chosen look"></canvas></div>
+          <span class="handle"><i id="handleAv"></i><span>oldmasters.daily <small>· now</small></span></span>
+          <div class="capl" id="capl" data-c="gold" aria-live="polite"></div>
+        </div>
+        <div class="worker" id="worker"><div class="line"><small>Diw at work</small><span id="workerLine">Ready</span></div><span class="bar"><i></i></span></div>
+      </div>
+      <div class="controls">
+        <div class="ctl"><h3>Photo</h3>
+          <div class="photos" id="photos">
+            <button type="button" class="on" data-src="assets/mona.jpg" data-hook="She’s not smiling at you." data-key="2" aria-label="Mona Lisa, Leonardo"><img src="assets/mona.jpg" alt=""></button>
+            <button type="button" data-src="assets/pearl.jpg" data-hook="The pearl is probably not a pearl." data-key="5" aria-label="Girl with a Pearl Earring, Vermeer"><img src="assets/pearl.jpg" alt=""></button>
+            <button type="button" data-src="assets/agnew.jpg" data-hook="Painted in one sitting. Still judging you." data-key="6" aria-label="Lady Agnew of Lochnaw, Sargent"><img src="assets/agnew.jpg" alt=""></button>
+            <button type="button" data-src="assets/hammersley.jpg" data-hook="Main character energy, 1892." data-key="1" aria-label="Mrs Hugh Hammersley, Sargent"><img src="assets/hammersley.jpg" alt=""></button>
+            <button type="button" data-src="assets/velata.jpg" data-hook="Raphael’s girlfriend, probably." data-key="1" aria-label="La Velata, Raphael"><img src="assets/velata.jpg" alt=""></button>
+            <button type="button" data-src="assets/shepherd.jpg" data-hook="POV: you skipped art class." data-key="3" aria-label="A young shepherdess, Bouguereau"><img src="assets/shepherd.jpg" alt=""></button>
+            <label for="ownPhoto">Your photo<input type="file" id="ownPhoto" accept="image/*"></label>
+          </div>
+        </div>
+        <div class="ctl"><h3>Look</h3>
+          <div class="chiprow" id="lookRow">
+            <button type="button" data-look="none">Original</button>
+            <button type="button" data-look="portra">Portra</button>
+            <button type="button" data-look="tealorange" class="on">Teal &amp; orange</button>
+            <button type="button" data-look="mono">Mono</button>
+            <button type="button" data-look="warm">Warm</button>
+            <button type="button" data-look="fade">Fade</button>
+          </div>
+        </div>
+        <div class="ctl"><h3>Words</h3>
+          <div class="chiprow" id="capRow">
+            <button type="button" data-c="clean">Clean</button>
+            <button type="button" data-c="gold" class="on">Gold word</button>
+            <button type="button" data-c="big">Big word</button>
+            <button type="button" data-c="box">Box</button>
+            <button type="button" data-c="news">Newsline</button>
+            <button type="button" data-c="marker">Marker</button>
+            <button type="button" data-c="two">Two tone</button>
+          </div>
+        </div>
+        <div class="ctl"><h3>Motion</h3>
+          <div class="chiprow" id="motionRow">
+            <button type="button" data-m="still">Still</button>
+            <button type="button" data-m="push" class="on">Slow push</button>
+            <button type="button" data-m="pop">Pop words</button>
+            <button type="button" data-m="type">Typewriter</button>
+          </div>
+        </div>
+        <p class="fine">Portra, Teal &amp; orange and Mono are the exact colour tables the app ships. In the app the same look runs on every slide and every frame of a video, and you can still change one on its own.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="diwband" id="diw">
+  <div class="wrap diw-grid">
+    <div>
+      <p class="eyebrow">The idea behind Diw</p>
+      <h2>A small div that does the work.</h2>
+      <p>In Persian stories a <span class="fa">دیو</span>, a div, is the giant who can build a palace overnight. Diwche is a little one, and it works for you. While it works it never shows you a spinner. It tells you, in one honest line, exactly what it is doing, and you can leave: it keeps going and tells you when it is done.</p>
+      <div class="never"><span>No spinners</span><span>No fake progress</span><span>Leave any time</span><span>English and Tehrani Persian</span></div>
+    </div>
+    <div class="ticker" id="ticker" aria-live="polite">
+      <div class="row"><span class="eyebrow">Diw at work</span><span class="eyebrow" id="tickJob" style="color:var(--ink3)">Your reel</span></div>
+      <div class="now"><span id="tickEn">Opening the video</span></div>
+      <div class="fa-now" lang="fa" id="tickFa">دارم ویدیو رو باز می‌کنم</div>
+      <div class="gb"><i id="tickBar"></i></div>
+      <div class="meta"><span id="tickStep">Step 1 of 6</span><span>You can leave. I keep going.</span></div>
     </div>
   </div>
 </section>
@@ -584,12 +798,12 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
       <p>Each channel gets its own cut: the right size, length, caption and hour. Nothing is copied and pasted between them.</p>
     </div>
     <div class="proj-row" id="projRow">
-      <div class="pj" style="--i:0"><div class="frame f-ig"><div class="img">Your flat white is lying to you.<span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bar">roastery.leipzig · Swipe for the taste test</div></div><span class="cap">Instagram<small>Carousel, 4:5</small></span></div>
-      <div class="pj" style="--i:1"><div class="frame f-tt"><span class="cc">your flat white<br>is <em>lying</em></span><span class="u">@roastery.leipzig · original sound</span></div><span class="cap">TikTok<small>Reel, 9:16, word captions</small></span></div>
-      <div class="pj" style="--i:2"><div class="frame f-yt"><span class="play"></span></div><span class="cap">YouTube<small>Short, 0:24</small></span></div>
-      <div class="pj" style="--i:3"><div class="frame f-tg"><div class="vn"><span class="pl"></span><span class="w"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:60"></i><i style="--h:30"></i><i style="--h:70"></i><i style="--h:45"></i><i style="--h:85"></i><i style="--h:50"></i></span><small>0:31</small></div><div class="msg">Try one shot black, then with milk. Tell us what you taste ☕</div></div><span class="cap">Telegram<small>Voice note and post</small></span></div>
-      <div class="pj" style="--i:4"><div class="frame f-blog"><span class="k">Taste · 3 min read</span><h4>Why your flat white is lying to you</h4><span class="ln"></span><span class="ln"></span><span class="ln s"></span><span class="pic"></span></div><span class="cap">Blog<small>Article from the script</small></span></div>
-      <div class="pj" style="--i:5"><div class="frame f-x"><div class="tw"><span class="h"><i></i>Roastery <small>@roastery_lpz</small></span><p>Your flat white is lying to you. A thread on what milk hides 🧵</p></div><div class="tw"><p>1/ Milk is sweet. It covers a dark roast the way a filter covers a photo.</p></div></div><span class="cap">X<small>Thread, 5 posts</small></span></div>
+      <div class="pj" style="--i:0"><div class="frame f-ig"><div class="img"><img src="assets/pearl.jpg" alt="Girl with a Pearl Earring, Vermeer, as an Instagram carousel slide"><b>The pearl is probably not a pearl.</b><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bar">oldmasters.daily · Swipe for the proof</div></div><span class="cap">Instagram<small>Carousel, 4:5</small></span></div>
+      <div class="pj" style="--i:1"><div class="frame f-tt"><video src="assets/reels/mona.mp4" poster="assets/reels/mona.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc live-cc" data-video data-words="She’s|not|smiling|at|you." data-key="2"></span><span class="u">@oldmasters.daily · original sound</span></div><span class="cap">TikTok<small>Reel, 9:16, Teal &amp; orange look</small></span></div>
+      <div class="pj" style="--i:2"><div class="frame f-yt"><video src="assets/reels/agnew.mp4" poster="assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video><span class="cc box live-cc" data-video data-words="Sargent|painted|her|in|one|sitting" data-key="4"></span><span class="yt-bar"><i></i></span></div><span class="cap">YouTube<small>Short, Mono look</small></span></div>
+      <div class="pj" style="--i:3"><div class="frame f-tg"><div class="photo"><img src="assets/velata.jpg" alt=""></div><div class="vn"><span class="pl"></span><span class="w"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:60"></i><i style="--h:30"></i><i style="--h:70"></i><i style="--h:45"></i><i style="--h:85"></i><i style="--h:50"></i></span><small>0:31</small></div><div class="msg">Raphael’s girlfriend, probably. Tell us who you see 👀</div></div><span class="cap">Telegram<small>Photo, voice note and post</small></span></div>
+      <div class="pj" style="--i:4"><div class="frame f-blog"><img class="pic" src="assets/hammersley.jpg" alt=""><span class="k">Myths · 3 min read</span><h4>Why she isn’t smiling at you</h4><span class="ln"></span><span class="ln"></span><span class="ln s"></span></div><span class="cap">Blog<small>Article from the script</small></span></div>
+      <div class="pj" style="--i:5"><div class="frame f-x"><div class="tw"><span class="h"><i></i>Old Masters <small>@oldmasters_daily</small></span><p>She’s not smiling at you. A thread on the most famous mouth in art 🧵</p><img src="assets/mona.jpg" alt=""></div><div class="tw"><p>1/ Leonardo blurred the corners of her mouth on purpose.</p></div></div><span class="cap">X<small>Thread, 5 posts</small></span></div>
     </div>
   </div>
 </section>
@@ -602,6 +816,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     </div>
     <a class="btn btn-primary" href="#top">Get the app</a>
   </section>
+  <p class="credits">Paintings: Leonardo da Vinci, Johannes Vermeer, John Singer Sargent, Raphael, William-Adolphe Bouguereau. All public domain. Reels and looks made with the app’s own colour tables.</p>
   <footer><span>Diwche · v2 design prototype</span><span>Quiet style, shared with the apps</span></footer>
 </div>
 
@@ -633,7 +848,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
       g.lineWidth = 3; g.beginPath(); g.roundRect ? g.roundRect(4, 4, W - 8, H - 8, 18) : g.rect(4, 4, W - 8, H - 8); g.stroke();
       g.fillRect(64, 22, 120, 9); g.fillRect(64, 37, 70, 6);
       g.font = '600 35px Fraunces, Georgia, serif'; g.textBaseline = 'middle';
-      g.lineWidth = 1.5; ['Your flat white', 'is lying to you.'].forEach((t, i) => { g.fillText(t, 34, 160 + i * 44); g.strokeText(t, 34, 160 + i * 44); });
+      g.lineWidth = 1.5; ['She’s not', 'smiling at you.'].forEach((t, i) => { g.fillText(t, 34, 160 + i * 44); g.strokeText(t, 34, 160 + i * 44); });
       g.lineWidth = 2.5; g.strokeRect(22, 62, W - 44, 284);
       [[34, 372], [70, 372], [106, 372]].forEach(([x, y]) => { g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.stroke(); });
       g.fillRect(28, 398, 250, 6); g.fillRect(28, 412, 190, 6); g.fillRect(28, 426, 120, 6);
@@ -650,7 +865,7 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     }
     return { pos, gold, cam: [0, 0, 13.5], look: [0, 0, 0],
       callouts: [
-        { at: [-2.1, 2.85, 0], t: 'Handle', d: 'who it speaks for' },
+        { at: [-2.1, 2.85, 0], t: 'Handle', d: '@oldmasters.daily' },
         { at: [1.6, 1.1, 0], t: 'Hook', d: 'the line that stops the thumb' },
         { at: [-2.2, -1.0, 0], t: 'Visual', d: 'what the eye lands on' },
         { at: [0.9, -2.75, 0], t: 'Caption', d: 'the ask, in your voice' } ] };
@@ -674,8 +889,8 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     }
     return { pos, gold, cam: [0, 1.5, 14], look: [0, 0, 0],
       callouts: [
-        { at: [-4.3, 2.55, 0], t: 'Trend', d: 'what Leipzig is talking about' },
-        { at: [1.9, 3.15, .7], t: 'Taste test', d: 'picked for today' },
+        { at: [-4.3, 2.55, 0], t: 'Trend', d: 'what art pages are posting today' },
+        { at: [1.9, 3.15, .7], t: 'Myth', d: 'picked for today' },
         { at: [4.6, -.5, -.6], t: 'Question', d: 'asked by your followers' },
         { at: [-3.0, -2.95, 1.0], t: 'Behind the bar', d: 'a story only you have' },
         { at: [.3, -.05, -.4], t: 'Nucleus', d: 'why it should work for you' } ] };
@@ -697,9 +912,9 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     }
     return { pos, gold, cam: [0, 2.2, 14.5], look: [0, 0, 0],
       callouts: [
-        { at: [-4.6, 1.5, 0], t: 'Hook', d: '“Your flat white is lying to you.”' },
-        { at: [0, -1.5, 0], t: 'Body', d: 'milk hides the roast' },
-        { at: [4.6, 1.5, 0], t: 'Ask', d: 'come taste it black' },
+        { at: [-4.6, 1.5, 0], t: 'Hook', d: '“She’s not smiling at you.”' },
+        { at: [0, -1.5, 0], t: 'Body', d: 'the blurred corners of her mouth' },
+        { at: [4.6, 1.5, 0], t: 'Ask', d: 'follow for one painting a day' },
         { at: [-1.8, 0, 0], t: 'Base pair', d: 'one line, used by every format' } ] };
   }
 
@@ -961,3 +1176,165 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
   }
 })();
 </script>
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Captions that follow a video, one word lit at a time (the app's word-by-word captions). */
+  document.querySelectorAll('.live-cc[data-video]').forEach(el => {
+    const words = el.dataset.words.split('|'), key = +el.dataset.key;
+    el.innerHTML = words.map(w => `<span>${w}</span>`).join(' ');
+    const spans = [...el.children], v = el.parentElement.querySelector('video'), bar = el.parentElement.querySelector('.yt-bar');
+    if (!v) return;
+    const tick = () => {
+      const t = v.duration ? v.currentTime / v.duration : 0, n = Math.min(words.length - 1, Math.floor(t * (words.length + 1)));
+      spans.forEach((s, i) => { s.classList.toggle('on', i === n || (i === key && n >= key)); s.classList.toggle('wait', i > n); });
+      if (bar) bar.style.setProperty('--p', t.toFixed(3));
+    };
+    v.addEventListener('timeupdate', tick); tick();
+    if (reduce) { v.removeAttribute('autoplay'); v.pause(); spans.forEach(s => s.classList.remove('wait')); }
+  });
+
+  /* ---------- Looks studio ---------- */
+  const canvas = document.getElementById('lookCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const W = canvas.width, H = canvas.height;
+  const stage = document.getElementById('stage'), capl = document.getElementById('capl');
+  const worker = document.getElementById('worker'), workerLine = document.getElementById('workerLine');
+  const state = { src: 'assets/mona.jpg', hook: 'She’s not smiling at you.', key: 2, look: 'tealorange', cap: 'gold', motion: 'push', own: null };
+  const cubes = {}, base = {}, graded = {};
+
+  const say = (line, busy) => { workerLine.textContent = line; worker.classList.toggle('busy', !!busy); worker.classList.toggle('done', !busy); };
+
+  async function cube(name) {
+    if (cubes[name]) return cubes[name];
+    const txt = await (await fetch(`assets/looks/${name}.cube`)).text();
+    let N = 0; const data = [];
+    for (const line of txt.split('\n')) {
+      const l = line.trim(); if (!l || l[0] === '#') continue;
+      if (l.startsWith('LUT_3D_SIZE')) { N = +l.split(/\s+/)[1]; continue; }
+      if (/^[A-Z_]/.test(l)) continue;
+      const p = l.split(/\s+/); if (p.length === 3) data.push(+p[0], +p[1], +p[2]);
+    }
+    return (cubes[name] = { N, d: new Float32Array(data) });
+  }
+
+  function drawCover(img) {
+    const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+    const s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+    g.drawImage(img, (W - w) / 2, (H - h) * .3, w, h);
+    return g.getImageData(0, 0, W, H);
+  }
+  async function loadBase(key, src) {
+    if (base[key]) return base[key];
+    const img = new Image(); img.src = src; await img.decode();
+    return (base[key] = drawCover(img));
+  }
+
+  // The colour table, trilinear, red fastest (the .cube order).
+  function applyCube(src, { N, d }) {
+    const out = new ImageData(new Uint8ClampedArray(src.data), src.width, src.height), p = out.data, M = N - 1;
+    for (let i = 0; i < p.length; i += 4) {
+      const r = p[i] / 255 * M, g = p[i + 1] / 255 * M, b = p[i + 2] / 255 * M;
+      const r0 = r | 0, g0 = g | 0, b0 = b | 0, r1 = Math.min(r0 + 1, M), g1 = Math.min(g0 + 1, M), b1 = Math.min(b0 + 1, M);
+      const fr = r - r0, fg = g - g0, fb = b - b0;
+      for (let c = 0; c < 3; c++) {
+        const at = (R, G, B) => d[(R + G * N + B * N * N) * 3 + c];
+        const c00 = at(r0, g0, b0) * (1 - fr) + at(r1, g0, b0) * fr, c10 = at(r0, g1, b0) * (1 - fr) + at(r1, g1, b0) * fr;
+        const c01 = at(r0, g0, b1) * (1 - fr) + at(r1, g0, b1) * fr, c11 = at(r0, g1, b1) * (1 - fr) + at(r1, g1, b1) * fr;
+        p[i + c] = ((c00 * (1 - fg) + c10 * fg) * (1 - fb) + (c01 * (1 - fg) + c11 * fg) * fb) * 255;
+      }
+    }
+    return out;
+  }
+  function simple(src, kind) {
+    const out = new ImageData(new Uint8ClampedArray(src.data), src.width, src.height), p = out.data;
+    for (let i = 0; i < p.length; i += 4) {
+      let r = p[i], g = p[i + 1], b = p[i + 2];
+      if (kind === 'warm') { r = r * 1.07 + 6; g = g * 1.01 + 2; b = b * .88; }
+      else { const y = .3 * r + .59 * g + .11 * b; r = 22 + (r * .8 + y * .2) * .84; g = 20 + (g * .8 + y * .2) * .84; b = 26 + (b * .8 + y * .2) * .84; }
+      p[i] = r; p[i + 1] = g; p[i + 2] = b;
+    }
+    return out;
+  }
+
+  let run = 0;
+  async function render() {
+    const my = ++run, photoKey = state.own ? 'own' : state.src, lookKey = photoKey + '|' + state.look;
+    if (!graded[lookKey]) say(state.look === 'none' ? 'Opening your photo' : 'Grading the light', true);
+    try {
+      const src = state.own ? base.own : await loadBase(photoKey, state.src);
+      if (!graded[lookKey]) {
+        await new Promise(r => setTimeout(r, 30));
+        graded[lookKey] = state.look === 'none' ? src : (state.look === 'warm' || state.look === 'fade') ? simple(src, state.look) : applyCube(src, await cube(state.look));
+      }
+      if (my !== run) return;
+      ctx.putImageData(graded[lookKey], 0, 0);
+      say('Your look is ready', false);
+    } catch (e) { say('That photo could not be opened. Try another.', false); }
+  }
+
+  function words() {
+    const ws = state.hook.split(' '), half = Math.ceil(ws.length / 2);
+    capl.dataset.c = state.cap;
+    capl.innerHTML = ws.map((w, i) => `<span class="w${i === state.key ? ' k' : ''}${i >= half ? ' l2' : ''}" style="--i:${i}">${w}</span>`).join(' ');
+    capl.classList.remove('pop', 'type'); void capl.offsetWidth;
+    if (!reduce && (state.motion === 'pop' || state.motion === 'type')) capl.classList.add(state.motion);
+    stage.classList.toggle('push', !reduce && state.motion === 'push');
+  }
+
+  const pick = (row, attr, key) => document.getElementById(row).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    [...e.currentTarget.querySelectorAll('button')].forEach(x => x.classList.toggle('on', x === b));
+    state[key] = b.dataset[attr]; key === 'look' ? render() : words();
+  });
+  pick('lookRow', 'look', 'look'); pick('capRow', 'c', 'cap'); pick('motionRow', 'm', 'motion');
+
+  const photos = document.getElementById('photos'), av = document.getElementById('handleAv');
+  photos.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    photos.querySelectorAll('.on').forEach(x => x.classList.remove('on')); b.classList.add('on');
+    Object.assign(state, { src: b.dataset.src, hook: b.dataset.hook, key: +b.dataset.key, own: null });
+    av.style.backgroundImage = `url(${b.dataset.src})`; words(); render();
+  });
+  document.getElementById('ownPhoto').addEventListener('change', async e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    say('Reading your photo', true);
+    try {
+      const url = URL.createObjectURL(f), img = new Image(); img.src = url; await img.decode();
+      base.own = drawCover(img); Object.keys(graded).filter(k => k.startsWith('own|')).forEach(k => delete graded[k]);
+      photos.querySelectorAll('.on').forEach(x => x.classList.remove('on')); e.target.parentElement.classList.add('on');
+      Object.assign(state, { own: true, hook: 'Your page, your look.', key: 3 });
+      av.style.backgroundImage = `url(${url})`; words(); render();
+    } catch (err) { say('That photo could not be opened. Try another.', false); }
+  });
+
+  av.style.backgroundImage = 'url(assets/mona.jpg)';
+  words(); render();
+  // Pop and typewriter replay every few seconds while the studio is on screen.
+  let seen = false;
+  new IntersectionObserver(([e]) => { seen = e.isIntersecting; }).observe(stage);
+  if (!reduce) setInterval(() => { if (seen && (state.motion === 'pop' || state.motion === 'type')) words(); }, 4200);
+
+  /* ---------- Diw's live lines (the app's own steps, English and Persian) ---------- */
+  const lines = [
+    ['Opening the video', 'دارم ویدیو رو باز می‌کنم'],
+    ['Sending the audio', 'دارم صدا رو می‌فرستم'],
+    ['Listening word by word', 'دارم کلمه به کلمه گوش می‌دم'],
+    ['Burning the captions in', 'دارم زیرنویس رو می‌چسبونم رو ویدیو'],
+    ['Rendering your video', 'دارم ویدیوت رو می‌سازم'],
+    ['Your video is ready · Open', 'ویدیوت آماده‌ست، ببین'] ];
+  const en = document.getElementById('tickEn'), fa = document.getElementById('tickFa'), bar = document.getElementById('tickBar'), step = document.getElementById('tickStep');
+  let k = 0, live = false;
+  new IntersectionObserver(([e]) => { live = e.isIntersecting; }).observe(document.getElementById('ticker'));
+  const show = () => {
+    en.classList.add('out');
+    setTimeout(() => { en.textContent = lines[k][0]; fa.textContent = lines[k][1]; en.classList.remove('out');
+      bar.style.setProperty('--f', ((k + 1) / lines.length).toFixed(2)); step.textContent = `Step ${k + 1} of ${lines.length}`; }, reduce ? 0 : 260);
+  };
+  show();
+  setInterval(() => { if (!live) return; k = (k + 1) % lines.length; show(); }, 2200);
+})();
+</script>
+
