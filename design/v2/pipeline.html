@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;700&family=Gabarito:wght@700&family=Manrope:wght@400;600;700&family=Unbounded:wght@700&family=Space+Grotesk:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Instrument+Serif:ital@0;1&family=Anton&family=Bricolage+Grotesque:wght@700&family=Archivo+Black&family=DM+Serif+Display:ital@1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;700&family=Gabarito:wght@700&family=Manrope:wght@400;600;700&family=Unbounded:wght@700&family=Space+Grotesk:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Instrument+Serif:ital@0;1&family=Anton&family=Caveat:wght@600&family=Bricolage+Grotesque:wght@700&family=Archivo+Black&family=DM+Serif+Display:ital@1&display=swap">
 <link rel="stylesheet" href="site.css">
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -20,26 +20,27 @@
 
 <div class="wrap">
   <nav class="nav" aria-label="Main">
-    <a class="mark" href="#top"><span class="mark-dot" aria-hidden="true"></span>Diwche</a>
+    <a class="mark" href="#top"><img class="mark-horns" src="assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
     <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#post">Post</a>
+      <a href="#story">How it works</a>
+      <a href="#tools">Tools</a>
+      <a href="#templates">Templates</a>
       <a href="usecases.html">Who it’s for</a>
       <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">EN</button><button type="button" data-l="de">DE</button><button type="button" data-l="fa">فا</button></div>
-      <a class="btn btn-primary" href="#start">Get the app</a>
+      <a class="btn btn-primary" href="#start">Get early access</a>
     </div>
   </nav>
 
   <header class="hero" id="top">
     <div>
-      <p class="eyebrow">For people who run a page</p>
-      <h1 data-tk="hero">One idea in.<br><em>Every channel</em> out.</h1>
+      <p class="eyebrow">Content from 0 to 100</p>
+      <h1 data-tk="hero2">From knowing you<br>to <em>the finished post</em>.</h1>
     </div>
     <div class="hero-side">
-      <p class="lede">Tell Diwche about your page once. Each morning it brings you ideas, writes the script, and builds every format from it: posts, carousels, stories, reels and voiceovers, shaped for each channel.</p>
+      <p class="lede">Diwche gets to know you and your page, brings you ideas every morning, writes the script for each medium, from story to post to reel, and gives you the tools to make them: Photo Studio, Video Studio, D1, templates and looks. Then it shows you what worked.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#start">Get the app</a>
-        <a class="btn btn-quiet" href="#post">Try the Post studio</a>
+        <a class="btn btn-primary" href="#start">Get early access</a>
+        <a class="btn btn-quiet" href="#tools">See the tools</a>
       </div>
     </div>
   </header>
@@ -87,73 +88,48 @@
   </div>
 </section>
 
-<section class="poststudio" id="post">
-  <div class="wrap">
-    <div class="sec-head">
-      <div><p class="eyebrow">Create · Post</p><h2>One photo. Every look the app has.</h2></div>
-      <p>This is the Post screen from the app. Pick a photo, then a look from the same 67 the app grades with, a caption look from its 30, or a one-tap recipe. Or press Shuffle and let it surprise you. Your own photo works too, and it never leaves this page.</p>
-    </div>
-    <div class="ps">
-      <div>
-        <div class="ps-stage" id="psStage"><canvas id="psCanvas" width="720" height="900" aria-label="The photo with the chosen look"></canvas><div class="ps-cap" id="psCap" data-no-t aria-live="off"></div></div>
-        <div class="ps-meta"><span><b id="psCode" data-no-t>X2</b><span id="psName" data-no-t>Teal &amp; orange</span> · <span id="psCapName" data-no-t>Gold fill</span></span>
-          <button type="button" class="shuffle" id="psShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span>Shuffle</span></button></div>
-        <div class="worker" id="worker"><div class="line"><small>Diw at work</small><span id="workerLine" data-no-t>Your look is ready</span></div><span class="bar"><i></i></span></div>
-      </div>
-      <div class="ps-ctl">
-        <div><h3><span class="h">Photo</span></h3><div class="hscroll" id="psPhotos" data-no-t></div></div>
-        <div><h3><span class="h">Recipes</span><span>One tap: a look at its own strength</span></h3><div class="recipes" id="psRecipes" data-no-t></div></div>
-        <div><h3><span class="h">Looks</span><span id="psCount">67 looks · 10 families</span></h3><div class="fam" id="psFam" data-no-t></div><div class="hscroll" id="psLooks" data-no-t></div>
-          <div class="strength"><span class="s-meta">Look strength</span><input type="range" id="psStrength" min="0" max="100" value="100" aria-label="Look strength"><output id="psStrengthOut" data-no-t>100</output></div></div>
-        <div><h3><span class="h">Caption look</span><span>30 looks · 5 shelves</span></h3><div class="shelf" id="psShelf" data-no-t></div><div class="hscroll" id="psCaps" data-no-t></div></div>
-        <p class="fine">The looks are the app’s own colour tables, applied here pixel by pixel. Captions use each look’s real font, colours and highlight: colour, fill-in or bounce.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="story" id="story">
   <div class="wrap">
     <div class="story-head">
-      <p class="eyebrow">Follow one idea</p>
-      <h2>From a voice note to six channels, in the app you already hold.</h2>
+      <p class="eyebrow">From 0 to 100</p>
+      <h2>From knowing you to knowing what worked.</h2>
     </div>
     <div class="story-grid">
       <div class="steps" id="steps">
         <article class="step on" data-step="0">
-          <span class="n">01 Onboarding</span>
-          <h3>Tell it about your page, out loud.</h3>
+          <span class="n">0 · Knows you</span>
+          <h3>First, it gets to know you.</h3>
           <p>Talk for a minute about what you post and who for. Diwche turns it into a brief: your niche, your voice, your people, how often you want to post.</p>
           <div class="tags"><span class="tag">Voice or text</span><span class="tag">English, Deutsch, فارسی</span></div>
         </article>
         <article class="step" data-step="1">
-          <span class="n">02 Ideas</span>
+          <span class="n">15 · Ideas</span>
           <h3>Every morning, ideas that fit your page.</h3>
           <p>It reads what your corner of the internet is talking about today and hands you a few ideas, each with the hook and the reason it should work for you.</p>
         </article>
         <article class="step" data-step="2">
-          <span class="n">03 Plan</span>
+          <span class="n">30 · Plan</span>
           <h3>Pick one. It finds the slot.</h3>
           <p>The week fills itself around the rhythm you chose. Done posts turn green, planned ones wait in grey, and you can drag anything around.</p>
         </article>
         <article class="step" data-step="3">
-          <span class="n">04 Script</span>
-          <h3>A script in your voice.</h3>
-          <p>Hook, body, call to action. Change a line by typing or by talking, and it rewrites around you without losing the point.</p>
+          <span class="n">45 · Scripts</span>
+          <h3>A script for every medium.</h3>
+          <p>One idea, written for each shape it takes: a hook for the post, slides for the carousel, frames for the story, spoken lines for the reel. Change a line by typing or by talking.</p>
         </article>
         <article class="step" data-step="4">
-          <span class="n">05 Make</span>
-          <h3>One script, four shapes.</h3>
-          <p>The same script becomes a post, a carousel, a reel with word-by-word captions, and a voiceover. You watch Diw work through it, one honest line at a time.</p>
-          <div class="tags"><span class="tag">Post</span><span class="tag">Carousel</span><span class="tag">Reel</span><span class="tag">Voiceover</span></div>
+          <span class="n">70 · Make</span>
+          <h3>Then the tools to make it.</h3>
+          <p>Each script opens in the right tool, already filled in. You finish it your way, and Diw tells you what it is doing, one honest line at a time.</p>
+          <div class="tags"><span class="tag">Photo Studio</span><span class="tag">Video Studio</span><span class="tag">D1</span><span class="tag">Templates</span><span class="tag">Looks</span></div>
         </article>
         <article class="step" data-step="5">
-          <span class="n">06 Publish</span>
+          <span class="n">85 · Publish</span>
           <h3>Shaped for each channel, sent on time.</h3>
           <p>Square for the feed, vertical for TikTok and Shorts, a voice note and a caption for Telegram, an article for your blog, a thread for X. Each goes out at its own best hour.</p>
         </article>
         <article class="step" data-step="6">
-          <span class="n">07 See how it did</span>
+          <span class="n">100 · See how it did</span>
           <h3>Then it tells you what worked.</h3>
           <p>Results come back per channel, in plain words, and the next morning's ideas lean toward what your people actually watched.</p>
         </article>
@@ -253,20 +229,115 @@
 
 
 
+<section class="tools" id="tools">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">The tools to make it</p><h2>Every idea gets a workshop.</h2></div>
+      <p>The script lands in the right tool, already filled in. Finish it by hand, or let Diw take the first pass and change what you like.</p>
+    </div>
+    <div class="tool-grid">
+      <article class="tool">
+        <div class="tv tv-photo" aria-hidden="true"><img src="assets/pearl.jpg" alt=""><span class="cut"></span><span class="txt">The pearl is probably not a pearl.</span></div>
+        <h3>Photo Studio</h3>
+        <p>Crop, retouch, lift the subject off the background, add text and stickers. Persian text runs right to left on its own.</p>
+      </article>
+      <article class="tool">
+        <div class="tv tv-video" aria-hidden="true"><video src="assets/reels/agnew.mp4" poster="assets/reels/agnew.jpg" muted loop playsinline autoplay preload="metadata"></video>
+          <span class="tl"><i style="--w:28"></i><i style="--w:18"></i><i style="--w:34"></i><i style="--w:20"></i><b></b></span></div>
+        <h3>Video Studio</h3>
+        <p>One timeline for cuts, music, word-by-word captions, text, looks and your own voice.</p>
+      </article>
+      <article class="tool">
+        <div class="tv tv-d1" aria-hidden="true">
+          <span class="clips"><img src="assets/rowers.jpg" alt=""><img src="assets/agnew.jpg" alt=""><img src="assets/coffee.jpg" alt=""></span>
+          <span class="arrow"></span>
+          <span class="reel"><img src="assets/reels/pearl.jpg" alt=""><span class="beat"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+        </div>
+        <h3>D1</h3>
+        <p>Drop in your raw clips. D1 watches them, cuts a reel to your script and the beat, and opens it in the Video Studio for you to finish.</p>
+      </article>
+      <a class="tool" href="#templates">
+        <div class="tv tv-tpl" aria-hidden="true"><img src="assets/coffee.jpg" alt=""><span class="date"><b>30</b>OCT</span><span class="lbl">New on the menu</span></div>
+        <h3>Make a post</h3>
+        <p>Your photo in a template that moves. Shuffle until one feels right.</p>
+      </a>
+      <a class="tool" href="#post">
+        <div class="tv tv-looks" aria-hidden="true"><img src="assets/shuffle/kodachrome.jpg" alt=""><img src="assets/shuffle/noir.jpg" alt=""><img src="assets/shuffle/tealorange.jpg" alt=""></div>
+        <h3>Looks</h3>
+        <p>67 looks in 10 families and 30 caption looks, the same in every tool.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="tpl" id="templates">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Create · Make a post</p><h2>Your photo. A template that moves.</h2></div>
+      <p>Pick a photo and shuffle. Each template recreates a motion reference with your picture: the frame settles, the type comes in, the label lands. Tap a text and it moves to the next spot the template allows.</p>
+    </div>
+    <div class="tpl-grid">
+      <div class="tpl-col">
+        <div class="tpl-stage" id="tplStage" data-no-t></div>
+        <div class="ps-meta"><span><b id="tplName" data-no-t>Date stamp</b> · <span id="tplSpot" data-no-t></span></span>
+          <button type="button" class="shuffle" id="tplShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle</button></div>
+      </div>
+      <div class="ps-ctl tpl-side">
+        <div><h3><span class="h">Photo</span></h3><div class="hscroll" id="tplPhotos" data-no-t></div></div>
+        <div><h3><span class="h">Templates</span><span>15 now, 50 on the way</span></h3><div class="tpl-list" id="tplList" data-no-t></div></div>
+        <ul class="tpl-facts">
+          <li>Each template is redrawn from a motion reference, so it moves, not just sits there.</li>
+          <li>Text stays readable and off faces. A spot that would not work is skipped.</li>
+          <li>Tap a text to move it. Texts the look pins, like a masthead, stay put.</li>
+          <li>Your page’s name and logo go where the template wants them.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="poststudio" id="post">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Looks</p><h2>One photo. Every look the app has.</h2></div>
+      <p>This is the Post screen from the app. Pick a photo, then a look from the same 67 the app grades with, a caption look from its 30, or a one-tap recipe. Or press Shuffle and let it surprise you. Your own photo works too, and it never leaves this page.</p>
+    </div>
+    <div class="ps">
+      <div>
+        <div class="ps-stage" id="psStage"><canvas id="psCanvas" width="720" height="900" aria-label="The photo with the chosen look"></canvas><div class="ps-cap" id="psCap" data-no-t aria-live="off"></div></div>
+        <div class="ps-meta"><span><b id="psCode" data-no-t>X2</b><span id="psName" data-no-t>Teal &amp; orange</span> · <span id="psCapName" data-no-t>Gold fill</span></span>
+          <button type="button" class="shuffle" id="psShuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span>Shuffle</span></button></div>
+        <div class="worker" id="worker"><div class="line"><small>Diw at work</small><span id="workerLine" data-no-t>Your look is ready</span></div><span class="bar"><i></i></span></div>
+      </div>
+      <div class="ps-ctl">
+        <div><h3><span class="h">Photo</span></h3><div class="hscroll" id="psPhotos" data-no-t></div></div>
+        <div><h3><span class="h">Recipes</span><span>One tap: a look at its own strength</span></h3><div class="recipes" id="psRecipes" data-no-t></div></div>
+        <div><h3><span class="h">Looks</span><span id="psCount">67 looks · 10 families</span></h3><div class="fam" id="psFam" data-no-t></div><div class="hscroll" id="psLooks" data-no-t></div>
+          <div class="strength"><span class="s-meta">Look strength</span><input type="range" id="psStrength" min="0" max="100" value="100" aria-label="Look strength"><output id="psStrengthOut" data-no-t>100</output></div></div>
+        <div><h3><span class="h">Caption look</span><span>30 looks · 5 shelves</span></h3><div class="shelf" id="psShelf" data-no-t></div><div class="hscroll" id="psCaps" data-no-t></div></div>
+        <p class="fine">The looks are the app’s own colour tables, applied here pixel by pixel. Captions use each look’s real font, colours and highlight: colour, fill-in or bounce.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="diwband" id="diw">
   <div class="wrap diw-grid">
     <div>
       <p class="eyebrow">The idea behind Diw</p>
-      <h2>A small div that does the work.</h2>
-      <p data-tk="diw">In Persian stories a <span class="fa">دیو</span>, a div, is the giant who can build a palace overnight. Diwche is a little one, and it works for you. While it works it never shows you a spinner. It tells you, in one honest line, exactly what it is doing, and you can leave: it keeps going and tells you when it is done.</p>
+      <h2>A small Diw that does the work.</h2>
+      <p data-tk="diw2">In Persian stories a Diw (<span class="fa">دیو</span>) is the giant who can build a palace overnight. Diwche is a little one, and it works for you. While it works it never shows you a spinner. It tells you, in one honest line, exactly what it is doing, and you can leave: it keeps going and tells you when it is done.</p>
       <div class="never"><span>No spinners</span><span>No fake progress</span><span>Leave any time</span><span>English and Tehrani Persian</span></div>
     </div>
+    <div class="diw-side">
+    <img class="diw-mascot" src="assets/brand/working-hard.svg" alt="Diw at a desk under a lamp, writing in a ledger" width="840" height="803" loading="lazy" decoding="async">
     <div class="ticker" id="ticker" aria-live="polite">
       <div class="row"><span class="eyebrow">Diw at work</span><span class="eyebrow" id="tickJob" data-no-t style="color:var(--ink3)">Your reel</span></div>
       <div class="now"><span id="tickEn" data-no-t>Opening the video</span></div>
       <div class="fa-now" lang="fa" id="tickFa" data-no-t>دارم ویدیو رو باز می‌کنم</div>
       <div class="gb"><i id="tickBar"></i></div>
       <div class="meta"><span id="tickStep" data-no-t>Step 1 of 6</span><span>You can leave. I keep going.</span></div>
+    </div>
     </div>
   </div>
 </section>
@@ -302,17 +373,40 @@
 
 <div class="wrap" id="start">
   <section class="final">
+    <img class="final-mascot" src="assets/brand/thinking.svg" alt="" width="599" height="840" loading="lazy" decoding="async">
     <div>
-      <h2>Your page, run by someone paying attention.</h2>
-      <p data-tk="final">iPhone, iPad, Mac and Android. In English, Deutsch and <span lang="fa">فارسی</span>.</p>
+      <h2>Your page, from 0 to 100.</h2>
+      <p data-tk="final2">Coming soon to the App Store and Google Play. Testers use it today, in English, Deutsch and <span lang="fa">فارسی</span>.</p>
     </div>
-    <a class="btn btn-primary" href="#top">Get the app</a>
+    <a class="btn btn-primary" href="mailto:support@diwche.com?subject=Diwche%20early%20access">Get early access</a>
   </section>
-  <p class="credits">Paintings: Leonardo da Vinci, Johannes Vermeer, John Singer Sargent, Raphael, William-Adolphe Bouguereau, all public domain. Photos: Rachel Michetti and Stefan van der Walt, CC0. Looks and caption looks are the app’s own.</p>
-  <footer><span>Diwche · v2 design prototype</span><span>Quiet style, shared with the apps</span></footer>
+  <p class="credits">Paintings: Leonardo da Vinci, Johannes Vermeer, John Singer Sargent, Raphael, William-Adolphe Bouguereau, Paul Cézanne, Thomas Eakins and a Qajar Nowruz still life, all public domain. Photos: Rachel Michetti and Stefan van der Walt, CC0. Looks, caption looks and templates are the app’s own.</p>
 </div>
-
-
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="mark" href="pipeline.html#top"><img class="mark-horns" src="assets/brand/horns.png" alt="" width="256" height="166">Diwche</a>
+      <p>Your content from 0 to 100, on your phone.</p>
+    </div>
+    <div class="foot-col">
+      <h3 class="eyebrow">Talk to us</h3>
+      <a class="foot-mail" href="mailto:support@diwche.com" dir="ltr">support@diwche.com</a>
+      <p>A real person reads this one.</p>
+    </div>
+    <div class="foot-col">
+      <h3 class="eyebrow">Diwche</h3>
+      <a href="pipeline.html#story">How it works</a>
+      <a href="pipeline.html#tools">Tools</a>
+      <a href="usecases.html">Who it’s for</a>
+    </div>
+    <div class="foot-col">
+      <h3 class="eyebrow">Legal</h3>
+      <a href="https://diwche.com/privacy">Privacy</a>
+      <a href="https://diwche.com/terms">Terms</a>
+    </div>
+  </div>
+  <div class="wrap foot-base"><span>© 2026 Diwche</span><span dir="ltr">diwche.com</span></div>
+</footer>
 
 <script>
 (() => {
@@ -353,4 +447,5 @@
 <script src="i18n.js"></script>
 <script src="personas.js"></script>
 <script src="home.js"></script>
+<script src="templates.js"></script>
 

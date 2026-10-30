@@ -28,7 +28,7 @@ The attached photo is inspiration for the HEAD SHAPE ONLY (the tall pointed dome
 swept-back ears, the big soft nose, the low warm eyes, the gentle closed smile). Do not copy its
 realism, wet skin, neck wrinkles or overalls.
 
-CHARACTER: Diw, a lovable genderless div (a creature from Persian folklore), the hard-working
+CHARACTER: Diw, a lovable genderless Diw (دیو, a creature from Persian folklore), the hard-working
 craftsperson of a small studio. Short and compact. The HEAD is the main mass of the figure,
 about half of its total height: a tall onion-dome skull rising from wide cheeks to a soft
 rounded point that leans very slightly back. Two SMALL smooth cream horns point straight up

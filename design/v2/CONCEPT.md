@@ -1,4 +1,13 @@
-# diwche.com v2: "One idea, many shapes"
+# diwche.com v2: "Content from 0 to 100"
+
+**The narrative (owner, 2026-10-30):** Diwche covers content from 0 to 100. It understands you, brings ideas, writes
+scripts for every medium (story, post, carousel, reel), and gives you the tools to make them: Photo Studio, Video
+Studio, D1, Make a post templates and looks. Then it shows you what worked. Every section serves that line.
+The app is not in the stores yet: the call to action is "Get early access" (mail to support@diwche.com), never
+"Get the app". Other channels (YouTube, TikTok, Telegram, X, blog) are planned and may be shown.
+The page uses the live site's logo (horns + wordmark) and a little of the current mascot until Diw v2 art exists.
+
+## Earlier framing: "One idea, many shapes"
 
 The old site explains Diwche in paragraphs. v2 shows it: one idea travels down the page
 through every step of the app and comes out the other end as a post, a carousel, a reel and
@@ -38,7 +47,12 @@ The prototype uses the apps' **Quiet style** tokens, not a new system:
 The site's `design/DNA.md` still describes Sapphire & Champagne, which the apps have since moved
 away from on their main screens. If v2 goes ahead, DNA.md should be rewritten around tokens.json.
 
-## The page
+## The page (order as of 2026-10-30)
+
+Hero → motion explainer → From 0 to 100 (sticky phone) → The tools to make it → Make a post templates →
+Looks (Post studio) → The idea behind Diw (with the mascot) → Channels → Who it's for → Final call → Footer with contact.
+
+### Original section notes
 
 1. **How it works, as motion graphics.** A live, scene-based sequence under the headline, in the style of a
    Remotion explainer: one idea; it becomes a script whose lines are colour-coded building blocks (hook, body,
@@ -51,7 +65,7 @@ away from on their main screens. If v2 goes ahead, DNA.md should be rewritten ar
    with their codes (P1, F12 …) and a strength ruler, each applied from its real colour table; the 12 one-tap
    recipes; all 30 caption looks on 5 shelves, drawn with their real fonts, colours, boxes and highlight modes;
    and Shuffle. Data comes straight from the backend's looks.json and caption-looks.json.
-4. **The idea behind Diw.** The div from Persian stories, small and working for you, shown through its
+4. **The idea behind Diw.** The Diw (دیو) from Persian stories, small and working for you, shown through its
    real live lines in English and the app's Tehrani Persian. No mascot drawing until the new art exists.
 5. **Shaped for the place it lands.** The same idea rendered six ways: Instagram carousel,
    TikTok reel with word captions, YouTube Short, Telegram voice note and post, blog article, X thread.

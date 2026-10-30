@@ -20,3 +20,9 @@ move over the painting, graded with one of the app's looks.
 | `chelsea.jpg` | Chelsea the cat, Stefan van der Walt (via scikit-image data) | CC0 |
 | `looks/*.cube` (67) | The app's full look library (`backend/src/main/resources/looks/cube/`) | Ours |
 | `looks-sprite.jpg`, `shuffle/*.jpg` | Rendered here from the paintings with those looks | Ours |
+| `apples.jpg` | Paul Cézanne, *The Basket of Apples* (c. 1893), Art Institute of Chicago | Public domain |
+| `rowers.jpg` | Thomas Eakins, *The Biglin Brothers Racing* (1872), National Gallery of Art | CC0 / public domain |
+| `nowruz.jpg` | *A Nowruz still life*, Persia, Qajar, 19th century | Public domain |
+| `brand/horns.png`, `brand/thinking.svg`, `brand/working-hard.svg` | The live site's logo and mascot (`public/brand/`, `public/mascot/v2/`) | Ours |
+
+The three paintings above come from Wikimedia Commons, cropped to 4:5 and resized to 720 × 900.

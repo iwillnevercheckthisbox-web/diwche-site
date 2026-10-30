@@ -1,9 +1,9 @@
 /* Use cases: six pages, each drawn with a real carousel design family and brand palette from the app
-   (backend layouts/{family}, brand/palettes.json) and the app's real looks, recipes, caption looks and voices.
-   People and handles are invented. Images are public-domain paintings or CC0 photos. */
+   (backend layouts/{family}, brand/palettes.json) and the app's real looks, recipes and caption looks.
+   People and handles are invented. Images are public-domain paintings or CC0 photos (assets/CREDITS.md). */
 window.PERSONAS = [
   {
-    id: 'nutritionist', family: 'sage', img: null,
+    id: 'nutritionist', family: 'sage', img: 'assets/apples.jpg',
     pal: { bg: '#F3F5EF', ink: '#1E2A22', accent: '#4A7353', soft: '#DFE8DA', pop: '#C9783E' },
     handle: '@eat.with.mina',
     en: {
@@ -39,7 +39,7 @@ window.PERSONAS = [
       week: [['کاروسل', 'افسانه: شب کربوهیدرات نخور'], null, ['ریلز', 'صبحونه در ۳ دقیقه'], ['استوری', 'نظرسنجی: چی خوردی؟'], ['پست', 'سؤال هفته'], null, ['صداگذاری', 'لیست خرید آخر هفته']],
       tags: ['خانواده‌ی مریم‌گلی', 'Food Pop', 'زیرنویس تمیز'],
     },
-    kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'D1 · Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'Matilda · upbeat, educational'], ['Templates', 'Food']],
+    kit: [['Design family', 'Sage'], ['Palette', 'Sage'], ['Look', 'D1 · Fresh'], ['Recipe', 'Food Pop'], ['Caption look', 'Clean'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
     id: 'shop', family: 'editorial', img: 'assets/chelsea.jpg',
@@ -78,7 +78,7 @@ window.PERSONAS = [
       week: [['پست', 'طعم جدید: ترد سالمون'], ['استوری', 'استیکر شمارش معکوس'], ['ریلز', 'قبل و بعد'], null, ['کاروسل', 'مواد، هر اسلاید یکی'], ['استوری', 'عکس‌های مشتری‌ها'], null],
       tags: ['خانواده‌ی سرمقاله', 'Film Glow', 'زیرنویس ماژیک'],
     },
-    kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'F9 · Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'Laura · sassy, social media'], ['Templates', 'Product · Before and after']],
+    kit: [['Design family', 'Editorial'], ['Palette', 'Paper'], ['Look', 'F9 · Portra'], ['Recipe', 'Film Glow'], ['Caption look', 'Marker'], ['Text preset', 'Label · NEW DROP'], ['Voice', 'In my voice'], ['Templates', 'Product · Before and after']],
   },
   {
     id: 'cafe', family: 'linen', img: 'assets/coffee.jpg',
@@ -120,7 +120,7 @@ window.PERSONAS = [
     kit: [['Design family', 'Linen'], ['Palette', 'Linen'], ['Look', 'W3 · Golden hour'], ['Recipe', 'Golden Hour'], ['Caption look', 'Editorial'], ['Voice', 'In my voice'], ['Templates', 'Food']],
   },
   {
-    id: 'coach', family: 'poster', img: null,
+    id: 'coach', family: 'poster', img: 'assets/rowers.jpg',
     pal: { bg: '#14171A', ink: '#F2EFE8', accent: '#E3B23C', soft: '#22282E', pop: '#6FB7A0' },
     handle: '@ten.min.amir',
     en: {
@@ -156,10 +156,10 @@ window.PERSONAS = [
       week: [['ریلز', 'ست ده‌دقیقه‌ای'], ['استوری', 'تمرین کردی؟'], ['کاروسل', 'پنج حرکت، هر اسلاید یکی'], ['ریلز', 'اصلاح فرم'], null, ['پست', 'شاگرد هفته'], ['استوری', 'روز استراحت، واقعی']],
       tags: ['خانواده‌ی پوستر', 'Noir', 'زیرنویس حروف بزرگ'],
     },
-    kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'M4 · Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'Liam · energetic, short-form'], ['Templates', 'Fitness · Beat cuts']],
+    kit: [['Design family', 'Poster'], ['Palette', 'Night'], ['Look', 'M4 · Noir'], ['Recipe', 'Y2K Flash'], ['Caption look', 'Caps · Headline'], ['Camera', 'Slam · Bullet'], ['Voice', 'In my voice'], ['Templates', 'Fitness · Beat cuts']],
   },
   {
-    id: 'persian', family: 'saffron', img: null,
+    id: 'persian', family: 'saffron', img: 'assets/nowruz.jpg',
     pal: { bg: '#FFF8EC', ink: '#2A1E12', accent: '#B35F00', soft: '#F7E6C4', pop: '#7A2E3A' },
     handle: '@ashpazkhane.shirin',
     en: {
@@ -234,7 +234,7 @@ window.PERSONAS = [
       week: [['کاروسل', 'افسانه‌ی هفته'], ['ریلز', 'زوم روی جزئیات'], ['پست', 'مسابقه‌ی کپشن'], ['ریلز', 'به تو لبخند نمی‌زنه'], ['استوری', 'نقاشش رو حدس بزن'], ['کاروسل', 'نقاشی‌هایی که میم‌ان'], ['صداگذاری', 'قصه‌ی پشتش']],
       tags: ['خانواده‌ی سرمقاله', 'Teal & orange', 'زیرنویس پر طلایی'],
     },
-    kit: [['Design family', 'Editorial'], ['Palette', 'Editorial'], ['Look', 'X2 · Teal & orange'], ['Recipe', 'Teal & Orange'], ['Caption look', 'Gold fill'], ['Voice', 'Alice · clear, narrative'], ['Templates', 'Slideshow · Quote']],
+    kit: [['Design family', 'Editorial'], ['Palette', 'Editorial'], ['Look', 'X2 · Teal & orange'], ['Recipe', 'Teal & Orange'], ['Caption look', 'Gold fill'], ['Voice', 'In my voice'], ['Templates', 'Slideshow · Quote']],
   },
 ];
 window.PERSONA_UI = {

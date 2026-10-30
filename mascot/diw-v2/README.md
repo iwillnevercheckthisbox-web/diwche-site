@@ -6,7 +6,7 @@ in `../build/`.
 
 ## Who Diw is
 
-A **div** (دیو) from Persian stories, made lovable. Diw is the one inside the app who does the
+A **Diw** (دیو) from Persian stories, made lovable. Diw is the one inside the app who does the
 work: listens to you, thinks it through, makes the post, sends it out. Diw is not scary, not
 cute-for-babies, and not a monster. Think of the best craftsperson you know: grumpy face,
 proud of the work, an answer for every question.
