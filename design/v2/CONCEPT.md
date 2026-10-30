@@ -22,8 +22,16 @@ away from on their main screens. If v2 goes ahead, DNA.md should be rewritten ar
 
 ## The page
 
-1. **Hero prism.** An idea card splits into four formats, which fan out to six channels.
-   Loops idea, formats, channels. Pauses offscreen. The resting frame is the full fan.
+1. **Anatomy of a post.** The centrepiece. A 3D particle body you scroll through like five
+   anatomical plates, with callouts drawn like a technical illustration:
+   - **I · The whole.** A finished post, its handle, hook, visual and caption labelled.
+   - **II · Ideas.** It comes apart into idea cells. Each nucleus is why the idea fits your page.
+   - **III · Script.** The cells twist into a double helix: hook, body and ask as base pairs.
+   - **IV · Formats.** The helix opens into an exploded view: post, carousel, story, reel, voiceover.
+   - **V · Channels.** The formats route out to Instagram, TikTok, YouTube, Telegram, blog and X,
+     with gold pulses travelling the routes.
+   Built with three.js (r128 from cdnjs), one shader morphing 15,000 particles between five shapes
+   (8,000 on phones). Pauses offscreen. Reduced motion removes the drift and the swirl between plates.
 2. **Follow one idea.** A sticky phone walks through the real app flow as you scroll:
    onboarding by voice, today's ideas, the week plan, the script, Make (with Diw at work and the
    gold progress bar from the app), publishing per channel, and results.

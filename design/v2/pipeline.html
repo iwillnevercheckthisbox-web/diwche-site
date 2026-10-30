@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one idea travels down the page. Hero = the idea splitting into formats and channels.
+/* Layout: one idea travels down the page. Hero = headline, then the anatomy: a post dissected into ideas, script, formats, channels.
    Story = a sticky phone that follows the same idea through every screen of the app.
    Tokens are the app's Quiet style (android/shared/design/tokens.json), not a new system. */
 :root {
@@ -85,84 +85,73 @@ a { color: inherit; }
 @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
 
 /* ---------- Hero ---------- */
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center;
-  padding-block: 40px 72px; }
-.hero h1 { font-size: clamp(38px, 5.2vw, 66px); line-height: 1.02; letter-spacing: -.03em; margin-block: 18px 22px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px 64px; align-items: end;
+  padding-block: 48px 64px; }
+.hero-side { display: flex; flex-direction: column; gap: 24px; }
+.hero h1 { font-size: clamp(40px, 6vw, 80px); line-height: 1.0; letter-spacing: -.035em; margin-block: 18px 0; }
 .hero h1 em { font-style: normal; color: var(--gold-text); }
 .hero .lede { font-size: 18px; line-height: 1.55; color: var(--ink2); max-width: 30em; }
-.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
 @media (max-width: 880px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 16px; } }
 
-/* The prism: one idea card becomes four formats, then six channels.
-   Every piece is placed by transform only, in container units, so it scales with the stage. */
-.prism { position: relative; container-type: inline-size; aspect-ratio: 1 / .92; max-width: 560px; width: 100%;
-  margin-inline: auto; border-radius: 28px; background: var(--paper2); border: 1px solid var(--rule); overflow: hidden; }
-.prism::before { content: ""; position: absolute; inset: 0;
-  background: radial-gradient(60% 45% at 50% 30%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 70%); }
-.p-item {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%) translate(calc(var(--x, 0) * 1cqw), calc(var(--y, 0) * 1cqw)) rotate(var(--r, 0deg)) scale(var(--s, 1));
-  opacity: var(--o, 1);
-  transition: transform var(--scene) var(--ease-in-out), opacity 420ms var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 50ms);
+/* ---------- Anatomy of a post ----------
+   A scroll-driven dissection. One particle body (a finished post) comes apart into idea cells,
+   twists into a script helix, opens into an exploded view of the formats, and routes out to the
+   channels. Labels are drawn like callouts on an anatomical plate. */
+.anat { position: relative; height: 560vh; border-top: 1px solid var(--rule); }
+.anat-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  background:
+    linear-gradient(var(--paper), transparent 14%, transparent 86%, var(--paper)),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--ink) 4%, transparent) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--ink) 4%, transparent) 0 1px, transparent 1px 48px),
+    var(--paper); }
+.anat canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.anat-callouts { position: absolute; inset: 0; pointer-events: none; }
+.anat-callouts svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.anat-callouts line { stroke: var(--ink2); stroke-width: 1; }
+.anat-callouts circle { fill: var(--paper); stroke: var(--ink); stroke-width: 1.25; }
+.co { position: absolute; left: 0; top: 0; font: 500 12px/1.3 var(--sans); color: var(--ink); white-space: nowrap;
+  opacity: 0; transition: opacity 260ms var(--ease-out); will-change: transform; }
+.co b { font: 600 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--gold-text); display: block; margin-bottom: 3px; }
+.co.r { text-align: right; }
+
+.anat-hud { position: absolute; inset: 0; pointer-events: none; font: 500 11px/1.2 var(--sans); color: var(--ink3);
+  letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums;
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 20px max(20px, env(safe-area-inset-left, 0px)); }
+.hud-tl { position: absolute; top: 22px; left: max(24px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 6px; }
+.hud-tl strong { font: 600 13px/1 var(--sans); color: var(--ink); letter-spacing: .12em; }
+.hud-tr { position: absolute; top: 22px; right: max(24px, env(safe-area-inset-right, 0px)); text-align: right; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.hud-mag { font: 500 22px/1 var(--display); letter-spacing: -.01em; text-transform: none; color: var(--ink); }
+.scale { width: 96px; height: 7px; border: 1px solid var(--ink2); border-top: 0; position: relative; }
+.scale::after { content: ""; position: absolute; left: 50%; bottom: 0; height: 4px; border-left: 1px solid var(--ink2); }
+
+.anat-text { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); bottom: 72px; width: min(400px, 36vw); }
+.chap { position: absolute; left: 0; bottom: 0; width: 100%; display: flex; flex-direction: column; gap: 10px;
+  opacity: 0; transform: translateY(12px); transition: opacity 420ms var(--ease-out), transform 520ms var(--ease-out); }
+.chap.on { opacity: 1; transform: none; }
+.chap .eyebrow { display: flex; gap: 10px; align-items: center; }
+.chap .eyebrow::after { content: ""; width: 36px; height: 1px; background: var(--gold); }
+.chap h2 { font-size: clamp(28px, 3.2vw, 42px); line-height: 1.06; letter-spacing: -.028em; }
+.chap p { color: var(--ink2); font-size: 16px; line-height: 1.55; }
+
+.anat-nav { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 6px; pointer-events: auto; }
+.anat-nav button { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 7px; align-items: flex-start;
+  font: 500 11px/1 var(--sans); color: var(--ink3); letter-spacing: .06em; text-transform: uppercase; padding: 8px 6px; min-width: 64px; }
+.anat-nav button i { display: block; width: 100%; height: 2px; background: var(--rule); position: relative; overflow: hidden; }
+.anat-nav button i::after { content: ""; position: absolute; inset: 0; background: var(--gold); transform: scaleX(var(--f, 0)); transform-origin: left; }
+.anat-nav button.on { color: var(--ink); }
+.anat-nav button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+.anat-fallback { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink2); }
+
+@media (max-width: 760px) {
+  .anat-text { left: 16px; right: 16px; width: auto; bottom: 64px; }
+  .chap { background: color-mix(in srgb, var(--paper) 88%, transparent); padding: 12px 0 0; }
+  .chap h2 { font-size: 26px; }
+  .chap p { font-size: 14.5px; }
+  .anat-nav button { min-width: 0; font-size: 0; padding: 10px 4px; width: 44px; }
+  .hud-mag { font-size: 18px; }
+  .co { font-size: 11px; }
 }
-.p-idea { width: 40cqw; aspect-ratio: 4 / 5; border-radius: 4.4cqw; background: var(--idea-1); color: var(--idea-ink);
-  padding: 4.4cqw; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 3cqw 8cqw var(--shadow); z-index: 3; }
-.p-idea .topic { font: 600 2.2cqw/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
-.p-idea .hook { font: 500 5.2cqw/1.1 var(--display); letter-spacing: -.015em; }
-.p-idea .who { font: 400 2.3cqw/1.2 var(--sans); opacity: .65; }
-.p-fmt { width: 19cqw; aspect-ratio: 4 / 5; border-radius: 3cqw; background: var(--paper); border: 1px solid var(--rule);
-  box-shadow: 0 1.6cqw 4cqw var(--shadow); display: grid; place-items: center; z-index: 2; overflow: hidden; }
-.p-fmt .lbl { position: absolute; left: 0; right: 0; bottom: 1.8cqw; text-align: center; font: 500 2.3cqw/1 var(--sans); color: var(--ink2); }
-.p-ch { display: flex; align-items: center; gap: 1.6cqw; padding: 1.5cqw 2.6cqw 1.5cqw 1.8cqw; border-radius: 99px;
-  background: var(--paper); border: 1px solid var(--rule); font: 500 2.6cqw/1 var(--sans); white-space: nowrap; z-index: 2; }
-.p-ch svg { width: 3.4cqw; height: 3.4cqw; color: var(--gold-text); }
-.p-ch .ok { width: 1.4cqw; height: 1.4cqw; border-radius: 50%; background: var(--done); }
-.p-thread { position: absolute; left: 50%; width: 1px; background: linear-gradient(var(--gold), transparent); z-index: 1;
-  transform: translateX(-50%) translateY(calc(var(--y, 0) * 1cqw)) scaleY(var(--sy, 0)); transform-origin: top;
-  transition: transform var(--scene) var(--ease-in-out), opacity 300ms ease; opacity: var(--o, 0); top: 50%; height: 14cqw; }
-.p-count { position: absolute; left: 4cqw; right: 4cqw; bottom: 3.6cqw; display: flex; justify-content: center; gap: 2.2cqw;
-  font: 500 2.5cqw/1 var(--sans); color: var(--ink3); z-index: 4; }
-.p-count span { padding: 1.2cqw 2.2cqw; border-radius: 99px; transition: background-color var(--normal) ease, color var(--normal) ease; }
-.p-count span.on { background: var(--primary-bg); color: var(--primary-text); }
-
-/* Format thumbnails, drawn not imaged */
-.mini-post { width: 70%; aspect-ratio: 1; border-radius: 1.6cqw; background: var(--idea-3); display: grid; place-items: center;
-  color: var(--idea-ink); font: 500 2.1cqw/1.1 var(--display); text-align: center; padding: 1cqw; margin-bottom: 3cqw; }
-.mini-car { position: relative; width: 62%; aspect-ratio: 4/5; margin-bottom: 3cqw; }
-.mini-car i { position: absolute; inset: 0; border-radius: 1.4cqw; background: var(--idea-2); }
-.mini-car i:nth-child(1) { transform: translateX(-22%) rotate(-8deg) scale(.86); opacity: .55; }
-.mini-car i:nth-child(2) { transform: translateX(22%) rotate(8deg) scale(.86); opacity: .55; }
-.mini-car i:nth-child(3) { background: var(--idea-4); }
-.mini-reel { width: 46%; aspect-ratio: 9/16; border-radius: 1.6cqw; background: linear-gradient(170deg, var(--idea-5), var(--idea-1));
-  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2cqw; margin-bottom: 3cqw; }
-.mini-reel b { font: 600 1.7cqw/1 var(--sans); color: var(--idea-ink); background: rgba(0,0,0,.35); padding: .5cqw 1cqw; border-radius: .6cqw; }
-.mini-reel b em { font-style: normal; color: var(--gold); }
-.mini-voice { display: flex; align-items: center; gap: .9cqw; height: 9cqw; margin-bottom: 3cqw; }
-.mini-voice i { width: 1cqw; border-radius: 1cqw; background: var(--gold); height: calc(var(--h) * 1%); }
-
-/* Stage states. Default (no JS, reduced motion, first frame) = the whole fan, so the still frame tells the full story. */
-.prism .p-idea { --y: -26; --s: .5; }
-.prism .p-fmt { --y: 1; --s: 1; }
-.prism .f1 { --x: -33; --r: -4deg; } .prism .f2 { --x: -11; --r: -1.5deg; }
-.prism .f3 { --x: 11; --r: 1.5deg; } .prism .f4 { --x: 33; --r: 4deg; }
-.prism .p-ch { --o: 1; --s: 1; }
-.prism .t1 { --y: -14; --sy: 1; --o: .9; } .prism .t2 { --y: 12; --sy: 1; --o: .9; }
-
-.prism[data-state="idea"] .p-idea { --y: -6; --s: 1; }
-.prism[data-state="idea"] .p-fmt { --x: 0; --y: -4; --r: 0deg; --s: .7; --o: 0; }
-.prism[data-state="idea"] .p-ch { --o: 0; --s: .92; --y: 30; }
-.prism[data-state="idea"] .t1, .prism[data-state="idea"] .t2 { --sy: 0; --o: 0; }
-
-.prism[data-state="formats"] .p-idea { --y: -22; --s: .56; }
-.prism[data-state="formats"] .p-fmt { --y: 10; }
-.prism[data-state="formats"] .p-ch { --o: 0; --s: .92; --y: 30; }
-.prism[data-state="formats"] .t2 { --sy: 0; --o: 0; }
-
-/* Channel chips: two rows of three below the formats */
-.prism .c1 { --x: -28; --y: 22; } .prism .c2 { --x: 0; --y: 22; } .prism .c3 { --x: 28; --y: 22; }
-.prism .c4 { --x: -28; --y: 30; } .prism .c5 { --x: 0; --y: 30; } .prism .c6 { --x: 28; --y: 30; }
-.prism[data-state="idea"] .p-ch { --y: 30; }
 
 /* ---------- Story ---------- */
 .story { padding-block: 64px 32px; border-top: 1px solid var(--rule); }
@@ -410,35 +399,41 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
     <div>
       <p class="eyebrow">For people who run a page</p>
       <h1>One idea in.<br><em>Every channel</em> out.</h1>
-      <p class="lede">Tell Diwche about your page once. Each morning it brings you ideas, plans the week, writes the script, and makes the post, the carousel, the reel and the voiceover. Then it shapes each one for wherever your people are.</p>
+    </div>
+    <div class="hero-side">
+      <p class="lede">Tell Diwche about your page once. Each morning it brings you ideas, writes the script, and grows it into every format and every channel. Scroll down to see what a post is made of.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#start">Get the app</a>
-        <a class="btn btn-quiet" href="#story">Follow one idea</a>
+        <a class="btn btn-quiet" href="#anatomy">Take a post apart</a>
       </div>
-    </div>
-
-    <div class="prism" id="prism" role="img" aria-label="One idea card splits into four formats, a post, a carousel, a reel and a voiceover, which go out to six channels.">
-      <div class="p-thread t1"></div>
-      <div class="p-thread t2"></div>
-      <div class="p-item p-idea">
-        <span class="topic">Coffee · today</span>
-        <span class="hook">Your flat white is lying to you.</span>
-        <span class="who">Idea for @roastery.leipzig</span>
-      </div>
-      <div class="p-item p-fmt f1" style="--i:0"><div class="mini-post">Your flat white is lying</div><span class="lbl">Post</span></div>
-      <div class="p-item p-fmt f2" style="--i:1"><div class="mini-car"><i></i><i></i><i></i></div><span class="lbl">Carousel</span></div>
-      <div class="p-item p-fmt f3" style="--i:2"><div class="mini-reel"><b>is <em>lying</em></b></div><span class="lbl">Reel</span></div>
-      <div class="p-item p-fmt f4" style="--i:3"><div class="mini-voice"><i style="--h:40"></i><i style="--h:80"></i><i style="--h:55"></i><i style="--h:100"></i><i style="--h:65"></i><i style="--h:35"></i><i style="--h:75"></i></div><span class="lbl">Voiceover</span></div>
-      <div class="p-item p-ch c1" style="--i:4"><svg><use href="#i-cam"/></svg>Instagram<span class="ok"></span></div>
-      <div class="p-item p-ch c2" style="--i:5"><svg><use href="#i-note"/></svg>TikTok<span class="ok"></span></div>
-      <div class="p-item p-ch c3" style="--i:6"><svg><use href="#i-play"/></svg>YouTube<span class="ok"></span></div>
-      <div class="p-item p-ch c4" style="--i:7"><svg><use href="#i-plane"/></svg>Telegram<span class="ok"></span></div>
-      <div class="p-item p-ch c5" style="--i:8"><svg><use href="#i-doc"/></svg>Blog<span class="ok"></span></div>
-      <div class="p-item p-ch c6" style="--i:9"><svg><use href="#i-x"/></svg>X<span class="ok"></span></div>
-      <div class="p-count" aria-hidden="true"><span data-c="idea">1 idea</span><span data-c="formats">4 formats</span><span data-c="channels" class="on">6 channels</span></div>
     </div>
   </header>
 </div>
+
+<section class="anat" id="anatomy" aria-label="Anatomy of a post">
+  <div class="anat-stage">
+    <canvas id="anatCanvas" aria-hidden="true"></canvas>
+    <div class="anat-callouts" id="anatCallouts" aria-hidden="true"><svg id="anatLines"></svg></div>
+    <div class="anat-hud" aria-hidden="true">
+      <div class="hud-tl"><strong>Anatomy of a post</strong><span id="hudPlate">Plate I of V</span></div>
+      <div class="hud-tr"><span class="hud-mag" id="hudMag">×1</span><span class="scale"></span><span id="hudScale">1 post</span></div>
+    </div>
+    <div class="anat-text">
+      <article class="chap on"><span class="eyebrow">Plate I · The whole</span><h2>A post, under the glass.</h2><p>Everything you publish is a body made of smaller parts. Diwche builds it from the inside out. Scroll to take it apart.</p></article>
+      <article class="chap"><span class="eyebrow">Plate II · Ideas</span><h2>Every post starts as a cell.</h2><p>Each morning Diwche grows a handful of ideas from what your corner of the internet is talking about. Each one has a nucleus: the reason it should work for your page.</p></article>
+      <article class="chap"><span class="eyebrow">Plate III · Script</span><h2>The idea becomes code.</h2><p>The script is the DNA: a hook, a body, an ask. Every format is expressed from these same lines, so nothing drifts from what you meant.</p></article>
+      <article class="chap"><span class="eyebrow">Plate IV · Formats</span><h2>One code, many organs.</h2><p>The same script grows into a post, a carousel, a story, a reel and a voiceover. Each layer is built for the way it will be seen.</p></article>
+      <article class="chap"><span class="eyebrow">Plate V · Channels</span><h2>Then it goes out into the world.</h2><p>Each format is routed to where your people are, at its own hour: Instagram, TikTok, YouTube, Telegram, your blog and X.</p></article>
+    </div>
+    <nav class="anat-nav" id="anatNav" aria-label="Plates">
+      <button type="button" data-k="0"><i></i>Post</button>
+      <button type="button" data-k="1"><i></i>Ideas</button>
+      <button type="button" data-k="2"><i></i>Script</button>
+      <button type="button" data-k="3"><i></i>Formats</button>
+      <button type="button" data-k="4"><i></i>Channels</button>
+    </nav>
+  </div>
+</section>
 
 <section class="story" id="story">
   <div class="wrap">
@@ -610,33 +605,329 @@ footer { padding-block: 0 48px; color: var(--ink3); font-size: 13px; display: fl
   <footer><span>Diwche · v2 design prototype</span><span>Quiet style, shared with the apps</span></footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  const section = document.getElementById('anatomy');
+  const canvas = document.getElementById('anatCanvas');
+  if (!window.THREE || !section) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const small = innerWidth < 760;
+  const N = small ? 8000 : 15000;
+
+  // Seeded random, so every visit dissects the same body.
+  let seed = 7;
+  const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const gauss = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;
+  const onSphere = (r) => { const u = rnd() * 2 - 1, a = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u); return [r * s * Math.cos(a), r * u, r * s * Math.sin(a)]; };
+  const inBall = (r) => { const p = onSphere(1), k = r * Math.cbrt(rnd()); return [p[0] * k, p[1] * k, p[2] * k]; };
+
+  // ---------- Plate I: the finished post, sampled from a drawing ----------
+  function plateWhole() {
+    const W = 360, H = 450, pos = new Float32Array(N * 3), gold = new Float32Array(N);
+    const layer = (draw) => { const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+      g.fillStyle = '#000'; g.strokeStyle = '#000'; draw(g); const d = g.getImageData(0, 0, W, H).data, out = [];
+      for (let i = 0; i < W * H; i++) if (d[i * 4 + 3] > 120) out.push(i); return out; };
+    const lines = layer(g => {
+      g.lineWidth = 3; g.beginPath(); g.roundRect ? g.roundRect(4, 4, W - 8, H - 8, 18) : g.rect(4, 4, W - 8, H - 8); g.stroke();
+      g.fillRect(64, 22, 120, 9); g.fillRect(64, 37, 70, 6);
+      g.font = '600 35px Fraunces, Georgia, serif'; g.textBaseline = 'middle';
+      g.lineWidth = 1.5; ['Your flat white', 'is lying to you.'].forEach((t, i) => { g.fillText(t, 34, 160 + i * 44); g.strokeText(t, 34, 160 + i * 44); });
+      g.lineWidth = 2.5; g.strokeRect(22, 62, W - 44, 284);
+      [[34, 372], [70, 372], [106, 372]].forEach(([x, y]) => { g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.stroke(); });
+      g.fillRect(28, 398, 250, 6); g.fillRect(28, 412, 190, 6); g.fillRect(28, 426, 120, 6);
+    });
+    const fill = layer(g => { for (let y = 64; y < 344; y += 9) for (let x = 24 + (y % 18 ? 4 : 0); x < W - 24; x += 9) if (y < 120 || y > 220) g.fillRect(x, y, 1.6, 1.6); });
+    const accent = layer(g => { g.lineWidth = 4; g.beginPath(); g.arc(40, 34, 17, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(34, 380); g.bezierCurveTo(20, 368, 26, 360, 34, 366); g.bezierCurveTo(42, 360, 48, 368, 34, 380); g.fill();
+      for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(160 + i * 10, 330, i === 0 ? 3.5 : 2.4, 0, 7); g.fill(); } });
+    for (let i = 0; i < N; i++) {
+      const r = rnd(), pool = r < .76 ? lines : r < .93 ? fill : accent, idx = pool[Math.floor(rnd() * pool.length)];
+      const x = idx % W, y = Math.floor(idx / W);
+      pos.set([(x / W - .5) * 5.2, -(y / H - .5) * 6.5, gauss() * .05], i * 3);
+      gold[i] = pool === accent ? 1 : 0;
+    }
+    return { pos, gold, cam: [0, 0, 13.5], look: [0, 0, 0],
+      callouts: [
+        { at: [-2.1, 2.85, 0], t: 'Handle', d: 'who it speaks for' },
+        { at: [1.6, 1.1, 0], t: 'Hook', d: 'the line that stops the thumb' },
+        { at: [-2.2, -1.0, 0], t: 'Visual', d: 'what the eye lands on' },
+        { at: [0.9, -2.75, 0], t: 'Caption', d: 'the ask, in your voice' } ] };
+  }
+
+  // ---------- Plate II: idea cells ----------
+  function plateIdeas() {
+    const pos = new Float32Array(N * 3), gold = new Float32Array(N);
+    const cells = [[-4.3, 1.3, 0, 1.25], [-1.3, 2.5, -1.4, .95], [1.9, 1.7, .7, 1.45], [4.6, .5, -.6, 1.0],
+                   [-3.0, -1.9, 1.0, 1.05], [.3, -1.3, -.4, 1.3], [3.4, -2.3, .6, .85]];
+    const wsum = cells.reduce((s, c) => s + c[3] * c[3], 0);
+    for (let i = 0; i < N; i++) {
+      let r = rnd() * wsum, c = cells[0];
+      for (const cc of cells) { r -= cc[3] * cc[3]; if (r <= 0) { c = cc; break; } }
+      const k = rnd(); let p;
+      if (k < .56) p = onSphere(c[3] * (1 + gauss() * .025));
+      else if (k < .78) { p = inBall(c[3] * .3); gold[i] = 1; }
+      else if (k < .84) { const a = rnd() * 6.283, h = gauss() * .2; p = [Math.cos(a) * c[3] * .55, h, Math.sin(a) * c[3] * .55]; }
+      else p = inBall(c[3] * .92);
+      pos.set([c[0] + p[0], c[1] + p[1], c[2] + p[2]], i * 3);
+    }
+    return { pos, gold, cam: [0, 1.5, 14], look: [0, 0, 0],
+      callouts: [
+        { at: [-4.3, 2.55, 0], t: 'Trend', d: 'what Leipzig is talking about' },
+        { at: [1.9, 3.15, .7], t: 'Taste test', d: 'picked for today' },
+        { at: [4.6, -.5, -.6], t: 'Question', d: 'asked by your followers' },
+        { at: [-3.0, -2.95, 1.0], t: 'Behind the bar', d: 'a story only you have' },
+        { at: [.3, -.05, -.4], t: 'Nucleus', d: 'why it should work for you' } ] };
+  }
+
+  // ---------- Plate III: the script helix ----------
+  function plateScript() {
+    const pos = new Float32Array(N * 3), gold = new Float32Array(N);
+    const L = 13, R = 1.35, turns = 3.1, rungs = 34;
+    const strand = (u, s) => { const a = u * turns * 6.2832 + s * Math.PI; return [-L / 2 + u * L, R * Math.cos(a), R * Math.sin(a)]; };
+    for (let i = 0; i < N; i++) {
+      const k = rnd(); let p;
+      if (k < .58) { const u = rnd(), s = rnd() < .5 ? 0 : 1; p = strand(u, s); p[0] += gauss() * .04; p[1] += gauss() * .07; p[2] += gauss() * .07; }
+      else if (k < .9) { const j = Math.floor(rnd() * rungs), u = (j + .5) / rungs, a = strand(u, 0), b = strand(u, 1), t = rnd();
+        p = [a[0] + gauss() * .03, a[1] + (b[1] - a[1]) * t + gauss() * .03, a[2] + (b[2] - a[2]) * t + gauss() * .03];
+        gold[i] = (j % 4 === 0 || j % 4 === 1) ? 1 : 0; }
+      else { p = [(rnd() - .5) * L * 1.1, gauss() * 2.2, gauss() * 2.2]; }
+      pos.set(p, i * 3);
+    }
+    return { pos, gold, cam: [0, 2.2, 14.5], look: [0, 0, 0],
+      callouts: [
+        { at: [-4.6, 1.5, 0], t: 'Hook', d: '“Your flat white is lying to you.”' },
+        { at: [0, -1.5, 0], t: 'Body', d: 'milk hides the roast' },
+        { at: [4.6, 1.5, 0], t: 'Ask', d: 'come taste it black' },
+        { at: [-1.8, 0, 0], t: 'Base pair', d: 'one line, used by every format' } ] };
+  }
+
+  // ---------- Plate IV: exploded formats ----------
+  function plateFormats() {
+    const pos = new Float32Array(N * 3), gold = new Float32Array(N);
+    const gap = 2.7, levels = [2 * gap, gap, 0, -gap, -2 * gap];
+    const rectEdge = (cx, cz, w, d) => { const per = 2 * (w + d), t = rnd() * per;
+      if (t < w) return [cx - w / 2 + t, cz - d / 2]; if (t < w + d) return [cx + w / 2, cz - d / 2 + (t - w)];
+      if (t < 2 * w + d) return [cx + w / 2 - (t - w - d), cz + d / 2]; return [cx - w / 2, cz + d / 2 - (t - 2 * w - d)]; };
+    const rectFill = (cx, cz, w, d) => [cx + (rnd() - .5) * w, cz + (rnd() - .5) * d];
+    const plates = [
+      () => rnd() < .55 ? [...rectEdge(0, 0, 3.8, 3.8), 0] : rnd() < .7 ? [...rectFill(0, .3, 3.4, 2.4), 0] : [-1.4 + rnd() * 2.6, -1.6 + Math.floor(rnd() * 2) * .3, 1],
+      () => { const k = Math.floor(rnd() * 4), cx = -3.3 + k * 2.2; return rnd() < .62 ? [...rectEdge(cx, 0, 1.9, 2.4), k === 0 ? 1 : 0] : [...rectFill(cx, 0, 1.7, 2.2), 0]; },
+      () => rnd() < .5 ? [...rectEdge(0, 0, 2.3, 4.0), 0] : rnd() < .45 ? [(-1.05 + Math.floor(rnd() * 3) * .75) + rnd() * .6, -1.85, 1] : [...rectFill(0, 0, 2.1, 3.8), 0],
+      () => { const k = rnd(); if (k < .5) return [...rectEdge(0, 0, 2.3, 4.0), 0];
+        if (k < .75) { const t = rnd(), s = Math.floor(rnd() * 3), A = [[-.5, -.6], [-.5, .6], [.6, 0]], a = A[s], b = A[(s + 1) % 3]; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 1]; }
+        return [...rectFill(0, 0, 2.1, 3.8), 0]; },
+      () => { const j = Math.floor(rnd() * 44), x = -4.3 + j * .2, h = .25 + Math.abs(Math.sin(j * 1.7) * Math.cos(j * .45)) * 1.7; return [x, (rnd() - .5) * h * 2, j > 14 && j < 22 ? 1 : 0]; } ];
+    for (let i = 0; i < N; i++) {
+      const k = rnd();
+      if (k < .05) { pos.set([gauss() * .02, levels[4] - .6 + rnd() * (levels[0] - levels[4] + 1.2), gauss() * .02], i * 3); gold[i] = 1; continue; }
+      const li = Math.floor(rnd() * 5), [x, z, g] = plates[li]();
+      pos.set([x, levels[li] + gauss() * .03, z], i * 3); gold[i] = g;
+    }
+    return { pos, gold, cam: [0, 9.5, 21], look: [0, -.4, 0],
+      callouts: [
+        { at: [1.9, levels[0], -1.9], t: 'Post', d: '4:5, the hook as type' },
+        { at: [4.25, levels[1], -1.2], t: 'Carousel', d: '5 slides, swipe for the test' },
+        { at: [1.15, levels[2], -2.0], t: 'Story', d: '3 frames, 15 s each' },
+        { at: [-1.15, levels[3], 2.0], t: 'Reel', d: '0:24, word-by-word captions' },
+        { at: [-4.3, levels[4], 0], t: 'Voiceover', d: '0:31, your voice or one you chose' } ] };
+  }
+
+  // ---------- Plate V: channels ----------
+  const CH = ['Instagram', 'TikTok', 'YouTube', 'Telegram', 'Blog', 'X'];
+  const chAt = (k, R = 4.7) => { const a = (k / 6) * 6.2832 + .52; return [Math.cos(a) * R, 0, Math.sin(a) * R]; };
+  const curve = (k, t) => { const e = chAt(k), m = [e[0] * .5, 2.4, e[2] * .5], u = 1 - t;
+    return [u * u * 0 + 2 * u * t * m[0] + t * t * e[0], u * u * .4 + 2 * u * t * m[1] + t * t * e[1], u * u * 0 + 2 * u * t * m[2] + t * t * e[2]]; };
+  function plateChannels() {
+    const pos = new Float32Array(N * 3), gold = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const k = rnd(); let p;
+      if (k < .16) { const l = Math.floor(rnd() * 5); p = [(rnd() - .5) * 1.5, -.6 + l * .3 + gauss() * .02, (rnd() - .5) * 1.5]; }
+      else if (k < .5) { const c = chAt(Math.floor(rnd() * 6)), a = rnd() * 6.2832, ring = rnd() < .7;
+        const r = ring ? .62 + gauss() * .02 : Math.sqrt(rnd()) * .28; p = [c[0] + Math.cos(a) * r, c[1] + (ring ? gauss() * .03 : gauss() * .05), c[2] + Math.sin(a) * r]; gold[i] = ring ? 0 : 1; }
+      else { const ch = Math.floor(rnd() * 6), t = rnd(), q = curve(ch, t); p = [q[0] + gauss() * .06, q[1] + gauss() * .06, q[2] + gauss() * .06]; gold[i] = 0; }
+      pos.set(p, i * 3);
+    }
+    return { pos, gold, cam: [0, 12.5, 11], look: [0, .2, 0],
+      callouts: CH.map((t, k) => { const c = chAt(k); return { at: [c[0], .7, c[2]], t, d: ['Reel · Carousel · 18:30', 'Reel · 19:00', 'Short · 19:00', 'Voice note · 20:00', 'Article · Friday', 'Thread · coming soon'][k] }; }) };
+  }
+
+  const MAG = [['×1', '1 post'], ['×400', '7 ideas'], ['×4,000', '1 script'], ['×40', '5 formats'], ['×1', '6 channels']];
+
+  async function start() {
+    try { await document.fonts.load('600 35px Fraunces'); } catch (e) {}
+    const plates = [plateWhole(), plateIdeas(), plateScript(), plateFormats(), plateChannels()];
+
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
+    catch (e) { section.querySelector('.anat-stage').insertAdjacentHTML('beforeend', '<p class="anat-fallback">This view needs WebGL.</p>'); return; }
+    const PR = Math.min(devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(PR);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, .1, 100);
+    const geo = new THREE.BufferGeometry();
+    plates.forEach((p, k) => geo.setAttribute('p' + k, new THREE.BufferAttribute(p.pos, 3)));
+    geo.setAttribute('position', new THREE.BufferAttribute(plates[0].pos, 3));
+    const G = new Float32Array(N * 4), G4 = new Float32Array(N), S = new Float32Array(N);
+    for (let i = 0; i < N; i++) { for (let k = 0; k < 4; k++) G[i * 4 + k] = plates[k].gold[i]; G4[i] = plates[4].gold[i]; S[i] = rnd(); }
+    geo.setAttribute('g', new THREE.BufferAttribute(G, 4));
+    geo.setAttribute('g4', new THREE.BufferAttribute(G4, 1));
+    geo.setAttribute('seed', new THREE.BufferAttribute(S, 1));
+
+    const uniforms = {
+      mA: { value: new THREE.Vector4(1, 0, 0, 0) }, mA4: { value: 0 }, mB: { value: new THREE.Vector4(0, 1, 0, 0) }, mB4: { value: 0 },
+      uT: { value: 0 }, uTime: { value: 0 }, uArc: { value: reduce ? 0 : 1 }, uSize: { value: small ? 2.3 : 2.0 }, uPR: { value: PR },
+      uInk: { value: new THREE.Color() }, uGold: { value: new THREE.Color() }, uAlpha: { value: .6 } };
+    const mat = new THREE.ShaderMaterial({
+      uniforms, transparent: true, depthWrite: false,
+      vertexShader: `
+        attribute vec3 p0; attribute vec3 p1; attribute vec3 p2; attribute vec3 p3; attribute vec3 p4;
+        attribute vec4 g; attribute float g4; attribute float seed;
+        uniform vec4 mA; uniform float mA4; uniform vec4 mB; uniform float mB4;
+        uniform float uT; uniform float uTime; uniform float uArc; uniform float uSize; uniform float uPR;
+        varying float vGold; varying float vDepth;
+        vec3 pick(vec4 m, float m4) { return p0 * m.x + p1 * m.y + p2 * m.z + p3 * m.w + p4 * m4; }
+        void main() {
+          float t = clamp((uT - seed * .3) / .7, 0., 1.);
+          t = t < .5 ? 4. * t * t * t : 1. - pow(-2. * t + 2., 3.) / 2.;
+          vec3 pos = mix(pick(mA, mA4), pick(mB, mB4), t);
+          float arc = sin(t * 3.14159) * uArc;
+          pos += vec3(sin(seed * 41.), cos(seed * 29.), sin(seed * 63.)) * arc * 1.6;
+          pos += vec3(sin(uTime * .9 + seed * 50.), cos(uTime * .7 + seed * 70.), sin(uTime * .8 + seed * 90.)) * .022 * uArc;
+          vGold = mix(dot(g, mA) + g4 * mA4, dot(g, mB) + g4 * mB4, t);
+          vec4 mv = modelViewMatrix * vec4(pos, 1.);
+          vDepth = -mv.z;
+          gl_PointSize = uSize * uPR * (1. + vGold * .55) * (12. / -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        uniform vec3 uInk; uniform vec3 uGold; uniform float uAlpha;
+        varying float vGold; varying float vDepth;
+        void main() {
+          float d = length(gl_PointCoord - .5);
+          if (d > .5) discard;
+          float a = smoothstep(.5, .15, d) * uAlpha * mix(1., .55, smoothstep(10., 24., vDepth));
+          gl_FragColor = vec4(mix(uInk, uGold, step(.5, vGold)), a * (1. + vGold * .4));
+        }` });
+    const points = new THREE.Points(geo, mat);
+    points.frustumCulled = false;
+    const body = new THREE.Group(); body.add(points); scene.add(body);
+    const shift = () => { body.position.x = innerWidth >= 760 ? Math.min(3.2, (innerWidth - 760) / 260) : 0; };
+    shift(); addEventListener('resize', shift);
+
+    // Gold pulses that travel the channel routes once Plate V is up.
+    const PN = small ? 90 : 180, pg = new THREE.BufferGeometry(), pp = new Float32Array(PN * 3), pk = [];
+    for (let i = 0; i < PN; i++) pk.push([i % 6, rnd(), .12 + rnd() * .16]);
+    pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+    const pmat = new THREE.PointsMaterial({ size: small ? .13 : .11, transparent: true, opacity: 0, depthWrite: false });
+    const pulses = new THREE.Points(pg, pmat); pulses.frustumCulled = false; body.add(pulses);
+
+    const theme = () => {
+      const cs = getComputedStyle(document.documentElement), dark = matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light' || document.documentElement.dataset.theme === 'dark';
+      uniforms.uInk.value.set(cs.getPropertyValue('--ink').trim() || '#14171F');
+      uniforms.uGold.value.set(cs.getPropertyValue('--gold-text').trim() || '#8A6A2C');
+      pmat.color.set(cs.getPropertyValue('--gold').trim() || '#C9A668');
+      mat.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending;
+      uniforms.uAlpha.value = dark ? .5 : .62; mat.needsUpdate = true;
+    };
+    theme();
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', theme);
+    new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Callouts
+    const holder = document.getElementById('anatCallouts'), svg = document.getElementById('anatLines'), NS = 'http://www.w3.org/2000/svg';
+    const cos = plates.map((p, k) => p.callouts.filter((c, j) => !small || k === 4 || j < 3).map(c => {
+      const el = document.createElement('div'); el.className = 'co'; el.innerHTML = `<b>${c.t}</b>${c.d}`; holder.appendChild(el);
+      const ln = document.createElementNS(NS, 'line'), dot = document.createElementNS(NS, 'circle'); dot.setAttribute('r', 3.5);
+      svg.append(ln, dot); return { ...c, k, el, ln, dot, v: new THREE.Vector3() }; })).flat();
+
+    const chaps = [...section.querySelectorAll('.chap')], navs = [...section.querySelectorAll('#anatNav button')];
+    const hudPlate = document.getElementById('hudPlate'), hudMag = document.getElementById('hudMag'), hudScale = document.getElementById('hudScale');
+    const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+    navs.forEach(b => b.addEventListener('click', () => {
+      const k = +b.dataset.k, r = section.getBoundingClientRect(), span = section.offsetHeight - innerHeight;
+      scrollTo({ top: scrollY + r.top + span * ((k === 0 ? 0 : k - .25) / 4), behavior: reduce ? 'auto' : 'smooth' });
+    }));
+
+    let w = 0, h = 0, fit = 1;
+    const resize = () => { const r = canvas.parentElement.getBoundingClientRect(); w = r.width; h = r.height;
+      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); fit = Math.max(1, (small ? 1.12 : 1.45) / camera.aspect); };
+    resize(); addEventListener('resize', resize);
+
+    let mx = 0, my = 0; addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+    let pTarget = 0, pNow = 0, running = false, shown = -1;
+    const readScroll = () => { const r = section.getBoundingClientRect(), span = section.offsetHeight - innerHeight;
+      pTarget = Math.min(1, Math.max(0, -r.top / span)) * 4; };
+    addEventListener('scroll', readScroll, { passive: true }); readScroll(); pNow = pTarget;
+
+    const one = (k) => [k === 0, k === 1, k === 2, k === 3, k === 4].map(Number);
+    const cam = new THREE.Vector3(), look = new THREE.Vector3(), lerp3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const clock = new THREE.Clock();
+
+    function frame() {
+      if (!running) return;
+      requestAnimationFrame(frame);
+      const time = clock.getElapsedTime();
+      pNow += (pTarget - pNow) * (reduce ? 1 : .085);
+      const i = Math.min(3, Math.floor(pNow)), f = pNow - i;
+      const t = Math.min(1, Math.max(0, (f - .28) / .62)), te = ease(t);
+      const a = one(i), b = one(i + 1);
+      uniforms.mA.value.set(a[0], a[1], a[2], a[3]); uniforms.mA4.value = a[4];
+      uniforms.mB.value.set(b[0], b[1], b[2], b[3]); uniforms.mB4.value = b[4];
+      uniforms.uT.value = t; uniforms.uTime.value = time;
+
+      const A = plates[i], B = plates[i + 1], c = lerp3(A.cam, B.cam, te), l = lerp3(A.look, B.look, te);
+      cam.set(c[0] + (reduce ? 0 : mx * 1.6), c[1] - (reduce ? 0 : my * 1.1), c[2]).multiplyScalar(fit);
+      look.set(l[0], l[1] - (small ? 1.6 : 0), l[2]);
+      camera.position.copy(cam); camera.lookAt(look);
+      body.rotation.y = reduce ? 0 : Math.sin(time * .12) * .22;
+
+      // pulses along the routes, only on Plate V
+      const wV = i === 3 ? te : 0; pmat.opacity = wV * .95;
+      if (wV > .01) for (let n = 0; n < PN; n++) { const [ch, ph, sp] = pk[n], q = curve(ch, (ph + time * sp) % 1); pp[n * 3] = q[0]; pp[n * 3 + 1] = q[1]; pp[n * 3 + 2] = q[2]; }
+      pg.attributes.position.needsUpdate = wV > .01;
+
+      renderer.render(scene, camera);
+
+      // Text, HUD and nav
+      const cur = te > .5 ? i + 1 : i;
+      if (cur !== shown) { shown = cur; chaps.forEach((el, k) => el.classList.toggle('on', k === cur));
+        hudPlate.textContent = `Plate ${ROMAN[cur]} of V`; hudMag.textContent = MAG[cur][0]; hudScale.textContent = MAG[cur][1];
+        navs.forEach((el, k) => el.classList.toggle('on', k === cur)); }
+      navs.forEach((el, k) => el.style.setProperty('--f', Math.min(1, Math.max(0, pNow - k + 1)).toFixed(3)));
+
+      // Callouts: visible when their plate is settled
+      body.updateMatrixWorld();
+      const settle = k => (k === i ? 1 - t : 0) + (k === i + 1 ? t : 0);
+      for (const co of cos) {
+        const vis = Math.max(0, (settle(co.k) - .82) / .18);
+        co.el.style.opacity = vis.toFixed(2); co.ln.style.opacity = co.dot.style.opacity = vis.toFixed(2);
+        if (vis <= 0) continue;
+        co.v.set(co.at[0], co.at[1], co.at[2]).applyMatrix4(body.matrixWorld).project(camera);
+        const sx = (co.v.x * .5 + .5) * w, sy = (-co.v.y * .5 + .5) * h, right = sx > w * .5;
+        const lx = sx + (right ? 1 : -1) * (small ? 26 : 54), ly = sy - (small ? 22 : 34);
+        co.ln.setAttribute('x1', sx); co.ln.setAttribute('y1', sy); co.ln.setAttribute('x2', lx); co.ln.setAttribute('y2', ly);
+        co.dot.setAttribute('cx', sx); co.dot.setAttribute('cy', sy);
+        const cw = co.el.offsetWidth || 120; let side = right;
+        if (side && lx + 6 + cw > w - 12) side = false; else if (!side && lx - 6 - cw < 12) side = true;
+        const lx2 = sx + (side ? 1 : -1) * (small ? 26 : 54);
+        co.ln.setAttribute('x2', lx2);
+        let left = side ? lx2 + 6 : lx2 - 6 - cw; left = Math.max(12, Math.min(w - cw - 12, left));
+        co.el.classList.toggle('r', !side);
+        co.el.style.transform = `translate(${left}px, ${ly - 26}px)`;
+      }
+    }
+    new IntersectionObserver(([e]) => { const was = running; running = e.isIntersecting; if (running && !was) { resize(); frame(); } }, { rootMargin: '100px' }).observe(section);
+  }
+  start();
+})();
+</script>
+
 <script>
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* Hero prism: idea, then formats, then channels. Class changes only; CSS transitions do the motion,
-     so a state change mid-flight retargets instead of restarting. Paused offscreen and under reduced motion. */
-  const prism = document.getElementById('prism');
-  const counts = prism.querySelectorAll('.p-count span');
-  const states = [['idea', 1800], ['formats', 2400], ['channels', 3600]];
-  let k = 2, timer = null, visible = true;
-  const show = (name) => {
-    prism.dataset.state = name;
-    counts.forEach(c => c.classList.toggle('on', c.dataset.c === name));
-  };
-  const tick = () => {
-    k = (k + 1) % states.length;
-    show(states[k][0]);
-    timer = setTimeout(tick, states[k][1]);
-  };
-  if (!reduce) {
-    show('channels');
-    timer = setTimeout(tick, 2600);
-    new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !visible) { visible = true; timer = setTimeout(tick, 600); }
-      if (!e.isIntersecting && visible) { visible = false; clearTimeout(timer); }
-    }).observe(prism);
-  }
 
   /* Story: the step crossing the reading line drives the phone screen. */
   const steps = [...document.querySelectorAll('.step')];
